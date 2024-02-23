@@ -4,10 +4,45 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:MyHelper.Views.UserControls"
+             
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
+             xmlns:purpose="clr-namespace:MyHelper.Models.Purposes"
+             
              d:DataContext="{d:DesignInstance vm:ListPurposesViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <GroupBox Grid.Column="0" Header="Группа целей">
+            <ListBox ItemsSource="{Binding MyPurposes}" SelectedItem="{Binding SelectedListMyPurposes}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="purpose:MyPurposes">
+                        <TextBlock Text="{Binding Year}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
+        <GroupBox Grid.Column="1" Header="{Binding SelectedListMyPurposes.Name, FallbackValue='Выберите год'}">
+            <DataGrid ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}">
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding IsCompleted}"/>
+                    <DataGridTextColumn Header="Цель" Binding="{Binding Purpose}" 
+                                        ElementStyle="{StaticResource TextWrap}"
+                                        Width="Auto"/>
+                    <DataGridTemplateColumn Header="Подцели" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Показать"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Примечание" Binding="{Binding Note}"
+                                        ElementStyle="{StaticResource TextWrap}"
+                                        Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
     </Grid>
 </UserControl>
