@@ -1,6 +1,7 @@
 ﻿using MyHelper.Infrastructure.Commands;
 using MyHelper.Infrastructure.Commands.Base;
 using MyHelper.Models.Purposes;
+using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System;
 using System.Collections.ObjectModel;
@@ -11,7 +12,10 @@ namespace MyHelper.ViewModels
 {
     class ListPurposesViewModel : ViewModel
     {
-        public ObservableCollection<MyPurposes>? MyPurposes { get; }
+        private readonly IUserDialog _userDialog;
+        private readonly IWorkWithJSONFile _workWithJSONFile;
+
+        public ObservableCollection<MyPurposes>? ListMyPurposes { get; }
 
         #region SelectedListMyPurposes : MyPurposes - Выбранный список целей
 
@@ -91,6 +95,7 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Команда удаления цели</summary>
         private void OnDeletePurposeCommandExecuted(object? p)
         {
+            SelectedListMyPurposes!.ListPurposes.Remove(SelectedMyPurpose!);
             ((Command)SaveListMyPurposesCommand).Executable = true;
         }
 
@@ -131,6 +136,8 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Команда сохранения списка целей</summary>
         private void OnSaveListMyPurposesCommandExecuted(object? p)
         {
+            _workWithJSONFile.WriteFile(@"Data/MyPurposes.json", p);
+            _userDialog.InformationMessage("Список целей успешно сохранено", "MyHelper");
             ((Command)SaveListMyPurposesCommand).Executable = false;
         }
 
@@ -139,18 +146,28 @@ namespace MyHelper.ViewModels
         #endregion
 
 
-        public ListPurposesViewModel()
+        public ListPurposesViewModel(IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile)
         {
+            _userDialog = userDialog;
+            _workWithJSONFile = workWithJSONFile;
+
             ((Command)SaveListMyPurposesCommand).Executable = false;
-            MyPurposes = new ObservableCollection<MyPurposes>(Enumerable.Range(0, 100).Select(p => new MyPurposes
+            if (_workWithJSONFile.ReadFile(@"Data/MyPurposes.json", out ObservableCollection<MyPurposes>? listPurposes) && listPurposes is not null)
+                ListMyPurposes = new(listPurposes);
+            else
             {
-                Year = DateTime.Now.Year + p,
-                Name = $"Name {p}",
-                ListPurposes = new ObservableCollection<MyPurpose>(Enumerable.Range(1, 23).Select(p => new MyPurpose
+                ListMyPurposes = new ObservableCollection<MyPurposes>(Enumerable.Range(0, 100).Select(p => new MyPurposes
                 {
-                    Purpose = p.ToString(),
-                }))
-            }));
+                    Year = DateTime.Now.Year + p,
+                    Name = $"Name {p}",
+                    ListPurposes = new ObservableCollection<MyPurpose>(Enumerable.Range(1, 23).Select(p => new MyPurpose
+                    {
+                        Purpose = p.ToString(),
+                    }))
+                }));
+                ((Command)SaveListMyPurposesCommand).Executable = true;
+            }
+
         }
     }
 }

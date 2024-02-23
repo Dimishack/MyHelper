@@ -18,7 +18,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <GroupBox Grid.Column="0" Header="Группа целей">
-            <ListBox ItemsSource="{Binding MyPurposes}" SelectedItem="{Binding SelectedListMyPurposes}">
+            <ListBox ItemsSource="{Binding ListMyPurposes}" SelectedItem="{Binding SelectedListMyPurposes}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="purpose:MyPurposes">
                         <TextBlock Text="{Binding Year}"/>
@@ -75,7 +75,7 @@
                 <Button Content="Добавить" Command="{Binding CreateNewPurposeCommand}"/>
                 <Button Content="Удалить" Command="{Binding DeletePurposeCommand}"/>
                 <Button Content="Редактировать" Command="{Binding EditMyPurposeCommand}"/>
-                <Button Content="Сохранить" Command="{Binding SaveListMyPurposesCommand}"/>
+                <Button Content="Сохранить" Command="{Binding SaveListMyPurposesCommand}" CommandParameter="{Binding ListMyPurposes}"/>
             </UniformGrid>
         </GroupBox>
     </Grid>
