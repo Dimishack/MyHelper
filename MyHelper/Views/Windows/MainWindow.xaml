@@ -8,83 +8,17 @@
         xmlns:tasks="clr-namespace:MyHelper.Models.MyTasks"
         xmlns:purposes="clr-namespace:MyHelper.Models.Purposes"
         xmlns:challenges="clr-namespace:MyHelper.Models.Challenges"
+        xmlns:uc="clr-namespace:MyHelper.Views.UserControls"
         mc:Ignorable="d"
-        DataContext="{Binding MainWindowViewModel, Source={StaticResource Loctor}}"
+        DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}"
         Title="MyHelper"
         Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
         x:Name="ThisWindow">
     <DockPanel>
-        <Menu DockPanel.Dock="Top">
-
-        </Menu>
-        <StatusBar DockPanel.Dock="Bottom">
-
-        </StatusBar>
         <TabControl>
             <TabItem Header="Цели">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="Года">
-                        <DockPanel>
-                            <UniformGrid DockPanel.Dock="Bottom" Rows="2">
-                                <Button Content="Добавить год" Command="{Binding CreateNewListPurposesCommand}"/>
-                                <Button Content="Сохранить" Command="{Binding SaveCollectionCommand}" CommandParameter="{Binding MyPurposes}"/>
-                            </UniformGrid>
-                            <ListBox x:Name="Testing" ItemsSource="{Binding MyPurposes}" SelectedItem="{Binding SelectedMyPurposes}">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate DataType="purposes:MyPurposes">
-                                        <TextBlock Text="{Binding Name}"/>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </DockPanel>
-                    </GroupBox>
-                    <GroupBox Grid.Column="1" Header="Выбранный год">
-                        <DockPanel>
-                            <Grid DockPanel.Dock="Bottom">
-                                <Grid.Style>
-                                    <Style TargetType="Grid">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ElementName=Testing, Path=SelectedIndex}" Value="-1">
-                                                <Setter Property="Visibility" Value="Hidden"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Grid.Style>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Label FontSize="12" Grid.Column="0">
-                                    <Label.Content>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding CompletedPurposes, StringFormat='Выполненных/Всего: {0}/', UpdateSourceTrigger=PropertyChanged}"/>
-                                            <TextBlock Text="{Binding ListPurposesCount, UpdateSourceTrigger=PropertyChanged}"/>
-                                        </StackPanel>
-                                    </Label.Content>
-                                </Label>
-                                <ProgressBar Grid.Column="1" Maximum="{Binding ListPurposesCount}" 
-                                             Value="{Binding CompletedPurposes}"/>
-                                <TextBlock Grid.Column="1" Text="{Binding Procent}" FontWeight="Bold" FontSize="14"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Grid>
-                            <DataGrid ItemsSource="{Binding SelectedMyPurposes.ListPurposes}" 
-                                  AutoGenerateColumns="False">
-                                <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Header="Выполнен" 
-                                                        MinWidth="65" MaxWidth="65" 
-                                                        Binding="{Binding IsCompleted, UpdateSourceTrigger=PropertyChanged}"/>
-                                    <DataGridTextColumn Header="Цель" Width="*" 
-                                                    Binding="{Binding Purpose}" ElementStyle="{StaticResource TextWrap}"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </DockPanel>
-                    </GroupBox>
-                </Grid>
+                <uc:ListPurposesUserControl DataContext="{Binding ListPurposes}"/>
             </TabItem>
             <TabItem Header="Задачи">
                 <DockPanel>
