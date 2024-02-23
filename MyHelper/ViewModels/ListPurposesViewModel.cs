@@ -27,10 +27,10 @@ namespace MyHelper.ViewModels
 			{
 				Year = DateTime.Now.Year + p,
 				Name = $"Name {p}",
-				ListPurposes = new(Enumerable.Range(1, 10000).Select(p => new MyPurpose
+				ListPurposes = new ObservableCollection<MyPurpose>(Enumerable.Range(1, 10000).Select(p => new MyPurpose
 				{
 					Purpose = p.ToString(),
-				}).ToList())
+				}))
 			}));
 		}
 	}

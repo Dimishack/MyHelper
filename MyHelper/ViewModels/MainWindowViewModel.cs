@@ -31,24 +31,6 @@ namespace MyHelper.ViewModels
 
         #region Команды
 
-        #region CreateNewListPurposesCommand
-
-        public ICommand CreateNewListPurposesCommand { get; }
-
-        private bool CanCreateNewListPurposesCommandExecute(object p) => true;
-        private void OnCreateNewListPurposesCommandExecuted(object p)
-        {
-            var newListPurposes = new MyPurposes()
-            {
-                Name = (Int32.Parse(MyPurposes[^1].Name ?? DateTime.Now.Year.ToString()) + 1).ToString(),
-                ListPurposes = []
-            };
-            newListPurposes.ListPurposes.ListChanged += ListPurposes_ListChanged;
-            MyPurposes.Add(newListPurposes);
-        }
-
-        #endregion
-
         #region SaveCollectionCommand
 
         public ICommand SaveCollectionCommand { get; }
@@ -159,61 +141,6 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region MyPurposes
-        public ObservableCollection<MyPurposes> MyPurposes { get; }
-
-        #region CompletedPurposes : ushort - Количество выполненных целей
-        /// <summary> Количество выполненных целей. </summary>
-        private ushort _completedPurposes;
-        /// <summary> Количество выполненных целей. </summary>
-        public ushort CompletedPurposes
-        {
-            get => _completedPurposes;
-            set => Set(ref _completedPurposes, value);
-        }
-        #endregion
-
-        #region ListPurposesCount : int - Количество целей в списке
-        private int _listPurposesCount;
-        /// <summary> Количество целей в списке. </summary>
-        public int ListPurposesCount
-        {
-            get => _listPurposesCount;
-            set => Set(ref _listPurposesCount, value);
-        }
-        #endregion
-
-        #region SelectedMyPurposes : MyPurposes - Выбранный год списка целей
-        /// <summary>Выбранный год списка целей. </summary>
-        private MyPurposes? _selectedMyPurposes;
-
-        /// <summary>Выбранный год списка целей. </summary>
-        public MyPurposes? SelectedMyPurposes
-        {
-            get => _selectedMyPurposes;
-            set
-            {
-                Set(ref _selectedMyPurposes, value);
-                if (_selectedMyPurposes?.ListPurposes is not null)
-                {
-                    ListPurposesCount = _selectedMyPurposes.ListPurposes.Count;
-                    CompletedPurposes = (ushort)_selectedMyPurposes.ListPurposes.Where(i => i.IsCompleted).Count();
-                    if (ListPurposesCount > 0)
-                        Procent = String.Format("{0:0.##}%", CompletedPurposes / (float)ListPurposesCount * 100F);
-                }
-            }
-        }
-        #endregion
-
-
-        private string? _procent;
-        public string? Procent
-        {
-            get => _procent;
-            set => Set(ref _procent, value);
-        }
-        #endregion
-
         public ObservableCollection<MyBooks> MyBooks { get; }
         public ObservableCollection<MyTasks> MyTasks { get; }
 
@@ -223,7 +150,6 @@ namespace MyHelper.ViewModels
         {
             #region Команды
 
-            CreateNewListPurposesCommand = new LambdaCommand(OnCreateNewListPurposesCommandExecuted, CanCreateNewListPurposesCommandExecute);
             SaveCollectionCommand = new LambdaCommand(OnSaveCollectionCommandExecuted, CanSaveCollectionCommandExecute);
             OpenChecklistChallengeWindowCommand = new LambdaCommand(OnOpenChecklistChallengeWindowCommandExecuted, CanOpenChecklistChallengeWindowCommandExecute);
 
@@ -246,25 +172,6 @@ namespace MyHelper.ViewModels
                 JsonConvert.DeserializeObject<ObservableCollection<MyTasks>>(File.ReadAllText(pathTasks)) is ObservableCollection<MyTasks> tasks)
                 MyTasks = new ObservableCollection<MyTasks>(tasks);
             else MyTasks = [];
-            if (File.Exists(pathPurposes) &&
-                JsonConvert.DeserializeObject<ObservableCollection<MyPurposes>>(File.ReadAllText(pathPurposes)) is ObservableCollection<MyPurposes> purposes)
-                MyPurposes = new ObservableCollection<MyPurposes>(purposes);
-            else
-            {
-                MyPurposes =
-            [
-                new()
-                {
-                    Name = "Все",
-                    ListPurposes = [],
-                },
-                new()
-                {
-                    Name = (DateTime.Now.Year + 1).ToString(),
-                    ListPurposes = [],
-                }
-            ];
-            }
             if (File.Exists(pathBooks) &&
                 JsonConvert.DeserializeObject<ObservableCollection<MyBooks>>(File.ReadAllText(pathBooks)) is ObservableCollection<MyBooks> books)
                 MyBooks = new ObservableCollection<MyBooks>(books);
@@ -272,29 +179,12 @@ namespace MyHelper.ViewModels
 
             for (int i = 0; i < MyChallenges.Count; i++)
                 MyChallenges[i].ListChallenges.ListChanged += ListChallenges_ListChanged;
-            for (int i = 0; i < MyPurposes.Count; i++)
-                MyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
         }
 
         public MainWindowViewModel(ListPurposesViewModel listPurposes, IOpenWindows openWindows) : this()
         {
             ListPurposes = listPurposes;
             _openWindows = openWindows;
-        }
-
-        private void ListPurposes_ListChanged(object? sender, ListChangedEventArgs e)
-        {
-            switch (e.ListChangedType)
-            {
-                case ListChangedType.ItemDeleted:
-                case ListChangedType.ItemChanged:
-                    if (sender is not BindingList<MyPurpose> listPurposes) return;
-                    CompletedPurposes = (ushort)listPurposes.Where(i => i.IsCompleted).Count();
-                    ListPurposesCount = listPurposes.Count;
-                    if (ListPurposesCount > 0)
-                        Procent = String.Format("{0:0.#}%", CompletedPurposes / (float)ListPurposesCount * 100F);
-                    break;
-            }
         }
 
         private void ListChallenges_ListChanged(object? sender, ListChangedEventArgs e)

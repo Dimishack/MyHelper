@@ -1,5 +1,4 @@
-﻿using MyHelper.ViewModels.Base;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 
 namespace MyHelper.Models.Purposes
 {
@@ -9,15 +8,7 @@ namespace MyHelper.Models.Purposes
 
         public string? Name { get; set; }
 
-        public BindingList<MyPurpose> ListPurposes { get; set; } = [];
+        public IList<MyPurpose> ListPurposes { get; set; } = [];
 
-    }
-
-    internal class MyPurpose
-    {
-        public BindingList<MyPurpose>? Branch { get; set; }
-        public bool IsCompleted { get; set; }
-        public string? Purpose { get; set; }
-        public string? Note { get; set; }
     }
 }

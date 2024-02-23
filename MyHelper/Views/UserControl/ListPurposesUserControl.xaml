@@ -9,11 +9,13 @@
              xmlns:purpose="clr-namespace:MyHelper.Models.Purposes"
              
              d:DataContext="{d:DesignInstance vm:ListPurposesViewModel, IsDesignTimeCreatable=True}"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             MinHeight="150">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <GroupBox Grid.Column="0" Header="Группа целей">
             <ListBox ItemsSource="{Binding MyPurposes}" SelectedItem="{Binding SelectedListMyPurposes}">
@@ -43,6 +45,19 @@
                                         Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
+        </GroupBox>
+        <GroupBox Grid.Column="2" Header="Панель управления">
+            <UniformGrid Columns="1">
+                <UniformGrid.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="3,5"/>
+                    </Style>
+                </UniformGrid.Resources>
+                <Button Content="Добавить"/>
+                <Button Content="Удалить"/>
+                <Button Content="Редактировать"/>
+                <Button Content="Сохранить"/>
+            </UniformGrid>
         </GroupBox>
     </Grid>
 </UserControl>
