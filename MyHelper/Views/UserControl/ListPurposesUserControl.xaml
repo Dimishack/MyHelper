@@ -27,24 +27,43 @@
             </ListBox>
         </GroupBox>
         <GroupBox Grid.Column="1" Header="{Binding SelectedListMyPurposes.Name, FallbackValue='Выберите год'}">
-            <DataGrid ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}" SelectedItem="{Binding SelectedMyPurpose}">
-                <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding IsCompleted}"/>
-                    <DataGridTextColumn Header="Цель" Binding="{Binding Purpose}" 
+            <DockPanel>
+                <Grid DockPanel.Dock="Bottom" Margin="0,3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="3,0">
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="14"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBlock Text="{Binding MyPurposesCount, StringFormat='Всего/Выполненных: {0}/'}"/>
+                        <TextBlock Text="{Binding CompletingMyPurposesCount}"/>
+                    </StackPanel>
+                    <ProgressBar Grid.Column="1" Maximum="1" Value="{Binding Percent, Mode=OneWay}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat=p1}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Grid>
+                <DataGrid ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}" SelectedItem="{Binding SelectedMyPurpose}">
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding IsCompleted}"/>
+                        <DataGridTextColumn Header="Цель" Binding="{Binding Purpose}" 
                                         ElementStyle="{StaticResource TextWrap}"
                                         Width="Auto" IsReadOnly="True"/>
-                    <DataGridTemplateColumn Header="Подцели" Width="Auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="Показать"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Примечание" Binding="{Binding Note}"
+                        <DataGridTemplateColumn Header="Подцели" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Показать"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Примечание" Binding="{Binding Note}"
                                         ElementStyle="{StaticResource TextWrap}"
                                         Width="*" IsReadOnly="True"/>
-                </DataGrid.Columns>
-            </DataGrid>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
         </GroupBox>
         <GroupBox Grid.Column="2" Header="Панель управления">
             <UniformGrid Columns="1">
