@@ -10,7 +10,27 @@ namespace MyHelper.Infrastructure.Commands.Base
             add => CommandManager.RequerySuggested += value;
             remove => CommandManager.RequerySuggested -= value;
         }
-        public abstract bool CanExecute(object? parameter);
-        public abstract void Execute(object? parameter);
+
+        private bool _executable = true;
+        public bool Executable
+        {
+            get => _executable;
+            set
+            {
+                if (_executable == value) return;
+                _executable = value;
+                CommandManager.InvalidateRequerySuggested();
+            }
+        }
+
+        bool ICommand.CanExecute(object? parameter) => _executable && CanExecute(parameter);
+        void ICommand.Execute(object? parameter)
+        {
+            if (CanExecute(parameter))
+                Execute(parameter);
+        }
+
+        protected virtual bool CanExecute(object? parameter) => true;
+        protected abstract void Execute(object? parameter);
     }
 }
