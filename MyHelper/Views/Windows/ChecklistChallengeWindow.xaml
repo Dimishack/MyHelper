@@ -1,0 +1,55 @@
+﻿<Window x:Class="MyHelper.Views.Windows.ChecklistChallengeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyHelper.Views.Windows"
+        xmlns:vm="clr-namespace:MyHelper.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance vm:ChecklistChallengeViewModel,IsDesignTimeCreatable=True}"
+        Title="{Binding Title, StringFormat=' {0}(Чек-лист)'}" Height="500" MaxWidth="300">
+    <Grid>
+        <DockPanel Margin="5">
+            <Grid DockPanel.Dock="Bottom" Height="Auto">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Column="0" Margin="2">
+                    <TextBlock Text="Выполнено/Всего: "/>
+                    <TextBlock Text="{Binding Progess, StringFormat=' {0}/'}"/>
+                    <TextBlock Text="{Binding Count}"/>
+                </StackPanel>
+                <ProgressBar Grid.Column="1" 
+                             Maximum="{Binding Count}" Value="{Binding Progess}" 
+                             Margin="2"/>
+                <TextBlock Grid.Column="1" 
+                           HorizontalAlignment="Center" Margin="2"
+                           FontWeight="Bold" 
+                           Text="{Binding Procent, StringFormat=' {0}%'}"/>
+            </Grid>
+            <DataGrid ItemsSource="{Binding Checklists}"
+                  AutoGenerateColumns="False" CanUserReorderColumns="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserAddRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Дата" Binding="{Binding Time}" 
+                                        Width="*" 
+                                        IsReadOnly="True">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+                    <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding Check, UpdateSourceTrigger=PropertyChanged}" 
+                                            Width="*">
+                        <DataGridCheckBoxColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridCheckBoxColumn.HeaderStyle>
+                    </DataGridCheckBoxColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+    </Grid>
+</Window>
