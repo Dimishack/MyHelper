@@ -12,6 +12,7 @@ namespace MyHelper.ViewModels
 {
     class ListPurposesViewModel : ViewModel
     {
+        private readonly IOpenWindows _openWindows;
         private readonly IUserDialog _userDialog;
         private readonly IWorkWithJSONFile _workWithJSONFile;
 
@@ -70,11 +71,17 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand(OnCreateNewPurposeCommandExecuted, CanCreateNewPurposeCommandExecute);
 
         ///<summary>Проверка возможности выполнения - Команда создания цели</summary>
-        private bool CanCreateNewPurposeCommandExecute(object? p) => true;
+        private bool CanCreateNewPurposeCommandExecute(object? p) => SelectedListMyPurposes is not null;
 
         ///<summary>Логика выполнения - Команда создания цели</summary>
         private void OnCreateNewPurposeCommandExecuted(object? p)
         {
+            var purpose = new MyPurpose();
+            if (_openWindows.OpenCreator_EditPurposeWindow(purpose))
+            {
+                SelectedListMyPurposes?.ListPurposes.Add(purpose);
+                _userDialog.InformationMessage("Цель успешно добавлена", "MyHelper");
+            }
             ((Command)SaveListMyPurposesCommand).Executable = true;
         }
 
@@ -146,8 +153,9 @@ namespace MyHelper.ViewModels
         #endregion
 
 
-        public ListPurposesViewModel(IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile)
+        public ListPurposesViewModel(IOpenWindows openWindows, IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile)
         {
+            _openWindows = openWindows;
             _userDialog = userDialog;
             _workWithJSONFile = workWithJSONFile;
 

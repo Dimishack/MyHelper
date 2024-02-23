@@ -5,12 +5,16 @@ using MyHelper.Services.Interfaces;
 using MyHelper.Services.Registrator;
 using MyHelper.ViewModels.Registrator_Locator;
 using System;
+using System.Linq;
 using System.Windows;
 
 namespace MyHelper
 {
     public partial class App : Application
     {
+        public static Window ActivedWindow => Current.Windows.Cast<Window>().FirstOrDefault(w => w.IsActive);
+        public static Window FocusedWindow => Current.Windows.Cast<Window>().FirstOrDefault(w => w.IsFocused);
+
         private static IHost? __host;
 
         public static IHost Host => __host ??= Microsoft.Extensions.Hosting.Host

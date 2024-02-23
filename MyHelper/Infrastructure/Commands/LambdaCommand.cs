@@ -8,8 +8,8 @@ namespace MyHelper.Infrastructure.Commands
         private readonly Action<object?> _execute = execute;
         private readonly Func<object?, bool>? _canExecute = canExecute;
 
-        protected override bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
+        public override bool CanExecute(object? parameter) => _canExecute?.Invoke(parameter) ?? true;
 
-        protected override void Execute(object? parameter) => _execute(parameter);
+        public override void Execute(object? parameter) => _execute(parameter);
     }
 }
