@@ -27,12 +27,12 @@
             </ListBox>
         </GroupBox>
         <GroupBox Grid.Column="1" Header="{Binding SelectedListMyPurposes.Name, FallbackValue='Выберите год'}">
-            <DataGrid ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}">
+            <DataGrid ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}" SelectedItem="{Binding SelectedMyPurpose}">
                 <DataGrid.Columns>
                     <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding IsCompleted}"/>
                     <DataGridTextColumn Header="Цель" Binding="{Binding Purpose}" 
                                         ElementStyle="{StaticResource TextWrap}"
-                                        Width="Auto"/>
+                                        Width="Auto" IsReadOnly="True"/>
                     <DataGridTemplateColumn Header="Подцели" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -42,7 +42,7 @@
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Примечание" Binding="{Binding Note}"
                                         ElementStyle="{StaticResource TextWrap}"
-                                        Width="*"/>
+                                        Width="*" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>
@@ -53,10 +53,10 @@
                         <Setter Property="Margin" Value="3,5"/>
                     </Style>
                 </UniformGrid.Resources>
-                <Button Content="Добавить"/>
-                <Button Content="Удалить"/>
-                <Button Content="Редактировать"/>
-                <Button Content="Сохранить"/>
+                <Button Content="Добавить" Command="{Binding CreateNewPurposeCommand}"/>
+                <Button Content="Удалить" Command="{Binding DeletePurposeCommand}"/>
+                <Button Content="Редактировать" Command="{Binding EditMyPurposeCommand}"/>
+                <Button Content="Сохранить" Command="{Binding SaveListMyPurposesCommand}"/>
             </UniformGrid>
         </GroupBox>
     </Grid>
