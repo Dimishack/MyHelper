@@ -57,7 +57,7 @@ namespace MyHelper.ViewModels
             ? 0
             : SelectedListMyPurposes.ListPurposes.Where(p => p.IsCompleted).Count();
 
-        public double Percent => (double)CompletingMyPurposesCount / MyPurposesCount;
+        public double Percent => (double)CompletingMyPurposesCount / (MyPurposesCount == 0 ? 1 : MyPurposesCount);
 
         #region Команды
 
@@ -77,11 +77,9 @@ namespace MyHelper.ViewModels
         private void OnCreateNewPurposeCommandExecuted(object? p)
         {
             var purpose = new MyPurpose();
-            if (_openWindows.OpenCreator_EditPurposeWindow(purpose))
-            {
-                SelectedListMyPurposes?.ListPurposes.Add(purpose);
-                _userDialog.InformationMessage("Цель успешно добавлена", "MyHelper");
-            }
+            if (!_openWindows.OpenCreator_EditPurposeWindow(purpose)) return;
+            SelectedListMyPurposes?.ListPurposes.Add(purpose);
+            _userDialog.InformationMessage("Цель успешно добавлена в список", "MyHelper");
             ((Command)SaveListMyPurposesCommand).Executable = true;
         }
 
@@ -123,6 +121,8 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Редактирование цели</summary>
         private void OnEditMyPurposeCommandExecuted(object? p)
         {
+            if (!_openWindows.OpenCreator_EditPurposeWindow(SelectedMyPurpose!)) return;
+            _userDialog.InformationMessage("Цель отредактирована", "MyHelper");
             ((Command)SaveListMyPurposesCommand).Executable = true;
         }
 
@@ -144,14 +144,13 @@ namespace MyHelper.ViewModels
         private void OnSaveListMyPurposesCommandExecuted(object? p)
         {
             _workWithJSONFile.WriteFile(@"Data/MyPurposes.json", p);
-            _userDialog.InformationMessage("Список целей успешно сохранено", "MyHelper");
+            _userDialog.InformationMessage("Список целей успешно сохранен", "MyHelper");
             ((Command)SaveListMyPurposesCommand).Executable = false;
         }
 
         #endregion
 
         #endregion
-
 
         public ListPurposesViewModel(IOpenWindows openWindows, IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile)
         {

@@ -14,7 +14,7 @@
         <TextBlock DockPanel.Dock="Top" Text="{Binding Title}" 
                    VerticalAlignment="Center" HorizontalAlignment="Center" 
                    FontSize="16" FontWeight="Bold"
-                   Margin="10"/>
+                   Margin="0,5,0,0"/>
         <UniformGrid DockPanel.Dock="Bottom" Rows="1" HorizontalAlignment="Right">
             <Button Content="Ok" FontWeight="Bold"
                     Padding="35,5" Margin="10,5" IsDefault="True"
@@ -31,7 +31,7 @@
                 </Button.Command>
             </Button>
         </UniformGrid>
-        <Grid Margin="5" Height="101">
+        <Grid Margin="5,0" Height="101">
             <Grid.Resources>
                 <Style TargetType="TextBlock">
                     <Style.Triggers>
