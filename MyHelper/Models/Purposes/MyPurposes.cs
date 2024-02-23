@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace MyHelper.Models.Purposes
 {
@@ -8,7 +10,7 @@ namespace MyHelper.Models.Purposes
 
         public string? Name { get; set; }
 
-        public IList<MyPurpose> ListPurposes { get; set; } = [];
+        public ObservableCollection<MyPurpose> ListPurposes { get; set; } = [];
 
     }
 }

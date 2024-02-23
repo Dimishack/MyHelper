@@ -163,11 +163,11 @@ namespace MyHelper.ViewModels
                 ListMyPurposes = new(listPurposes);
             else
             {
-                ListMyPurposes = new ObservableCollection<MyPurposes>(Enumerable.Range(0, 100).Select(p => new MyPurposes
+                ListMyPurposes = new (Enumerable.Range(0, 100).Select(p => new MyPurposes
                 {
                     Year = DateTime.Now.Year + p,
                     Name = $"Name {p}",
-                    ListPurposes = new ObservableCollection<MyPurpose>(Enumerable.Range(1, 23).Select(p => new MyPurpose
+                    ListPurposes = new (Enumerable.Range(1, 23).Select(p => new MyPurpose
                     {
                         Purpose = p.ToString(),
                     }))
