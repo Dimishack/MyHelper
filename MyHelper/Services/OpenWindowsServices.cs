@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using MyHelper.Services.Interfaces;
 using MyHelper.Views.Windows;
 using System;
 
-namespace MyHelper.Services.Implementations
+namespace MyHelper.Services
 {
     class OpenWindowsServices(IServiceProvider services) : IOpenWindows
     {
@@ -12,7 +13,7 @@ namespace MyHelper.Services.Implementations
 
         public void OpenChecklistChallengeWindow()
         {
-            if(_checklistChallengeWindow is { } window)
+            if (_checklistChallengeWindow is { } window)
             {
                 window.ShowDialog();
                 return;

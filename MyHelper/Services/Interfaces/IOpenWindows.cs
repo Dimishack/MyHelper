@@ -1,4 +1,4 @@
-﻿namespace MyHelper.Services
+﻿namespace MyHelper.Services.Interfaces
 {
     interface IOpenWindows
     {

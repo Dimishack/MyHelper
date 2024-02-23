@@ -3,7 +3,7 @@ using MyHelper.Models.Books;
 using MyHelper.Models.Challenges;
 using MyHelper.Models.MyTasks;
 using MyHelper.Models.Purposes;
-using MyHelper.Services;
+using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using Newtonsoft.Json;
 using System;

@@ -5,18 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.com/icons/"
         xmlns:local="clr-namespace:MyHelper"
-        xmlns:vm="clr-namespace:MyHelper.ViewModels"
         xmlns:tasks="clr-namespace:MyHelper.Models.MyTasks"
         xmlns:purposes="clr-namespace:MyHelper.Models.Purposes"
         xmlns:challenges="clr-namespace:MyHelper.Models.Challenges"
         mc:Ignorable="d"
+        DataContext="{Binding MainWindowViewModel, Source={StaticResource Loctor}}"
         Title="MyHelper"
         Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
         x:Name="ThisWindow">
-    <Window.DataContext>
-        <vm:MainWindowViewModel/>
-    </Window.DataContext>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
 
