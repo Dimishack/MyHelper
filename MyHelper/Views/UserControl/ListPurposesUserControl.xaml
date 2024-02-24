@@ -71,15 +71,32 @@
                     <Style TargetType="Button">
                         <Setter Property="Margin" Value="3,5"/>
                     </Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="TextAlignment" Value="Center"/>
+                    </Style>
                 </UniformGrid.Resources>
-                <Button Content="Добавить год"/>
-                <Button Content="Удалить год"/>
-                <Button Content="Редактировать год"/>
+                <Button Command="{Binding CreateNewYearCommand}">
+                    <TextBlock>Создать <LineBreak/> список целей</TextBlock>
+                </Button>
+                <Button Command="{Binding DeleteYearCommand}">
+                    <TextBlock>Удалить <LineBreak/> список целей</TextBlock>
+                </Button>
+                <Button Command="{Binding EditYearCommand}">
+                    <TextBlock>Редактировать <LineBreak/> список целей</TextBlock>
+                </Button>
                 <Separator/>
-                <Button Content="Добавить" Command="{Binding CreateNewPurposeCommand}"/>
-                <Button Content="Удалить" Command="{Binding DeletePurposeCommand}"/>
-                <Button Content="Редактировать" Command="{Binding EditMyPurposeCommand}"/>
-                <Button Content="Сохранить" Command="{Binding SaveListMyPurposesCommand}" CommandParameter="{Binding ListMyPurposes}"/>
+                <Button Command="{Binding CreateNewPurposeCommand}">
+                    <TextBlock>Создать <LineBreak/> цель</TextBlock>
+                </Button>
+                <Button Command="{Binding DeletePurposeCommand}">
+                    <TextBlock>Удалить <LineBreak/> цель</TextBlock>
+                </Button>
+                <Button Command="{Binding EditMyPurposeCommand}">
+                    <TextBlock>Редактировать <LineBreak/> цель</TextBlock>
+                </Button>
+                <Button Command="{Binding SaveListMyPurposesCommand}" CommandParameter="{Binding ListMyPurposes}">
+                    <TextBlock>Сохранить <LineBreak/> списки целей</TextBlock>
+                </Button>
             </UniformGrid>
         </GroupBox>
     </Grid>

@@ -77,6 +77,75 @@ namespace MyHelper.ViewModels
 
         #region Команды
 
+        #region CreateNewYearCommand - Команда создания нового списка целей
+
+        ///<summary>Команда создания нового списка целей</summary>
+        private ICommand? _createNewYearCommand;
+
+        ///<summary>Команда создания нового списка целей</summary>
+        public ICommand CreateNewYearCommand => _createNewYearCommand
+            ??= new LambdaCommand(OnCreateNewYearCommandExecuted, CanCreateNewYearCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - Команда создания нового списка целей</summary>
+        private bool CanCreateNewYearCommandExecute(object? p) => true;
+
+        ///<summary>Логика выполнения - Команда создания нового списка целей</summary>
+        private void OnCreateNewYearCommandExecuted(object? p)
+        {
+            MyPurposes listPurposes = new();
+            if (!_openWindows.OpenCreator_EditorYearWindow(listPurposes)) return;
+
+            ListMyPurposes?.Add(listPurposes);
+            _userDialog.InformationMessage("Новый список целей успешно добавлен", "MyHepler");
+            ((Command)SaveListMyPurposesCommand).Executable = true;
+        }
+
+        #endregion
+
+        #region DeleteYearCommand - Команда удаления списка целей
+
+        ///<summary>Команда удаления списка целей</summary>
+        private ICommand? _deleteYearCommand;
+
+        ///<summary>Команда удаления списка целей</summary>
+        public ICommand DeleteYearCommand => _deleteYearCommand
+            ??= new LambdaCommand(OnDeleteYearCommandExecuted, CanDeleteYearCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - Команда удаления списка целей</summary>
+        private bool CanDeleteYearCommandExecute(object? p) => SelectedListMyPurposes is not null;
+
+        ///<summary>Логика выполнения - Команда удаления списка целей</summary>
+        private void OnDeleteYearCommandExecuted(object? p)
+        {
+            ListMyPurposes?.Remove(SelectedListMyPurposes!);
+            ((Command)SaveListMyPurposesCommand).Executable = true;
+        }
+
+        #endregion
+
+        #region EditYearCommand - Команда редактирования списка целей
+
+        ///<summary>Команда редактирования списка целей</summary>
+        private ICommand? _editYearCommand;
+
+        ///<summary>Команда редактирования списка целей</summary>
+        public ICommand EditYearCommand => _editYearCommand
+            ??= new LambdaCommand(OnEditYearCommandExecuted, CanEditYearCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - Команда редактирования списка целей</summary>
+        private bool CanEditYearCommandExecute(object? p) => SelectedListMyPurposes is not null;
+
+        ///<summary>Логика выполнения - Команда редактирования списка целей</summary>
+        private void OnEditYearCommandExecuted(object? p)
+        {
+            if (!_openWindows.OpenCreator_EditorYearWindow(SelectedListMyPurposes!)) return;
+
+            _userDialog.InformationMessage("Список целей успешно отредактирован", "MyHelper");
+            ((Command)SaveListMyPurposesCommand).Executable = true;
+        }
+
+        #endregion
+
         #region CreateNewPurposeCommand - Команда создания цели
 
         ///<summary>Команда создания цели</summary>
@@ -96,7 +165,6 @@ namespace MyHelper.ViewModels
             if (!_openWindows.OpenCreator_EditPurposeWindow(purpose)) return;
             SelectedListMyPurposes?.ListPurposes.Add(purpose);
             _userDialog.InformationMessage("Цель успешно добавлена в список", "MyHelper");
-            ((Command)SaveListMyPurposesCommand).Executable = true;
         }
 
         #endregion
@@ -114,11 +182,8 @@ namespace MyHelper.ViewModels
         private bool CanDeletePurposeCommandExecute(object? p) => SelectedMyPurpose is not null;
 
         ///<summary>Логика выполнения - Команда удаления цели</summary>
-        private void OnDeletePurposeCommandExecuted(object? p)
-        {
-            SelectedListMyPurposes!.ListPurposes.Remove(SelectedMyPurpose!);
-            ((Command)SaveListMyPurposesCommand).Executable = true;
-        }
+        private void OnDeletePurposeCommandExecuted(object? p) 
+            => SelectedListMyPurposes!.ListPurposes.Remove(SelectedMyPurpose!);
 
         #endregion
 
@@ -179,21 +244,23 @@ namespace MyHelper.ViewModels
                 ListMyPurposes = new(listPurposes);
             else
             {
-                ListMyPurposes = new (Enumerable.Range(0, 100).Select(p => new MyPurposes
+                ListMyPurposes = new (Enumerable.Range(0, 10).Select(p => new MyPurposes
                 {
                     Year = DateTime.Now.Year + p,
                     Name = $"Name {p}",
                     ListPurposes = new (Enumerable.Range(1, 23).Select(p => new MyPurpose
                     {
                         Purpose = p.ToString(),
-                    })),
+                    }).ToList()),
                     
                 }));
                 ((Command)SaveListMyPurposesCommand).Executable = true;
             }
 
             for (int i = 0; i < ListMyPurposes.Count; i++)
+            {
                 ListMyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
+            }
         }
 
         private void ListPurposes_ListChanged(object? sender,  ListChangedEventArgs e)
@@ -206,6 +273,7 @@ namespace MyHelper.ViewModels
                     OnPropertyChanged(nameof(MyPurposesCount));
                     OnPropertyChanged(nameof(CompletingMyPurposesCount));
                     OnPropertyChanged(nameof(Percent));
+                    ((Command)SaveListMyPurposesCommand).Executable = true;
                     break;
                 default:
                     break;

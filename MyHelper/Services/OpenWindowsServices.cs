@@ -59,5 +59,26 @@ namespace MyHelper.Services
 
             return true;
         }
+
+        public bool OpenCreator_EditorYearWindow(MyPurposes listPurposes)
+        {
+            var title = "Редактировать год";
+            if (string.IsNullOrEmpty(listPurposes.Name) && listPurposes.Year == 0)
+                title = "Создать год";
+
+            var window = new Creator_EditorYearWindow
+            {
+                Title = title,
+                Year = listPurposes.Year,
+                NameYear = listPurposes.Name ?? "",
+                Owner = App.ActivedWindow,
+                WindowStartupLocation= WindowStartupLocation.CenterOwner
+            };
+            if (window.ShowDialog() != true) return false;
+            listPurposes.Year = window.Year;
+            listPurposes.Name = window.NameYear;
+
+            return true;
+        }
     }
 }
