@@ -248,7 +248,7 @@ namespace MyHelper.ViewModels
                 {
                     Year = DateTime.Now.Year + p,
                     Name = $"Name {p}",
-                    ListPurposes = new (Enumerable.Range(1, 23).Select(p => new MyPurpose
+                    ListPurposes = new(Enumerable.Range(1, 100).Select(p => new MyPurpose
                     {
                         Purpose = p.ToString(),
                     }).ToList()),
@@ -258,9 +258,7 @@ namespace MyHelper.ViewModels
             }
 
             for (int i = 0; i < ListMyPurposes.Count; i++)
-            {
                 ListMyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
-            }
         }
 
         private void ListPurposes_ListChanged(object? sender,  ListChangedEventArgs e)

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace MyHelper.Models.Purposes
+﻿namespace MyHelper.Models.Purposes
 {
     internal class MyPurposes
     {
@@ -8,7 +6,7 @@ namespace MyHelper.Models.Purposes
 
         public string? Name { get; set; }
 
-        public BindingList<MyPurpose> ListPurposes { get; set; } = [];
+        public SortableBindingList<MyPurpose> ListPurposes { get; set; } = [];
 
     }
 }
