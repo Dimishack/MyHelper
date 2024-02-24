@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using System.ComponentModel;
+using System.Windows.Data;
 
 namespace MyHelper.ViewModels
 {
@@ -140,6 +141,7 @@ namespace MyHelper.ViewModels
         {
             if (!_openWindows.OpenCreator_EditorYearWindow(SelectedListMyPurposes!)) return;
 
+            CollectionViewSource.GetDefaultView(ListMyPurposes).Refresh();
             _userDialog.InformationMessage("Список целей успешно отредактирован", "MyHelper");
             ((Command)SaveListMyPurposesCommand).Executable = true;
         }
@@ -203,6 +205,8 @@ namespace MyHelper.ViewModels
         private void OnEditMyPurposeCommandExecuted(object? p)
         {
             if (!_openWindows.OpenCreator_EditPurposeWindow(SelectedMyPurpose!)) return;
+
+            CollectionViewSource.GetDefaultView(SelectedListMyPurposes?.ListPurposes).Refresh();
             _userDialog.InformationMessage("Цель отредактирована", "MyHelper");
             ((Command)SaveListMyPurposesCommand).Executable = true;
         }

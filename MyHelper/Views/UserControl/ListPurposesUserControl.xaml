@@ -74,7 +74,8 @@
                     <ProgressBar Grid.Column="1" Maximum="1" Value="{Binding Percent, Mode=OneWay}"/>
                     <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat=p1}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Grid>
-                <DataGrid ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}" SelectedItem="{Binding SelectedMyPurpose}">
+                <DataGrid ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}" 
+                          SelectedItem="{Binding SelectedMyPurpose}">
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding IsCompleted, UpdateSourceTrigger=PropertyChanged}"/>
                         <DataGridTextColumn Header="Цель" Binding="{Binding Purpose}" 
