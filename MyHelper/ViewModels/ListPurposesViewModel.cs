@@ -4,9 +4,11 @@ using MyHelper.Models.Purposes;
 using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using System.ComponentModel;
 
 namespace MyHelper.ViewModels
 {
@@ -49,15 +51,29 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region MyPurposesCount : int - Количество целей в списке
+
+        /// <summary>Количество целей в списке</summary>
         public int MyPurposesCount => SelectedListMyPurposes is null
             ? 0
             : SelectedListMyPurposes.ListPurposes.Count;
 
+        #endregion
+
+        #region CompletingMyPurposesCount : int - Количество выполненных целей в списке
+
+        /// <summary>Количество выполненных целей в списке</summary>
         public int CompletingMyPurposesCount => SelectedListMyPurposes is null
             ? 0
-            : SelectedListMyPurposes.ListPurposes.Where(p => p.IsCompleted).Count();
+            : SelectedListMyPurposes.ListPurposes.Where(p => p.IsCompleted).Count(); 
+        #endregion
 
+        #region Percent : double - Процент выполненных целей
+
+        /// <summary>Процент выполненных целей</summary>
         public double Percent => (double)CompletingMyPurposesCount / (MyPurposesCount == 0 ? 1 : MyPurposesCount);
+
+        #endregion
 
         #region Команды
 
@@ -159,7 +175,7 @@ namespace MyHelper.ViewModels
             _workWithJSONFile = workWithJSONFile;
 
             ((Command)SaveListMyPurposesCommand).Executable = false;
-            if (_workWithJSONFile.ReadFile(@"Data/MyPurposes.json", out ObservableCollection<MyPurposes>? listPurposes) && listPurposes is not null)
+            if (_workWithJSONFile.ReadFile(@"Data/MyPurposes.json", out IList<MyPurposes>? listPurposes) && listPurposes is not null)
                 ListMyPurposes = new(listPurposes);
             else
             {
@@ -170,11 +186,30 @@ namespace MyHelper.ViewModels
                     ListPurposes = new (Enumerable.Range(1, 23).Select(p => new MyPurpose
                     {
                         Purpose = p.ToString(),
-                    }))
+                    })),
+                    
                 }));
                 ((Command)SaveListMyPurposesCommand).Executable = true;
             }
 
+            for (int i = 0; i < ListMyPurposes.Count; i++)
+                ListMyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
+        }
+
+        private void ListPurposes_ListChanged(object? sender,  ListChangedEventArgs e)
+        {
+            switch (e.ListChangedType)
+            {
+                case ListChangedType.ItemAdded:
+                case ListChangedType.ItemDeleted:
+                case ListChangedType.ItemChanged:
+                    OnPropertyChanged(nameof(MyPurposesCount));
+                    OnPropertyChanged(nameof(CompletingMyPurposesCount));
+                    OnPropertyChanged(nameof(Percent));
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

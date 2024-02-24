@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-
-namespace MyHelper.Models.Purposes
+﻿namespace MyHelper.Models.Purposes
 {
     internal class MyPurposes
     {
@@ -10,7 +6,7 @@ namespace MyHelper.Models.Purposes
 
         public string? Name { get; set; }
 
-        public ObservableCollection<MyPurpose> ListPurposes { get; set; } = [];
+        public SortedBindingList<MyPurpose> ListPurposes { get; set; } = [];
 
     }
 }
