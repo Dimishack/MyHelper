@@ -1,9 +1,0 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace MyHelper.ViewModels.Registrator_Locator
-{
-    internal class ViewModelsLocator
-    {
-        public static MainWindowViewModel MainWindowViewModel = App.Services.GetRequiredService<MainWindowViewModel>();
-    }
-}

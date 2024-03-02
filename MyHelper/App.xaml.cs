@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyHelper.Services.Interfaces;
 using MyHelper.Services.Registrator;
-using MyHelper.ViewModels.Registrator_Locator;
+using MyHelper.ViewModels.Registrator;
 using System;
 using System.Linq;
 using System.Windows;
@@ -37,8 +37,8 @@ namespace MyHelper
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            base.OnExit(e);
             using var host = Host;
+            base.OnExit(e);
             await host.StopAsync();
         }
     }

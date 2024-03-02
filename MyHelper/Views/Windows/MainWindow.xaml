@@ -9,12 +9,15 @@
         xmlns:purposes="clr-namespace:MyHelper.Models.Purposes"
         xmlns:challenges="clr-namespace:MyHelper.Models.Challenges"
         xmlns:uc="clr-namespace:MyHelper.Views.UserControls"
+        xmlns:vm="clr-namespace:MyHelper.ViewModels"
         mc:Ignorable="d"
-        DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}"
         Title="MyHelper"
         Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
         x:Name="ThisWindow">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
     <DockPanel>
         <TabControl>
             <TabItem Header="Цели">
