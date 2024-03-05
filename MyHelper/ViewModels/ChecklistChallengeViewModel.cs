@@ -1,7 +1,6 @@
 ﻿using MyHelper.Models.Challenges;
 using MyHelper.ViewModels.Base;
 using System.ComponentModel;
-using System.Linq;
 
 namespace MyHelper.ViewModels
 {

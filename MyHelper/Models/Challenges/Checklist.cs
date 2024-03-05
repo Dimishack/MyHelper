@@ -1,5 +1,4 @@
 ﻿using MyHelper.ViewModels.Base;
-using System;
 
 namespace MyHelper.Models.Challenges
 {

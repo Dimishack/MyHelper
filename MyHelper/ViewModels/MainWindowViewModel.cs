@@ -6,12 +6,9 @@ using MyHelper.Models.Purposes;
 using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 

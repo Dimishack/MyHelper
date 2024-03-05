@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MyHelper.Models.MyTasks
+﻿namespace MyHelper.Models.MyTasks
 {
     internal class MyTasks
     {

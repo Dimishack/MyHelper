@@ -4,8 +4,6 @@ using Microsoft.Extensions.Hosting;
 using MyHelper.Services.Interfaces;
 using MyHelper.Services.Registrator;
 using MyHelper.ViewModels.Registrator;
-using System;
-using System.Linq;
 using System.Windows;
 
 namespace MyHelper

@@ -1,7 +1,5 @@
 ﻿using MyHelper.ViewModels.Base;
 using Newtonsoft.Json;
-using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace MyHelper.Models.Challenges

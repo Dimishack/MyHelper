@@ -1,5 +1,4 @@
 ﻿using MyHelper.Infrastructure.Commands.Base;
-using System;
 
 namespace MyHelper.Infrastructure.Commands
 {

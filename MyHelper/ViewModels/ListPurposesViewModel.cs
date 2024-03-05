@@ -3,13 +3,10 @@ using MyHelper.Infrastructure.Commands.Base;
 using MyHelper.Models.Purposes;
 using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Input;
 using System.ComponentModel;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {

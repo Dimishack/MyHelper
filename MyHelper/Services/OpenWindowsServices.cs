@@ -2,7 +2,6 @@
 using MyHelper.Models.Purposes;
 using MyHelper.Services.Interfaces;
 using MyHelper.Views.Windows;
-using System;
 using System.Windows;
 
 namespace MyHelper.Services
