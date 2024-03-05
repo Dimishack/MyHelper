@@ -62,7 +62,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="3,0">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="3,0,10,0">
                         <StackPanel.Resources>
                             <Style TargetType="TextBlock">
                                 <Setter Property="FontSize" Value="14"/>
@@ -71,7 +71,14 @@
                         <TextBlock Text="{Binding MyPurposesCount, StringFormat='Всего/Выполненных: {0}/'}"/>
                         <TextBlock Text="{Binding CompletingMyPurposesCount}"/>
                     </StackPanel>
-                    <ProgressBar Grid.Column="1" Maximum="1" Value="{Binding Percent, Mode=OneWay}"/>
+                    <ProgressBar Grid.Column="1" Maximum="1" Value="{Binding Percent, Mode=OneWay}">
+                        <ProgressBar.Foreground>
+                            <LinearGradientBrush>
+                                <GradientStop Color="Red" Offset="0"/>
+                                <GradientStop Color="LimeGreen" Offset="{Binding OffsetLimeGreenColor, Mode=OneWay}"/>
+                            </LinearGradientBrush>
+                        </ProgressBar.Foreground>
+                    </ProgressBar>
                     <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat=p1}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Grid>
                 <DataGrid ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}" 

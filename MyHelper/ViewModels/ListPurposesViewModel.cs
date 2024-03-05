@@ -37,6 +37,7 @@ namespace MyHelper.ViewModels
                     OnPropertyChanged(nameof(MyPurposesCount));
                     OnPropertyChanged(nameof(CompletingMyPurposesCount));
                     OnPropertyChanged(nameof(Percent));
+                    OnPropertyChanged(nameof(OffsetLimeGreenColor));
                 }
             }
         }
@@ -73,6 +74,12 @@ namespace MyHelper.ViewModels
 
         /// <summary>Процент выполненных целей</summary>
         public double Percent => (double)CompletingMyPurposesCount / (MyPurposesCount == 0 ? 1 : MyPurposesCount);
+
+        #endregion
+
+        #region LimeColorOffset : double - местоположение лаймового цвета в ProgressBar'e
+
+        public double OffsetLimeGreenColor => 2.0 - Percent;
 
         #endregion
 
@@ -252,7 +259,7 @@ namespace MyHelper.ViewModels
                 {
                     Year = DateTime.Now.Year + p,
                     Name = $"Name {p}",
-                    ListPurposes = new(Enumerable.Range(1, 100).Select(p => new MyPurpose
+                    ListPurposes = new(Enumerable.Range(1, 50).Select(p => new MyPurpose
                     {
                         Purpose = p.ToString(),
                     }).ToList()),
@@ -275,6 +282,7 @@ namespace MyHelper.ViewModels
                     OnPropertyChanged(nameof(MyPurposesCount));
                     OnPropertyChanged(nameof(CompletingMyPurposesCount));
                     OnPropertyChanged(nameof(Percent));
+                    OnPropertyChanged(nameof(OffsetLimeGreenColor));
                     ((Command)SaveListMyPurposesCommand).Executable = true;
                     break;
                 default:
