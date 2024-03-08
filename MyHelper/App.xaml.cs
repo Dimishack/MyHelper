@@ -17,7 +17,6 @@ namespace MyHelper
 
         public static IHost Host => __host ??= Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder(Environment.GetCommandLineArgs())
-            .ConfigureAppConfiguration(cfg => cfg.AddJsonFile("appsetting.json", true, true))
             .ConfigureServices((host, services) => services
             .AddViewModels()
             .AddServices())

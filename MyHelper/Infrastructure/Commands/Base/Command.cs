@@ -29,7 +29,7 @@ namespace MyHelper.Infrastructure.Commands.Base
                 Execute(parameter);
         }
 
-        public virtual bool CanExecute(object? parameter) => true;
-        public abstract void Execute(object? parameter);
+        protected virtual bool CanExecute(object? parameter) => true;
+        protected abstract void Execute(object? parameter);
     }
 }
