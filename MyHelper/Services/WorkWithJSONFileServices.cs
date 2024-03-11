@@ -10,8 +10,9 @@ namespace MyHelper.Services
         {
             try
             {
-                readData = JsonConvert.DeserializeObject<T>(File.ReadAllText(filePath));
-                if (readData is null) return false;
+                using var reader = new StreamReader(filePath);
+                readData = JsonConvert.DeserializeObject<T>(reader.ReadToEnd());
+                reader.Dispose();
                 return true;
             }
             catch (Exception)
@@ -21,9 +22,12 @@ namespace MyHelper.Services
             }
         }
 
-        public bool WriteFile(string filePath, object? data)
+        public async Task<bool> WriteFile(string filePath, object? data)
         {
-            File.WriteAllText(filePath, JsonConvert.SerializeObject(data, Formatting.Indented));
+            using var writer = new StreamWriter(filePath);
+            await writer.WriteAsync(JsonConvert.SerializeObject(data, Formatting.Indented));
+            writer.Dispose();
+            //File.WriteAllText(filePath, JsonConvert.SerializeObject(data, Formatting.Indented));
             return true;
         }
     }

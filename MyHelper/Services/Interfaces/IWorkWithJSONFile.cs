@@ -3,6 +3,6 @@
     internal interface IWorkWithJSONFile
     {
         bool ReadFile<T>(string filePath, out T? readData);
-        bool WriteFile(string filePath, object? data);
+        Task<bool> WriteFile(string filePath, object? data);
     }
 }

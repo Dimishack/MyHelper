@@ -110,7 +110,8 @@ namespace MyHelper.ViewModels
             if (_listMyPurposes is not null) return;
 
             ((Command)SaveListMyPurposesCommand).Executable = false;
-            if (_workWithJSONFile.ReadFile(@"Data/MyPurposes.json", out IList<MyPurposes>? listPurposes) && listPurposes is not null)
+            if (_workWithJSONFile.ReadFile(@"Data/MyPurposes.json", out IList<MyPurposes>? listPurposes)
+                && listPurposes is not null)
                 ListMyPurposes = new(listPurposes);
             else
             {
@@ -124,10 +125,10 @@ namespace MyHelper.ViewModels
                     }).ToList()),
 
                 }));
-                for (int i = 0; i < ListMyPurposes.Count; i++)
-                    ListMyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
                 ((Command)SaveListMyPurposesCommand).Executable = true;
             }
+            for (int i = 0; i < ListMyPurposes.Count; i++)
+                ListMyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
         }
 
         #endregion
