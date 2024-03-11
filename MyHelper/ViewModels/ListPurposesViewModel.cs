@@ -12,13 +12,22 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    class ListPurposesViewModel : ViewModel
+    class ListPurposesViewModel(IOpenWindows openWindows, IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile) : ViewModel
     {
-        private readonly IOpenWindows _openWindows;
-        private readonly IUserDialog _userDialog;
-        private readonly IWorkWithJSONFile _workWithJSONFile;
+        private readonly IOpenWindows _openWindows = openWindows;
+        private readonly IUserDialog _userDialog = userDialog;
+        private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
 
-        public ObservableCollection<MyPurposes>? ListMyPurposes { get; }
+        #region Свойства
+        #region ListMyPurposes : ObservableCollection<MyPurposes> - Коллекция списков целей
+
+        ///<summary>Коллекция списков целей</summary>
+        private ObservableCollection<MyPurposes>? _listMyPurposes;
+
+        ///<summary>Коллекция списков целей</summary>
+        public ObservableCollection<MyPurposes>? ListMyPurposes { get => _listMyPurposes; set => Set(ref _listMyPurposes, value); }
+
+        #endregion
 
         #region SelectedListMyPurposes : MyPurposes - Выбранный список целей
 
@@ -39,6 +48,7 @@ namespace MyHelper.ViewModels
                     UpdatePropertyChanged();
             }
         }
+
         #endregion
 
         #region SelectedMyPurpose : MyPurpose - Выбранная цель
@@ -66,6 +76,7 @@ namespace MyHelper.ViewModels
         public int CompletingMyPurposesCount => SelectedListMyPurposes is null
             ? 0
             : SelectedListMyPurposes.ListPurposes.Where(p => p.IsCompleted).Count();
+
         #endregion
 
         #region Percent : double - Процент выполненных целей
@@ -75,13 +86,51 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region LimeColorOffset : double - местоположение лаймового цвета в ProgressBar'e
+        #region OffsetLimeGreenColor : double - Местоположение лаймового цвета в ProgressBar'e
 
+        /// <summary>Местоположение лаймового цвета в ProgressBar'e</summary>
         public double OffsetLimeGreenColor => 2.0 - Percent;
 
+        #endregion 
         #endregion
 
         #region Команды
+        #region LoadCommand - Загрузка окна
+
+        ///<summary>Загрузка окна</summary>
+        private ICommand? _loadCommand;
+
+        ///<summary>Загрузка окна</summary>
+        public ICommand LoadCommand => _loadCommand
+            ??= new LambdaCommand(OnLoadCommandExecuted);
+
+        ///<summary>Логика выполнения - Загрузка окна</summary>
+        private void OnLoadCommandExecuted(object? p)
+        {
+            if (_listMyPurposes is not null) return;
+
+            ((Command)SaveListMyPurposesCommand).Executable = false;
+            if (_workWithJSONFile.ReadFile(@"Data/MyPurposes.json", out IList<MyPurposes>? listPurposes) && listPurposes is not null)
+                ListMyPurposes = new(listPurposes);
+            else
+            {
+                ListMyPurposes = new(Enumerable.Range(0, 10).Select(p => new MyPurposes
+                {
+                    Year = DateTime.Now.Year + p,
+                    Name = $"Name {p}",
+                    ListPurposes = new(Enumerable.Range(1, 10).Select(p => new MyPurpose
+                    {
+                        Purpose = p.ToString(),
+                    }).ToList()),
+
+                }));
+                for (int i = 0; i < ListMyPurposes.Count; i++)
+                    ListMyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
+                ((Command)SaveListMyPurposesCommand).Executable = true;
+            }
+        }
+
+        #endregion
 
         #region CreateNewYearCommand - Команда создания нового списка целей
 
@@ -92,9 +141,6 @@ namespace MyHelper.ViewModels
         public ICommand CreateNewYearCommand => _createNewYearCommand
             ??= new LambdaCommand(OnCreateNewYearCommandExecuted);
 
-        ///<summary>Проверка возможности выполнения - Команда создания нового списка целей</summary>
-        private bool CanCreateNewYearCommandExecute(object? p) => true;
-
         ///<summary>Логика выполнения - Команда создания нового списка целей</summary>
         private void OnCreateNewYearCommandExecuted(object? p)
         {
@@ -102,6 +148,7 @@ namespace MyHelper.ViewModels
             if (!_openWindows.OpenCreator_EditorYearWindow(listPurposes)) return;
 
             ListMyPurposes?.Add(listPurposes);
+            ListMyPurposes![^1].ListPurposes.ListChanged += ListPurposes_ListChanged;
             _userDialog.InformationMessage("Новый список целей успешно добавлен", "MyHepler");
             ((Command)SaveListMyPurposesCommand).Executable = true;
         }
@@ -239,36 +286,7 @@ namespace MyHelper.ViewModels
         }
 
         #endregion
-
         #endregion
-
-        public ListPurposesViewModel(IOpenWindows openWindows, IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile)
-        {
-            _openWindows = openWindows;
-            _userDialog = userDialog;
-            _workWithJSONFile = workWithJSONFile;
-
-            ((Command)SaveListMyPurposesCommand).Executable = false;
-            if (_workWithJSONFile.ReadFile(@"Data/MyPurposes.json", out IList<MyPurposes>? listPurposes) && listPurposes is not null)
-                ListMyPurposes = new(listPurposes);
-            else
-            {
-                ListMyPurposes = new(Enumerable.Range(0, 10).Select(p => new MyPurposes
-                {
-                    Year = DateTime.Now.Year + p,
-                    Name = $"Name {p}",
-                    ListPurposes = new(Enumerable.Range(1, 10).Select(p => new MyPurpose
-                    {
-                        Purpose = p.ToString(),
-                    }).ToList()),
-
-                }));
-                ((Command)SaveListMyPurposesCommand).Executable = true;
-            }
-
-            for (int i = 0; i < ListMyPurposes.Count; i++)
-                ListMyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
-        }
 
         private void ListPurposes_ListChanged(object? sender, ListChangedEventArgs e)
         {
