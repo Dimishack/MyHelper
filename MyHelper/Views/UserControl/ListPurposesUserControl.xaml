@@ -7,7 +7,6 @@
              
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
-             xmlns:purpose="clr-namespace:MyHelper.Models.Purposes"
              
              d:DataContext="{d:DesignInstance vm:ListPurposesUserControlViewModel}"
              d:DesignHeight="450" d:DesignWidth="800"
@@ -19,12 +18,17 @@
     </i:Interaction.Triggers>
     <DockPanel>
         <GroupBox DockPanel.Dock="Left" Header="Группа целей">
-            <ListBox ItemsSource="{Binding ListMyPurposes}" SelectedItem="{Binding SelectedListMyPurposes}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate DataType="purpose:MyPurposes">
-                        <TextBlock Text="{Binding Year}"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
+            <ListBox ItemsSource="{Binding ListMyPurposes}" SelectedItem="{Binding SelectedListMyPurposes}" SelectedIndex="0"
+                     DisplayMemberPath="Year"
+                     VirtualizingPanel.IsContainerVirtualizable="True"
+                     VirtualizingPanel.IsVirtualizing="True"
+                     VirtualizingPanel.VirtualizationMode="Recycling"
+                     VirtualizingPanel.CacheLength="2">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
             </ListBox>
         </GroupBox>
         <GroupBox DockPanel.Dock="Right" Header="Панель управления">
@@ -89,6 +93,11 @@
                 </Grid>
                 <DataGrid ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}" 
                           SelectedItem="{Binding SelectedMyPurpose}">
+                    <DataGrid.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel/>
+                        </ItemsPanelTemplate>
+                    </DataGrid.ItemsPanel>
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding IsCompleted, UpdateSourceTrigger=PropertyChanged}"/>
                         <DataGridTextColumn Header="Цель" Binding="{Binding Purpose}" 

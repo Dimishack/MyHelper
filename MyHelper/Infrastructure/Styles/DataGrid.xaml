@@ -9,9 +9,12 @@
         <Setter Property="CanUserAddRows" Value="False"/>
         <Setter Property="CanUserDeleteRows" Value="False"/>
         <Setter Property="SelectionMode" Value="Single"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
 
+        <Setter Property="EnableRowVirtualization" Value="True"/>
         <Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="True"/>
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
         <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
+        <Setter Property="VirtualizingPanel.CacheLength" Value="2"/>
     </Style>
 </ResourceDictionary>
