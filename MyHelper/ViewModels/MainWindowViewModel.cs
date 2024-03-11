@@ -24,7 +24,7 @@ namespace MyHelper.ViewModels
         const string pathBooks = @"Data\Books.json";
         const string pathChallenges = @"Data\Challenges.json";
 
-        public ListPurposesViewModel ListPurposes { get; }
+        public ListPurposesUserControlViewModel ListPurposes { get; }
 
         #region Команды
 
@@ -178,7 +178,7 @@ namespace MyHelper.ViewModels
                 MyChallenges[i].ListChallenges.ListChanged += ListChallenges_ListChanged;
         }
 
-        public MainWindowViewModel(ListPurposesViewModel listPurposes, IOpenWindows openWindows) : this()
+        public MainWindowViewModel(ListPurposesUserControlViewModel listPurposes, IOpenWindows openWindows) : this()
         {
             ListPurposes = listPurposes;
             _openWindows = openWindows;

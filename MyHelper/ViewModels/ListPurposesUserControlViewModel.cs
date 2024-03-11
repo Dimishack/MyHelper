@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    class ListPurposesViewModel(IOpenWindows openWindows, IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile) : ViewModel
+    class ListPurposesUserControlViewModel(IOpenWindows openWindows, IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile) : ViewModel
     {
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;

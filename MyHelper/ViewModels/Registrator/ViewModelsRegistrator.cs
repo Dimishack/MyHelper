@@ -9,7 +9,7 @@ namespace MyHelper.ViewModels.Registrator
         {
             services.AddSingleton<MainWindowViewModel>();
             services.AddTransient<ChecklistChallengeViewModel>();
-            services.AddSingleton<ListPurposesViewModel>();
+            services.AddSingleton<ListPurposesUserControlViewModel>();
 
             services.AddTransient(
                 s =>
