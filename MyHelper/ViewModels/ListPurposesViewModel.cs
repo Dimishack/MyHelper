@@ -1,10 +1,12 @@
-﻿using MyHelper.Infrastructure.Commands;
+﻿using MyHelper.Infrastructure.Attributes;
+using MyHelper.Infrastructure.Commands;
 using MyHelper.Infrastructure.Commands.Base;
 using MyHelper.Models.Purposes;
 using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -24,18 +26,17 @@ namespace MyHelper.ViewModels
         private MyPurposes? _selectedListMyPurposes;
 
         ///<summary>Выбранный список целей</summary>
+        [DependencyOn(nameof(MyPurposesCount))]
+        [DependencyOn(nameof(CompletingMyPurposesCount))]
+        [DependencyOn(nameof(Percent))]
+        [DependencyOn(nameof(OffsetLimeGreenColor))]
         public MyPurposes? SelectedListMyPurposes
         {
             get => _selectedListMyPurposes;
             set
             {
                 if (Set(ref _selectedListMyPurposes, value))
-                {
-                    OnPropertyChanged(nameof(MyPurposesCount));
-                    OnPropertyChanged(nameof(CompletingMyPurposesCount));
-                    OnPropertyChanged(nameof(Percent));
-                    OnPropertyChanged(nameof(OffsetLimeGreenColor));
-                }
+                    UpdatePropertyChanged();
             }
         }
         #endregion
@@ -64,7 +65,7 @@ namespace MyHelper.ViewModels
         /// <summary>Количество выполненных целей в списке</summary>
         public int CompletingMyPurposesCount => SelectedListMyPurposes is null
             ? 0
-            : SelectedListMyPurposes.ListPurposes.Where(p => p.IsCompleted).Count(); 
+            : SelectedListMyPurposes.ListPurposes.Where(p => p.IsCompleted).Count();
         #endregion
 
         #region Percent : double - Процент выполненных целей
@@ -89,7 +90,7 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда создания нового списка целей</summary>
         public ICommand CreateNewYearCommand => _createNewYearCommand
-            ??= new LambdaCommand(OnCreateNewYearCommandExecuted, CanCreateNewYearCommandExecute);
+            ??= new LambdaCommand(OnCreateNewYearCommandExecuted);
 
         ///<summary>Проверка возможности выполнения - Команда создания нового списка целей</summary>
         private bool CanCreateNewYearCommandExecute(object? p) => true;
@@ -188,7 +189,7 @@ namespace MyHelper.ViewModels
         private bool CanDeletePurposeCommandExecute(object? p) => SelectedMyPurpose is not null;
 
         ///<summary>Логика выполнения - Команда удаления цели</summary>
-        private void OnDeletePurposeCommandExecuted(object? p) 
+        private void OnDeletePurposeCommandExecuted(object? p)
             => SelectedListMyPurposes!.ListPurposes.Remove(SelectedMyPurpose!);
 
         #endregion
@@ -252,15 +253,15 @@ namespace MyHelper.ViewModels
                 ListMyPurposes = new(listPurposes);
             else
             {
-                ListMyPurposes = new (Enumerable.Range(0, 10).Select(p => new MyPurposes
+                ListMyPurposes = new(Enumerable.Range(0, 10).Select(p => new MyPurposes
                 {
                     Year = DateTime.Now.Year + p,
                     Name = $"Name {p}",
-                    ListPurposes = new(Enumerable.Range(1, 50).Select(p => new MyPurpose
+                    ListPurposes = new(Enumerable.Range(1, 10).Select(p => new MyPurpose
                     {
                         Purpose = p.ToString(),
                     }).ToList()),
-                    
+
                 }));
                 ((Command)SaveListMyPurposesCommand).Executable = true;
             }
@@ -269,22 +270,28 @@ namespace MyHelper.ViewModels
                 ListMyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
         }
 
-        private void ListPurposes_ListChanged(object? sender,  ListChangedEventArgs e)
+        private void ListPurposes_ListChanged(object? sender, ListChangedEventArgs e)
         {
             switch (e.ListChangedType)
             {
                 case ListChangedType.ItemAdded:
                 case ListChangedType.ItemDeleted:
                 case ListChangedType.ItemChanged:
-                    OnPropertyChanged(nameof(MyPurposesCount));
-                    OnPropertyChanged(nameof(CompletingMyPurposesCount));
-                    OnPropertyChanged(nameof(Percent));
-                    OnPropertyChanged(nameof(OffsetLimeGreenColor));
+                    UpdatePropertyChanged(nameof(SelectedListMyPurposes));
                     ((Command)SaveListMyPurposesCommand).Executable = true;
                     break;
                 default:
                     break;
             }
+        }
+
+        private void UpdatePropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            var property = this.GetType().GetProperty(propertyName!);
+            if (property is null) return;
+
+            foreach (var attr in property.GetCustomAttributes(false))
+                OnPropertyChanged(((DependencyOnAttribute)attr).Name);
         }
     }
 }
