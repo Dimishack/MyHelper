@@ -60,7 +60,12 @@
             <TextBlock Grid.Column="0" Grid.Row="0" Text="Год"/>
             <TextBlock Grid.Column="0" Grid.Row="1" Text="Название года"/>
 
-            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Year}"/>
+            <TextBox Name="Test" Grid.Column="1" Grid.Row="0" 
+                     Text="{Binding Year}" 
+                     KeyDown="TextBox_KeyDown"
+                     HorizontalAlignment="Left"
+                     Width="Auto" MinWidth="50"
+                     />
             <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding NameYear}"/>
         </Grid>
     </DockPanel>

@@ -1,9 +1,11 @@
 ﻿using System.Windows;
+using System.Windows.Input;
 
 namespace MyHelper.Views.Windows
 {
     public partial class Creator_EditorYearWindow : Window
     {
+        public Creator_EditorYearWindow() => InitializeComponent();
 
         #region Title : string - Заголовок окна
 
@@ -42,7 +44,12 @@ namespace MyHelper.Views.Windows
         }
 
         #endregion
-
-        public Creator_EditorYearWindow() => InitializeComponent();
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if ((e.Key < Key.D0 || e.Key > Key.D9) &&
+                (e.Key < Key.NumPad0 || e.Key > Key.NumPad9)
+                && e.Key != Key.Back)
+                e.Handled = true;
+        }
     }
 }
