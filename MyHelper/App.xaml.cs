@@ -34,9 +34,8 @@ namespace MyHelper
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            using var host = Host;
             base.OnExit(e);
-            await host.StopAsync();
+            using (Host) await Host.StopAsync();
         }
     }
 }
