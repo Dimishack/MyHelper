@@ -10,13 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Views\UserControls\**" />
-    <EmbeddedResource Remove="Views\UserControls\**" />
-    <None Remove="Views\UserControls\**" />
-    <Page Remove="Views\UserControls\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Resources\icon.ico" />
   </ItemGroup>
 
