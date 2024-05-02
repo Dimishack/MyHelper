@@ -17,19 +17,33 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <DockPanel>
+        <DockPanel.Resources>
+            <Style TargetType="ListBox">
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>
+                <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
+                <Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="True"/>
+                <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
+                <Setter Property="VirtualizingPanel.CacheLength" Value="2"/>
+                <Setter Property="ItemContainerStyle">
+                    <Setter.Value>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </DockPanel.Resources>
         <GroupBox DockPanel.Dock="Left" Header="Группа целей">
             <ListBox ItemsSource="{Binding ListMyPurposes}" SelectedItem="{Binding SelectedListMyPurposes}" SelectedIndex="0"
-                     DisplayMemberPath="Year"
-                     VirtualizingPanel.IsContainerVirtualizable="True"
-                     VirtualizingPanel.IsVirtualizing="True"
-                     VirtualizingPanel.VirtualizationMode="Recycling"
-                     VirtualizingPanel.CacheLength="2">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-            </ListBox>
+                     DisplayMemberPath="Year"/>
         </GroupBox>
         <GroupBox DockPanel.Dock="Right" Header="Панель управления">
             <UniformGrid Columns="1">
@@ -54,9 +68,6 @@
                 <Button Command="{Binding CreateNewPurposeCommand}">
                     <TextBlock>Создать <LineBreak/> цель</TextBlock>
                 </Button>
-                <Button Command="{Binding DeletePurposeCommand}">
-                    <TextBlock>Удалить <LineBreak/> цель</TextBlock>
-                </Button>
                 <Button Command="{Binding EditMyPurposeCommand}">
                     <TextBlock>Редактировать <LineBreak/> цель</TextBlock>
                 </Button>
@@ -78,8 +89,8 @@
                                 <Setter Property="FontSize" Value="14"/>
                             </Style>
                         </StackPanel.Resources>
-                        <TextBlock Text="{Binding MyPurposesCount, StringFormat='Всего/Выполненных: {0}/'}"/>
-                        <TextBlock Text="{Binding CompletingMyPurposesCount}"/>
+                        <TextBlock Text="{Binding CompletingMyPurposesCount, StringFormat='Выполненных/Всего: {0}/'}"/>
+                        <TextBlock Text="{Binding MyPurposesCount}"/>
                     </StackPanel>
                     <ProgressBar Grid.Column="1" Maximum="1" Value="{Binding Percent, Mode=OneWay}">
                         <ProgressBar.Foreground>
@@ -91,30 +102,41 @@
                     </ProgressBar>
                     <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat=p1}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Grid>
-                <DataGrid ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}" 
-                          SelectedItem="{Binding SelectedMyPurpose}">
-                    <DataGrid.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel/>
-                        </ItemsPanelTemplate>
-                    </DataGrid.ItemsPanel>
-                    <DataGrid.Columns>
-                        <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding IsCompleted, UpdateSourceTrigger=PropertyChanged}"/>
-                        <DataGridTextColumn Header="Цель" Binding="{Binding Purpose}" 
-                                        ElementStyle="{StaticResource TextWrap}"
-                                        Width="Auto" IsReadOnly="True"/>
-                        <DataGridTemplateColumn Header="Подцели" Width="Auto">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Content="Показать"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Примечание" Binding="{Binding Note}"
-                                        ElementStyle="{StaticResource TextWrap}"
-                                        Width="*" IsReadOnly="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <ListBox ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}" SelectedItem="{Binding SelectedMyPurpose}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="WhiteSmoke" BorderBrush="SandyBrown" BorderThickness="2"
+                                    HorizontalAlignment="Stretch" Margin="5">
+                                <Grid>
+                                    <StackPanel Orientation="Vertical" Margin="10">
+                                        <TextBlock Text="{Binding Purpose, StringFormat='Цель: {0}'}"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Выполнено: "/>
+                                            <CheckBox IsChecked="{Binding IsCompleted}"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
+                                    </StackPanel> 
+                                    <Button Content="X" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                            BorderThickness="0" Background="Transparent" FontWeight="Bold"
+                                            Padding="5"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=DataContext.DeletePurposeCommand}"
+                                            CommandParameter="{Binding}">
+                                        <Button.Resources>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Foreground" Value="Red"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Foreground" Value="Green"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </DockPanel>
         </GroupBox>
     </DockPanel>

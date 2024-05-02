@@ -110,7 +110,7 @@ namespace MyHelper.ViewModels
             if (_listMyPurposes is not null) return;
 
             ((Command)SaveListMyPurposesCommand).Executable = false;
-            if (_workWithJSONFile.ReadFile(@"Data/MyPurposes.json", out IList<MyPurposes>? listPurposes)
+            if (_workWithJSONFile.ReadFile(@"Data/Purposes.json", out IList<MyPurposes>? listPurposes)
                 && listPurposes is not null)
                 ListMyPurposes = new(listPurposes);
             else
@@ -234,11 +234,12 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand(OnDeletePurposeCommandExecuted, CanDeletePurposeCommandExecute);
 
         ///<summary>Проверка возможности выполнения - Команда удаления цели</summary>
-        private bool CanDeletePurposeCommandExecute(object? p) => SelectedMyPurpose is not null;
+        private bool CanDeletePurposeCommandExecute(object? p) => p is not null
+            && p is MyPurpose;
 
         ///<summary>Логика выполнения - Команда удаления цели</summary>
         private void OnDeletePurposeCommandExecuted(object? p)
-            => SelectedListMyPurposes!.ListPurposes.Remove(SelectedMyPurpose!);
+            => SelectedListMyPurposes!.ListPurposes.Remove((p as MyPurpose)!);
 
         #endregion
 
@@ -281,7 +282,7 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Команда сохранения списка целей</summary>
         private void OnSaveListMyPurposesCommandExecuted(object? p)
         {
-            _workWithJSONFile.WriteFile(@"Data/MyPurposes.json", p);
+            _workWithJSONFile.WriteFile(@"Data/Purposes.json", p);
             _userDialog.InformationMessage("Список целей успешно сохранен", "MyHelper");
             ((Command)SaveListMyPurposesCommand).Executable = false;
         }

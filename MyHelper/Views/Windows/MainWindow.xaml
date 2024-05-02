@@ -37,8 +37,7 @@
                     <Grid>
                         <DataGrid ItemsSource="{Binding MyTasks}" AutoGenerateColumns="False">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Задачи" Binding="{Binding Task}" Width="Auto"
-                                                    ElementStyle="{StaticResource TextWrap}"/>
+                                <DataGridTextColumn Header="Задачи" Binding="{Binding Task}" Width="Auto"/>
                                 <DataGridCheckBoxColumn Header="Важность" Binding="{Binding Prompt}" MinWidth="65" MaxWidth="65"/>
                                 <DataGridCheckBoxColumn Header="Срочность" Binding="{Binding Important}" MinWidth="70" MaxWidth="70"/>
                                 <DataGridTemplateColumn Header="Срок" Width="Auto">
@@ -53,8 +52,7 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellEditingTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Примечание" Binding="{Binding Note}" Width="*"
-                                                    ElementStyle="{StaticResource TextWrap}"/>
+                                <DataGridTextColumn Header="Примечание" Binding="{Binding Note}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
@@ -84,11 +82,9 @@
                             <DataGridCheckBoxColumn Header="Прочитан" Binding="{Binding IsRead}"
                                                 MinWidth="65" MaxWidth="65"/>
                             <DataGridTextColumn Header="Автор" Binding="{Binding Author}"
-                                            Width="Auto"
-                                                ElementStyle="{StaticResource TextWrap}"/>
+                                            Width="Auto"/>
                             <DataGridTextColumn Header="Название" Binding="{Binding Title}"
-                                            Width="*"
-                                                ElementStyle="{StaticResource TextWrap}"/>
+                                            Width="*"/>
 
                         </DataGrid.Columns>
                     </DataGrid>
@@ -150,9 +146,9 @@
                                 <DataGrid.Columns>
                                     <DataGridCheckBoxColumn Header="Выполняется" Binding="{Binding IsProgress, UpdateSourceTrigger=PropertyChanged}" 
                                                                 MinWidth="85" MaxWidth="85"/>
-                                    <DataGridTextColumn Header="Челлендж" Binding="{Binding Challenge}" ElementStyle="{StaticResource TextWrap}" 
+                                    <DataGridTextColumn Header="Челлендж" Binding="{Binding Challenge}"
                                                         Width="Auto"/>
-                                    <DataGridTextColumn Header="Примечание" Binding="{Binding Note}" ElementStyle="{StaticResource TextWrap}" 
+                                    <DataGridTextColumn Header="Примечание" Binding="{Binding Note}" 
                                                         Width="*"/>
                                 </DataGrid.Columns>
                             </DataGrid>
