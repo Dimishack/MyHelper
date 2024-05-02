@@ -66,27 +66,33 @@
                      DisplayMemberPath="Year"/>
             </DockPanel>
         </GroupBox>
-        <GroupBox DockPanel.Dock="Right" Header="Панель управления">
-            <UniformGrid Columns="1">
-                <UniformGrid.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Margin" Value="3,5"/>
-                    </Style>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="TextAlignment" Value="Center"/>
-                    </Style>
-                </UniformGrid.Resources>
-                <Button Command="{Binding CreateNewPurposeCommand}">
-                    <TextBlock>Создать <LineBreak/> цель</TextBlock>
-                </Button>
-                <Button Command="{Binding EditMyPurposeCommand}">
-                    <TextBlock>Редактировать <LineBreak/> цель</TextBlock>
-                </Button>
-                <Button Command="{Binding SaveListMyPurposesCommand}" CommandParameter="{Binding ListMyPurposes}">
-                    <TextBlock>Сохранить <LineBreak/> списки целей</TextBlock>
-                </Button>
-            </UniformGrid>
-        </GroupBox>
+        <DockPanel DockPanel.Dock="Right">
+            <GroupBox DockPanel.Dock="Top" Header="Сортировка">
+                <ComboBox ItemsSource="{Binding Sorting.Keys}" SelectedItem="{Binding SelectedSorting}"/>
+            </GroupBox>
+            <GroupBox Header="Панель управления">
+                <UniformGrid Columns="1">
+                    <UniformGrid.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Margin" Value="3,5"/>
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </UniformGrid.Resources>
+                    <Button Command="{Binding CreateNewPurposeCommand}">
+                        <TextBlock>Создать <LineBreak/> цель</TextBlock>
+                    </Button>
+                    <Button Command="{Binding EditMyPurposeCommand}">
+                        <TextBlock>Редактировать <LineBreak/> цель</TextBlock>
+                    </Button>
+                    <Separator/>
+                    <Button Command="{Binding SaveListMyPurposesCommand}" CommandParameter="{Binding ListMyPurposes}">
+                        <TextBlock>Сохранить <LineBreak/> списки целей</TextBlock>
+                    </Button>
+                </UniformGrid>
+            </GroupBox>
+        </DockPanel>
         <GroupBox Header="{Binding SelectedListMyPurposes.Name, FallbackValue='Выберите год'}">
             <DockPanel>
                 <Grid DockPanel.Dock="Bottom" Margin="0,3">
@@ -113,7 +119,7 @@
                     </ProgressBar>
                     <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat=p1}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Grid>
-                <ListBox ItemsSource="{Binding SelectedListMyPurposes.ListPurposes}" SelectedItem="{Binding SelectedMyPurpose}">
+                <ListBox ItemsSource="{Binding SelectedListMyPurposesView}" SelectedItem="{Binding SelectedMyPurpose}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Background="WhiteSmoke" BorderBrush="SandyBrown" BorderThickness="2"

@@ -28,9 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\MyPurposes.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>

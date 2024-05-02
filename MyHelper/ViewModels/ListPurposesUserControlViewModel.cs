@@ -19,6 +19,39 @@ namespace MyHelper.ViewModels
         private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
 
         #region Свойства
+
+        public Dictionary<string, SortDescription> Sorting { get; } = new()
+        {
+            { "Сначала старые записи", new SortDescription("Id", ListSortDirection.Ascending) },
+            { "Сначала новые записи", new SortDescription("Id", ListSortDirection.Descending) },
+            { "Сначала выполненные", new SortDescription("IsCompleted", ListSortDirection.Descending) },
+            { "Сначала невыполненные", new SortDescription("IsCompleted", ListSortDirection.Ascending) },
+            { "Цели (по возрастанию)", new SortDescription("Purpose", ListSortDirection.Ascending) },
+            { "Цели (по убыванию)", new SortDescription("Purpose", ListSortDirection.Descending) },
+        };
+
+        #region SelectedSorting : string - Выбранная сортировка
+
+        ///<summary>Выбранная сортировка</summary>
+        private string _selectedSorting = "Сначала старые записи";
+
+        ///<summary>Выбранная сортировка</summary>
+        public string SelectedSorting
+        {
+            get => _selectedSorting;
+            set
+            {
+                Set(ref _selectedSorting, value);
+                _selectedListMyPurposesView.View.SortDescriptions.Clear();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                _selectedListMyPurposesView.View.SortDescriptions.Add(Sorting[value]);
+            }
+        }
+
+        #endregion
+
         #region ListMyPurposes : ObservableCollection<MyPurposes> - Коллекция списков целей
 
         ///<summary>Коллекция списков целей</summary>
@@ -44,12 +77,19 @@ namespace MyHelper.ViewModels
             get => _selectedListMyPurposes;
             set
             {
-                if (Set(ref _selectedListMyPurposes, value))
-                    UpdatePropertyChanged();
+                if (!Set(ref _selectedListMyPurposes, value)) return;
+
+                _selectedListMyPurposesView.Source = value.ListPurposes;
+                OnPropertyChanged(nameof(SelectedListMyPurposesView));
+                SelectedSorting = "Сначала старые записи";
+                UpdatePropertyChanged();
             }
         }
 
         #endregion
+
+        private readonly CollectionViewSource _selectedListMyPurposesView = new();
+        public ICollectionView SelectedListMyPurposesView => _selectedListMyPurposesView.View;
 
         #region SelectedMyPurpose : MyPurpose - Выбранная цель
 
@@ -261,7 +301,7 @@ namespace MyHelper.ViewModels
         {
             if (!_openWindows.OpenCreator_EditPurposeWindow(SelectedMyPurpose!)) return;
 
-            CollectionViewSource.GetDefaultView(SelectedListMyPurposes?.ListPurposes).Refresh();
+            _selectedListMyPurposesView.View.Refresh();
             _userDialog.InformationMessage("Цель отредактирована", "MyHelper");
             ((Command)SaveListMyPurposesCommand).Executable = true;
         }
@@ -283,6 +323,13 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Команда сохранения списка целей</summary>
         private void OnSaveListMyPurposesCommandExecuted(object? p)
         {
+            //for (int i = 0; i < (p as ObservableCollection<MyPurposes>).Count; i++)
+            //{
+            //    for (int j = 0; j < (p as ObservableCollection<MyPurposes>)[i].ListPurposes.Count; j++)
+            //    {
+            //        (p as ObservableCollection<MyPurposes>)[i].ListPurposes[j].Id = j;
+            //    }
+            //}
             _workWithJSONFile.WriteFile(@"Data/Purposes.json", p);
             _userDialog.InformationMessage("Список целей успешно сохранен", "MyHelper");
             ((Command)SaveListMyPurposesCommand).Executable = false;
@@ -312,7 +359,10 @@ namespace MyHelper.ViewModels
             if (property is null) return;
 
             foreach (var attr in property.GetCustomAttributes(false))
-                OnPropertyChanged(((DependencyOnAttribute)attr).Name);
+            {
+                if (attr is DependencyOnAttribute dA)
+                    OnPropertyChanged(dA.Name);
+            }
         }
     }
 }
