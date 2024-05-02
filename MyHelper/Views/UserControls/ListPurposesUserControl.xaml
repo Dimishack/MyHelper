@@ -25,7 +25,7 @@
                 <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
                 <Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="True"/>
                 <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
-                <Setter Property="VirtualizingPanel.CacheLength" Value="2"/>
+                <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
                 <Setter Property="ItemContainerStyle">
                     <Setter.Value>
                         <Style TargetType="ListBoxItem">
