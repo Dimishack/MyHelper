@@ -5,7 +5,6 @@ namespace MyHelper.Models.Purposes
 {
     internal class MyPurpose : INotifyPropertyChanged
     {
-        public BindingList<MyPurpose>? Branch { get; set; }
         private bool _isCompleted;
         public bool IsCompleted
         {
