@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:MyHelper.Views.UserControls"
              
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:fa5="http://schemas.fontawesome.com/icons/"
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
              
              d:DataContext="{d:DesignInstance vm:ListPurposesUserControlViewModel}"
@@ -42,8 +43,28 @@
             </Style>
         </DockPanel.Resources>
         <GroupBox DockPanel.Dock="Left" Header="Группа целей">
-            <ListBox ItemsSource="{Binding ListMyPurposes}" SelectedItem="{Binding SelectedListMyPurposes}" SelectedIndex="0"
+            <DockPanel>
+                <UniformGrid DockPanel.Dock="Bottom" Columns="1">
+                    <UniformGrid.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Padding" Value="3"/>
+                            <Setter Property="Margin" Value="1,3"/>
+                            <Setter Property="Height" Value="20"/>
+                        </Style>
+                    </UniformGrid.Resources>
+                    <Button Command="{Binding CreateNewYearCommand}">
+                        <fa5:ImageAwesome Icon="Solid_Plus" Foreground="Green"/>
+                    </Button>
+                    <Button Command="{Binding EditYearCommand}">
+                        <fa5:ImageAwesome Icon="Solid_Edit" Foreground="Blue"/>
+                    </Button>
+                    <Button Command="{Binding DeleteYearCommand}">
+                        <fa5:ImageAwesome Icon="Solid_Minus" Width="12" Foreground="Red"/>
+                    </Button>
+                </UniformGrid>
+                <ListBox ItemsSource="{Binding ListMyPurposes}" SelectedItem="{Binding SelectedListMyPurposes}" SelectedIndex="0"
                      DisplayMemberPath="Year"/>
+            </DockPanel>
         </GroupBox>
         <GroupBox DockPanel.Dock="Right" Header="Панель управления">
             <UniformGrid Columns="1">
@@ -55,16 +76,6 @@
                         <Setter Property="TextAlignment" Value="Center"/>
                     </Style>
                 </UniformGrid.Resources>
-                <Button Command="{Binding CreateNewYearCommand}">
-                    <TextBlock>Создать <LineBreak/> список целей</TextBlock>
-                </Button>
-                <Button Command="{Binding DeleteYearCommand}">
-                    <TextBlock>Удалить <LineBreak/> список целей</TextBlock>
-                </Button>
-                <Button Command="{Binding EditYearCommand}">
-                    <TextBlock>Редактировать <LineBreak/> список целей</TextBlock>
-                </Button>
-                <Separator/>
                 <Button Command="{Binding CreateNewPurposeCommand}">
                     <TextBlock>Создать <LineBreak/> цель</TextBlock>
                 </Button>

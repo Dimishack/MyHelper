@@ -147,7 +147,6 @@ namespace MyHelper.ViewModels
         {
             MyPurposes listPurposes = new();
             if (!_openWindows.OpenCreator_EditorYearWindow(listPurposes)) return;
-
             ListMyPurposes?.Add(listPurposes);
             ListMyPurposes![^1].ListPurposes.ListChanged += ListPurposes_ListChanged;
             _userDialog.InformationMessage("Новый список целей успешно добавлен", "MyHepler");
@@ -166,7 +165,8 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand(OnDeleteYearCommandExecuted, CanDeleteYearCommandExecute);
 
         ///<summary>Проверка возможности выполнения - Команда удаления списка целей</summary>
-        private bool CanDeleteYearCommandExecute(object? p) => SelectedListMyPurposes is not null;
+        private bool CanDeleteYearCommandExecute(object? p) => SelectedListMyPurposes is not null
+            && !SelectedListMyPurposes.Name.Equals("все цели", StringComparison.CurrentCultureIgnoreCase);
 
         ///<summary>Логика выполнения - Команда удаления списка целей</summary>
         private void OnDeleteYearCommandExecuted(object? p)
@@ -187,7 +187,8 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand(OnEditYearCommandExecuted, CanEditYearCommandExecute);
 
         ///<summary>Проверка возможности выполнения - Команда редактирования списка целей</summary>
-        private bool CanEditYearCommandExecute(object? p) => SelectedListMyPurposes is not null;
+        private bool CanEditYearCommandExecute(object? p) => SelectedListMyPurposes is not null
+            && !SelectedListMyPurposes.Name.Equals("все цели", StringComparison.CurrentCultureIgnoreCase);
 
         ///<summary>Логика выполнения - Команда редактирования списка целей</summary>
         private void OnEditYearCommandExecuted(object? p)
