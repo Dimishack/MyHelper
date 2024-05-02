@@ -236,7 +236,7 @@ namespace MyHelper.ViewModels
             if (!_openWindows.OpenCreator_EditorYearWindow(SelectedListMyPurposes!)) return;
 
             CollectionViewSource.GetDefaultView(ListMyPurposes).Refresh();
-            _userDialog.InformationMessage("Список целей успешно отредактирован", "MyHelper");
+            _userDialog.InformationMessage("Список целей успешно отредактирован");
             ((Command)SaveListMyPurposesCommand).Executable = true;
         }
 
@@ -260,7 +260,7 @@ namespace MyHelper.ViewModels
             var purpose = new MyPurpose();
             if (!_openWindows.OpenCreator_EditPurposeWindow(purpose)) return;
             SelectedListMyPurposes?.ListPurposes.Add(purpose);
-            _userDialog.InformationMessage("Цель успешно добавлена в список", "MyHelper");
+            _userDialog.InformationMessage("Цель успешно добавлена в список");
         }
 
         #endregion
@@ -302,7 +302,7 @@ namespace MyHelper.ViewModels
             if (!_openWindows.OpenCreator_EditPurposeWindow(SelectedMyPurpose!)) return;
 
             _selectedListMyPurposesView.View.Refresh();
-            _userDialog.InformationMessage("Цель отредактирована", "MyHelper");
+            _userDialog.InformationMessage("Цель отредактирована");
             ((Command)SaveListMyPurposesCommand).Executable = true;
         }
 
@@ -331,7 +331,7 @@ namespace MyHelper.ViewModels
             //    }
             //}
             _workWithJSONFile.WriteFile(@"Data/Purposes.json", p);
-            _userDialog.InformationMessage("Список целей успешно сохранен", "MyHelper");
+            _userDialog.InformationMessage("Список целей успешно сохранен");
             ((Command)SaveListMyPurposesCommand).Executable = false;
         }
 
