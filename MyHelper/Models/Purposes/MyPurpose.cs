@@ -5,6 +5,7 @@ namespace MyHelper.Models.Purposes
 {
     internal class MyPurpose : INotifyPropertyChanged
     {
+        public int Id { get; set; }
         private bool _isCompleted;
         public bool IsCompleted
         {
