@@ -7,7 +7,7 @@
         xmlns:commands="clr-namespace:MyHelper.Infrastructure.Commands"
         
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="Creator_EditorYearWindow" Height="200" Width="400"
+        Title="{Binding Title}" Height="200" Width="400"
         WindowStyle="SingleBorderWindow"
         ResizeMode="CanMinimize">
     <DockPanel>
@@ -57,13 +57,11 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Text="Год"/>
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="Название года"/>
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="Год:"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="Название года:"/>
 
-            <TextBox Name="Test" Grid.Column="1" Grid.Row="0" 
-                     Text="{Binding Year}" 
-                     KeyDown="TextBox_KeyDown"
-                     HorizontalAlignment="Left"
+            <TextBlock Name="Test" Grid.Column="1" Grid.Row="0" 
+                     Text="{Binding Year}"
                      Width="Auto" MinWidth="50"
                      />
             <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding NameYear}"/>

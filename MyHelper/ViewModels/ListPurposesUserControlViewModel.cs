@@ -185,7 +185,10 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Команда создания нового списка целей</summary>
         private void OnCreateNewYearCommandExecuted(object? p)
         {
-            MyPurposes listPurposes = new();
+            MyPurposes listPurposes = new()
+            {
+                Year = ListMyPurposes![^1].Year + 1,
+            };
             if (!_openWindows.OpenCreator_EditorYearWindow(listPurposes)) return;
             ListMyPurposes?.Add(listPurposes);
             ListMyPurposes![^1].ListPurposes.ListChanged += ListPurposes_ListChanged;

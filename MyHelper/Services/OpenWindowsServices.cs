@@ -62,7 +62,7 @@ namespace MyHelper.Services
         public bool OpenCreator_EditorYearWindow(MyPurposes listPurposes)
         {
             var title = "Редактировать год";
-            if (string.IsNullOrEmpty(listPurposes.Name) && listPurposes.Year == 0)
+            if (string.IsNullOrWhiteSpace(listPurposes.Name))
                 title = "Создать год";
 
             var window = new Creator_EditorYearWindow
