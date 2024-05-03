@@ -7,8 +7,7 @@
         xmlns:commands="clr-namespace:MyHelper.Infrastructure.Commands"
         
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="{Binding Title}" Height="200" Width="400"
-        WindowStyle="SingleBorderWindow"
+        Title="{Binding Title}" Height="200" Width="430"
         ResizeMode="CanMinimize">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="{Binding Title}" 
@@ -56,6 +55,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Column="0" Grid.Row="0" Text="Год:"/>
             <TextBlock Grid.Column="0" Grid.Row="1" Text="Название года:"/>
@@ -64,7 +64,8 @@
                      Text="{Binding Year}"
                      Width="Auto" MinWidth="50"
                      />
-            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding NameYear}"/>
+            <TextBox Grid.Column="1" Grid.Row="1" KeyDown="TextBox_KeyDown" Text="{Binding NameYear, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding NameYear.Length, StringFormat=' {0}/50'}"/>
         </Grid>
     </DockPanel>
 </Window>

@@ -30,5 +30,7 @@ namespace MyHelper.Views.Windows
         }
 
         #endregion
+
+        private void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) => e.Handled = NameYear.Length >= 50;
     }
 }
