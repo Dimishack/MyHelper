@@ -42,11 +42,14 @@ namespace MyHelper.ViewModels
             set
             {
                 Set(ref _selectedSorting, value);
-                _selectedListMyPurposesView.View.SortDescriptions.Clear();
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-                _selectedListMyPurposesView.View.SortDescriptions.Add(Sorting[value]);
+                if (_selectedListMyPurposesView.View is not null)
+                {
+                    _selectedListMyPurposesView.View.SortDescriptions.Clear();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                    _selectedListMyPurposesView.View.SortDescriptions.Add(Sorting[value]); 
+                }
             }
         }
 
@@ -79,7 +82,7 @@ namespace MyHelper.ViewModels
             {
                 if (!Set(ref _selectedListMyPurposes, value)) return;
 
-                _selectedListMyPurposesView.Source = value.ListPurposes;
+                _selectedListMyPurposesView.Source = value?.ListPurposes;
                 OnPropertyChanged(nameof(SelectedListMyPurposesView));
                 SelectedSorting = "Сначала старые записи";
                 UpdatePropertyChanged();
@@ -187,7 +190,9 @@ namespace MyHelper.ViewModels
         {
             MyPurposes listPurposes = new()
             {
-                Year = ListMyPurposes![^1].Year + 1,
+                Year = ListMyPurposes![^1].Year == 0? 
+                DateTime.Now.Year 
+                : ListMyPurposes![^1].Year + 1,
             };
             if (!_openWindows.OpenCreator_EditorYearWindow(listPurposes)) return;
             ListMyPurposes?.Add(listPurposes);
@@ -341,6 +346,8 @@ namespace MyHelper.ViewModels
         #endregion
         #endregion
 
+        #region События
+
         private void ListPurposes_ListChanged(object? sender, ListChangedEventArgs e)
         {
             switch (e.ListChangedType)
@@ -356,6 +363,10 @@ namespace MyHelper.ViewModels
             }
         }
 
+        #endregion
+
+        #region Методы
+
         private void UpdatePropertyChanged([CallerMemberName] string? propertyName = null)
         {
             var property = this.GetType().GetProperty(propertyName!);
@@ -367,5 +378,7 @@ namespace MyHelper.ViewModels
                     OnPropertyChanged(dA.Name);
             }
         }
+
+        #endregion
     }
 }

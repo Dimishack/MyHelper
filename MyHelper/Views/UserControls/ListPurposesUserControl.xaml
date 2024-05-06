@@ -42,7 +42,7 @@
                 </Setter>
             </Style>
         </DockPanel.Resources>
-        <GroupBox DockPanel.Dock="Left" Header="Группа целей">
+        <GroupBox DockPanel.Dock="Left" Header="Года">
             <DockPanel>
                 <UniformGrid DockPanel.Dock="Bottom" Columns="1">
                     <UniformGrid.Resources>
@@ -66,32 +66,28 @@
                      DisplayMemberPath="Year"/>
             </DockPanel>
         </GroupBox>
-        <DockPanel DockPanel.Dock="Right">
+        <DockPanel DockPanel.Dock="Right" MaxWidth="150">
             <GroupBox DockPanel.Dock="Top" Header="Сортировка">
                 <ComboBox ItemsSource="{Binding Sorting.Keys}" SelectedItem="{Binding SelectedSorting}"/>
             </GroupBox>
-            <GroupBox Header="Панель управления">
-                <UniformGrid Columns="1">
-                    <UniformGrid.Resources>
-                        <Style TargetType="Button">
-                            <Setter Property="Margin" Value="3,5"/>
-                        </Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="TextAlignment" Value="Center"/>
-                        </Style>
-                    </UniformGrid.Resources>
-                    <Button Command="{Binding CreateNewPurposeCommand}">
-                        <TextBlock>Создать <LineBreak/> цель</TextBlock>
-                    </Button>
-                    <Button Command="{Binding EditMyPurposeCommand}">
-                        <TextBlock>Редактировать <LineBreak/> цель</TextBlock>
-                    </Button>
-                    <Separator/>
-                    <Button Command="{Binding SaveListMyPurposesCommand}" CommandParameter="{Binding ListMyPurposes}">
-                        <TextBlock>Сохранить <LineBreak/> списки целей</TextBlock>
-                    </Button>
-                </UniformGrid>
-            </GroupBox>
+            <UniformGrid Columns="1">
+                <UniformGrid.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="3,5"/>
+                    </Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="TextAlignment" Value="Center"/>
+                    </Style>
+                </UniformGrid.Resources>
+                <Button Content="Создать цель" 
+                            Command="{Binding CreateNewPurposeCommand}"/>
+                <Button Content="Редактировать цель" 
+                            Command="{Binding EditMyPurposeCommand}"/>
+                <Separator/>
+                <Button Command="{Binding SaveListMyPurposesCommand}" CommandParameter="{Binding ListMyPurposes}">
+                    <TextBlock>Сохранить <LineBreak/> списки целей</TextBlock>
+                </Button>
+            </UniformGrid>
         </DockPanel>
         <GroupBox Header="{Binding SelectedListMyPurposes.Name, FallbackValue='Выберите год'}">
             <DockPanel>
