@@ -58,14 +58,18 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Column="0" Grid.Row="0" Text="Год:"/>
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="Название года:"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="Название:"/>
 
             <TextBlock Name="Test" Grid.Column="1" Grid.Row="0" 
                      Text="{Binding Year}"
                      Width="Auto" MinWidth="50"
+                     Margin="3,0,0,0"
                      />
-            <TextBox Grid.Column="1" Grid.Row="1" KeyDown="TextBox_KeyDown" Text="{Binding NameYear, UpdateSourceTrigger=PropertyChanged}"/>
-            <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding NameYear.Length, StringFormat=' {0}/50'}"/>
+            <TextBox Grid.Column="1" Grid.Row="1" 
+                     KeyDown="TextBox_KeyDown" 
+                     Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock Grid.Column="1" Grid.Row="2" 
+                       Text="{Binding Name.Length, StringFormat=' {0}/50'}"/>
         </Grid>
     </DockPanel>
 </Window>

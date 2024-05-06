@@ -38,12 +38,8 @@ namespace MyHelper.Services
             window.Show();
         }
 
-        public bool OpenCreator_EditPurposeWindow(MyPurpose purpose)
+        public bool OpenCreator_EditorPurposeWindow(MyPurpose purpose, string title)
         {
-            var title = "Редактировать цель";
-            if (string.IsNullOrEmpty(purpose.Purpose) && string.IsNullOrEmpty(purpose.Note))
-                title = "Создать цель";
-
             var window = new Creator_EditorPurposeWindow
             {
                 Title = title,
@@ -59,23 +55,19 @@ namespace MyHelper.Services
             return true;
         }
 
-        public bool OpenCreator_EditorYearWindow(MyPurposes listPurposes)
+        public bool OpenCreator_EditorYearWindow(MyPurposes listPurposes, string title)
         {
-            var title = "Редактировать год";
-            if (string.IsNullOrWhiteSpace(listPurposes.Name))
-                title = "Создать год";
-
             var window = new Creator_EditorYearWindow
             {
                 Title = title,
                 Year = listPurposes.Year,
-                NameYear = listPurposes.Name ?? "",
+                Name = listPurposes.Name ?? "",
                 Owner = App.ActivedWindow,
                 WindowStartupLocation= WindowStartupLocation.CenterOwner
             };
             if (window.ShowDialog() != true) return false;
             listPurposes.Year = window.Year;
-            listPurposes.Name = window.NameYear;
+            listPurposes.Name = window.Name;
 
             return true;
         }

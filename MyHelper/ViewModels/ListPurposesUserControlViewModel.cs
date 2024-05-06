@@ -84,7 +84,7 @@ namespace MyHelper.ViewModels
 
                 _selectedListMyPurposesView.Source = value?.ListPurposes;
                 OnPropertyChanged(nameof(SelectedListMyPurposesView));
-                SelectedSorting = "Сначала старые записи";
+                OnPropertyChanged(nameof(SelectedSorting));
                 UpdatePropertyChanged();
             }
         }
@@ -194,7 +194,7 @@ namespace MyHelper.ViewModels
                 DateTime.Now.Year 
                 : ListMyPurposes![^1].Year + 1,
             };
-            if (!_openWindows.OpenCreator_EditorYearWindow(listPurposes)) return;
+            if (!_openWindows.OpenCreator_EditorYearWindow(listPurposes, "Создать год")) return;
             ListMyPurposes?.Add(listPurposes);
             ListMyPurposes![^1].ListPurposes.ListChanged += ListPurposes_ListChanged;
             _userDialog.InformationMessage("Новый список целей успешно добавлен", "MyHepler");
@@ -241,7 +241,7 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Команда редактирования списка целей</summary>
         private void OnEditYearCommandExecuted(object? p)
         {
-            if (!_openWindows.OpenCreator_EditorYearWindow(SelectedListMyPurposes!)) return;
+            if (!_openWindows.OpenCreator_EditorYearWindow(SelectedListMyPurposes!, "Редактировать год")) return;
 
             CollectionViewSource.GetDefaultView(ListMyPurposes).Refresh();
             _userDialog.InformationMessage("Список целей успешно отредактирован");
@@ -266,7 +266,7 @@ namespace MyHelper.ViewModels
         private void OnCreateNewPurposeCommandExecuted(object? p)
         {
             var purpose = new MyPurpose();
-            if (!_openWindows.OpenCreator_EditPurposeWindow(purpose)) return;
+            if (!_openWindows.OpenCreator_EditorPurposeWindow(purpose, "Создать цель")) return;
             SelectedListMyPurposes?.ListPurposes.Add(purpose);
             _userDialog.InformationMessage("Цель успешно добавлена в список");
         }
@@ -307,7 +307,7 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Редактирование цели</summary>
         private void OnEditMyPurposeCommandExecuted(object? p)
         {
-            if (!_openWindows.OpenCreator_EditPurposeWindow(SelectedMyPurpose!)) return;
+            if (!_openWindows.OpenCreator_EditorPurposeWindow(SelectedMyPurpose!, "Редактировать цель")) return;
 
             _selectedListMyPurposesView.View.Refresh();
             _userDialog.InformationMessage("Цель отредактирована");

@@ -4,23 +4,6 @@ namespace MyHelper.Views.Windows
 {
     public partial class Creator_EditorPurposeWindow : Window
     {
-        #region Title : string - Заголовок окна
-
-        public static new readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register(
-                "Title",
-                typeof(string),
-                typeof(Creator_EditorPurposeWindow),
-                new PropertyMetadata(default(string)));
-
-        public new string Title
-        {
-            get => (string)GetValue(TitleProperty);
-            set => SetValue(TitleProperty, value);
-        }
-
-        #endregion
-
         #region Purpose : string - Цель
 
         public static readonly DependencyProperty PurposeProperty =

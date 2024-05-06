@@ -8,8 +8,7 @@
         xmlns:commands="clr-namespace:MyHelper.Infrastructure.Commands"
         
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        ResizeMode="CanMinimize"
-        Title="{Binding Title}" Height="200" Width="375">
+        Title="{Binding Title}" MinHeight="200" Height="200" MaxHeight="400" MinWidth="400" Width="400" MaxWidth="600">
     <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="{Binding Title}" 
                    VerticalAlignment="Center" HorizontalAlignment="Center" 
@@ -56,16 +55,12 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Text="Цель"/>
-            <TextBlock Grid.Column="0" Grid.Row="1" Text="Примечание"/>
-            <TextBlock Grid.Column="0" Grid.Row="2" Text="Подцели"/>
+            <TextBlock Grid.Column="0" Grid.Row="0" Text="Цель:"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="Примечание:"/>
 
             <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Purpose}"/>
             <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Note}"/>
-            <Button Grid.Column="1" Grid.Row="2" Content="Редактировать"
-                    Margin="3,4,0,2" IsEnabled="False"/>
         </Grid>
     </DockPanel>
 </Window>

@@ -6,7 +6,7 @@ namespace MyHelper.Services.Interfaces
     {
         void OpenMainWindow();
         void OpenChecklistChallengeWindow();
-        bool OpenCreator_EditPurposeWindow(MyPurpose purpose);
-        bool OpenCreator_EditorYearWindow(MyPurposes listPurposes);
+        bool OpenCreator_EditorPurposeWindow(MyPurpose purpose, string title);
+        bool OpenCreator_EditorYearWindow(MyPurposes listPurposes, string title);
     }
 }

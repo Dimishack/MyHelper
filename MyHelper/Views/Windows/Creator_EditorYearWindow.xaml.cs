@@ -18,19 +18,19 @@ namespace MyHelper.Views.Windows
         }
         #endregion
 
-        #region NameYear : string - Название года
+        #region Name : string - Название года
 
-        public static readonly DependencyProperty NameYearProperty =
-            DependencyProperty.Register("NameYear", typeof(string), typeof(Creator_EditorYearWindow), new PropertyMetadata(default(string)));
+        public static readonly DependencyProperty NameProperty =
+            DependencyProperty.Register("Name", typeof(string), typeof(Creator_EditorYearWindow), new PropertyMetadata(default(string)));
 
-        public string NameYear
+        public string Name
         {
-            get => (string)GetValue(NameYearProperty);
-            set => SetValue(NameYearProperty, value);
+            get => (string)GetValue(NameProperty);
+            set => SetValue(NameProperty, value);
         }
 
         #endregion
 
-        private void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) => e.Handled = NameYear.Length >= 50;
+        private void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) => e.Handled = Name.Length >= 50;
     }
 }
