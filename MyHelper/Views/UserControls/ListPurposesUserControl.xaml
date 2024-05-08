@@ -115,7 +115,7 @@
                     </ProgressBar>
                     <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat=p1}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Grid>
-                <ListBox ItemsSource="{Binding SelectedListMyPurposesView}" SelectedItem="{Binding SelectedMyPurpose}">
+                <ListBox ItemsSource="{Binding SelectedListPurposesView}" SelectedItem="{Binding SelectedMyPurpose}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Background="WhiteSmoke" BorderBrush="SandyBrown" BorderThickness="2"

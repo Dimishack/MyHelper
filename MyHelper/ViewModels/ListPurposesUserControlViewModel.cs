@@ -42,13 +42,13 @@ namespace MyHelper.ViewModels
             set
             {
                 Set(ref _selectedSorting, value);
-                if (_selectedListMyPurposesView.View is not null)
+                if (_selectedListPurposesView.View is not null)
                 {
-                    _selectedListMyPurposesView.View.SortDescriptions.Clear();
+                    _selectedListPurposesView.View.SortDescriptions.Clear();
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
                     GC.Collect();
-                    _selectedListMyPurposesView.View.SortDescriptions.Add(Sorting[value]); 
+                    _selectedListPurposesView.View.SortDescriptions.Add(Sorting[value]);
                 }
             }
         }
@@ -82,17 +82,14 @@ namespace MyHelper.ViewModels
             {
                 if (!Set(ref _selectedListMyPurposes, value)) return;
 
-                _selectedListMyPurposesView.Source = value?.ListPurposes;
-                OnPropertyChanged(nameof(SelectedListMyPurposesView));
-                OnPropertyChanged(nameof(SelectedSorting));
+                _selectedListPurposesView.Source = value?.ListPurposes;
+                OnPropertyChanged(nameof(SelectedListPurposesView));
+                SelectedSorting = "Сначала старые записи";
                 UpdatePropertyChanged();
             }
         }
 
         #endregion
-
-        private readonly CollectionViewSource _selectedListMyPurposesView = new();
-        public ICollectionView SelectedListMyPurposesView => _selectedListMyPurposesView.View;
 
         #region SelectedMyPurpose : MyPurpose - Выбранная цель
 
@@ -135,6 +132,7 @@ namespace MyHelper.ViewModels
         public double OffsetLimeGreenColor => 2.0 - Percent;
 
         #endregion 
+
         #endregion
 
         #region Команды
@@ -153,7 +151,7 @@ namespace MyHelper.ViewModels
             if (_listMyPurposes is not null) return;
 
             ((Command)SaveListMyPurposesCommand).Executable = false;
-            if (_workWithJSONFile.ReadFile(@"Data/Purposes.json", out IList<MyPurposes>? listPurposes)
+            if (_workWithJSONFile.ReadFile(@"Data/Purposes/Purposes.json", out IList<MyPurposes>? listPurposes)
                 && listPurposes is not null)
                 ListMyPurposes = new(listPurposes);
             else
@@ -176,6 +174,9 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        private readonly CollectionViewSource _selectedListPurposesView = new();
+        public ICollectionView SelectedListPurposesView => _selectedListPurposesView.View;
+
         #region CreateNewYearCommand - Команда создания нового списка целей
 
         ///<summary>Команда создания нового списка целей</summary>
@@ -190,8 +191,8 @@ namespace MyHelper.ViewModels
         {
             MyPurposes listPurposes = new()
             {
-                Year = ListMyPurposes![^1].Year == 0? 
-                DateTime.Now.Year 
+                Year = ListMyPurposes![^1].Year == 0 ?
+                DateTime.Now.Year
                 : ListMyPurposes![^1].Year + 1,
             };
             if (!_openWindows.OpenCreator_EditorYearWindow(listPurposes, "Создать год")) return;
@@ -309,7 +310,7 @@ namespace MyHelper.ViewModels
         {
             if (!_openWindows.OpenCreator_EditorPurposeWindow(SelectedMyPurpose!, "Редактировать цель")) return;
 
-            _selectedListMyPurposesView.View.Refresh();
+            _selectedListPurposesView.View.Refresh();
             _userDialog.InformationMessage("Цель отредактирована");
             ((Command)SaveListMyPurposesCommand).Executable = true;
         }
@@ -331,14 +332,8 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Команда сохранения списка целей</summary>
         private void OnSaveListMyPurposesCommandExecuted(object? p)
         {
-            //for (int i = 0; i < (p as ObservableCollection<MyPurposes>).Count; i++)
-            //{
-            //    for (int j = 0; j < (p as ObservableCollection<MyPurposes>)[i].ListPurposes.Count; j++)
-            //    {
-            //        (p as ObservableCollection<MyPurposes>)[i].ListPurposes[j].Id = j;
-            //    }
-            //}
-            _workWithJSONFile.WriteFile(@"Data/Purposes.json", p);
+            SelectedSorting = "Сначала старые записи";
+            _workWithJSONFile.WriteFile(@"Data/Purposes/Purposes.json", p);
             _userDialog.InformationMessage("Список целей успешно сохранен");
             ((Command)SaveListMyPurposesCommand).Executable = false;
         }
