@@ -6,81 +6,103 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
     internal class ListChallengesUCViewModel : ViewModel
     {
-		#region Title : string - Заголовок окна
-
-		///<summary>Заголовок окна</summary>
-		private string _title = "Проверка";
-
-		///<summary>Заголовок окна</summary>
-		public string Title { get => _title; set => Set(ref _title, value); }
-
-        #endregion
-
-        #region Challenges : BindingList<MyChallenges> - Список челленджей
+        #region Challenges : ObservableCollection<MyChallenges> - Список челленджей
 
         ///<summary>Список челленджей</summary>
         private ObservableCollection<MyChallenges>? _challenges;
 
-		///<summary>Список челленджей</summary>
-		public ObservableCollection<MyChallenges>? Challenges { get => _challenges; set => Set(ref _challenges, value); }
+        ///<summary>Список челленджей</summary>
+        public ObservableCollection<MyChallenges>? Challenges { get => _challenges; set => Set(ref _challenges, value); }
 
         #endregion
 
-        #region SelectedGroup : BindingList<MyChallenges>? - Выбранная группа
+        #region SelectedGroup : MyChallenges? - Выбранная группа
 
         ///<summary>Выбранная группа</summary>
         private MyChallenges? _selectedGroup;
 
-		///<summary>Выбранная группа</summary>
-		public MyChallenges? SelectedGroup { get => _selectedGroup; set => Set(ref _selectedGroup, value); }
+        ///<summary>Выбранная группа</summary>
+        public MyChallenges? SelectedGroup { get => _selectedGroup; set => Set(ref _selectedGroup, value); }
 
-		#endregion
+        #endregion
 
+        public IList<MyChallenge>? ChallengesOnProgress => SelectedGroup?.ListChallenges.Where(c => c.IsProgress).ToList();
 
-		#region Команды
+        #region SelectedChallenge : MyChallenge? - Выбранный челлендж
 
-		#region LoadedCommand - Команда - Загрузка
+        ///<summary>Выбранный челлендж</summary>
+        private MyChallenge? _selectedChallenge;
 
-		///<summary>Команда - Загрузка</summary>
-		private ICommand? _loadedCommand;
+        ///<summary>Выбранный челлендж</summary>
+        public MyChallenge? SelectedChallenge { get => _selectedChallenge; set => Set(ref _selectedChallenge, value); }
 
-		///<summary>Команда - Загрузка</summary>
-		public ICommand LoadedCommand => _loadedCommand
-			??= new LambdaCommand(OnLoadedCommandExecuted, CanLoadedCommandExecute);
+        #endregion
 
-		///<summary>Проверка возможности выполнения - Загрузка</summary>
-		private bool CanLoadedCommandExecute(object? p) => true;
+        #region Команды
 
-		///<summary>Логика выполнения - Загрузка</summary>
-		private void OnLoadedCommandExecuted(object? p)
-		{
-			if (_challenges is not null) return;
+        #region LoadedCommand - Команда - Загрузка
 
-			var groups = new string[] {"Все", "Месяц", "Квартал" , "Полгода", "Год"};
+        ///<summary>Команда - Загрузка</summary>
+        private ICommand? _loadedCommand;
 
-			Challenges = new(Enumerable.Range(0, groups.Length).Select(c => new MyChallenges
-			{
-				Group = groups[c],
-				ListChallenges = new(Enumerable.Range(0,1000).Select(c => new MyChallenge
-				{
-					Challenge = $"Challenge {c}",
-					DateStartProgressing = DateTime.Now.ToShortDateString(),
-					Checklist = []
-				}).ToList()),
-			}));
-		}
+        ///<summary>Команда - Загрузка</summary>
+        public ICommand LoadedCommand => _loadedCommand
+            ??= new LambdaCommand(OnLoadedCommandExecuted, CanLoadedCommandExecute);
 
-		#endregion
+        ///<summary>Проверка возможности выполнения - Загрузка</summary>
+        private bool CanLoadedCommandExecute(object? p) => true;
 
-		#endregion
+        ///<summary>Логика выполнения - Загрузка</summary>
+        private void OnLoadedCommandExecuted(object? p)
+        {
+            if (_challenges is not null) return;
 
-	}
+            var groups = new string[] { "Все", "Месяц", "Квартал", "Полгода", "Год" };
+
+            Challenges = new(Enumerable.Range(0, groups.Length).Select(c => new MyChallenges
+            {
+                Group = groups[c],
+                ListChallenges = new(Enumerable.Range(0, 1000).Select(c => new MyChallenge
+                {
+                    Id = c,
+                    Challenge = $"Challenge {c}",
+                    Checklist = []
+                }).ToList()),
+            }));
+            for (int i = 0; i < Challenges.Count; i++)
+                Challenges[i].ListChallenges.ListChanged += ListChallenges_ListChanged;
+        }
+
+        private void ListChallenges_ListChanged(object? sender, ListChangedEventArgs e)
+        {
+            var challengeOnProgressing = SelectedGroup?.ListChallenges.FirstOrDefault(
+                c => c.IsProgress
+                && string.IsNullOrWhiteSpace(c.DateStartProgressing));
+            if (challengeOnProgressing is not null)
+            {
+                SelectedGroup.ListChallenges[challengeOnProgressing.Id].DateStartProgressing = DateTime.Now.ToString("yyyy.MM.dd");
+                OnPropertyChanged(nameof(ChallengesOnProgress));
+                return;
+            }
+            var challengesFromProgressing = SelectedGroup?.ListChallenges.FirstOrDefault(
+                c => !c.IsProgress
+                && !string.IsNullOrWhiteSpace(c.DateStartProgressing));
+            if ( challengesFromProgressing is not null )
+            {
+                SelectedGroup.ListChallenges[challengesFromProgressing.Id].DateStartProgressing = string.Empty;
+                OnPropertyChanged(nameof(ChallengesOnProgress));
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+    }
 }

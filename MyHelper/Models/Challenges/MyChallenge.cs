@@ -1,21 +1,29 @@
-﻿using MyHelper.ViewModels.Base;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace MyHelper.Models.Challenges
 {
-    internal class MyChallenge : ViewModel
+    internal class MyChallenge : INotifyPropertyChanged
     {
+        public int Id { get; set; }
         private bool _isProgress;
         [JsonProperty("Выполняется?")]
         public bool IsProgress
         {
             get => _isProgress;
-            set => Set(ref _isProgress, value);
+            set
+            {
+                if(Equals(value, _isProgress)) return;
+                _isProgress = value;
+                OnPropertyChanged();
+            }
         }
         private string? _challenge;
+
         [JsonProperty("Челлендж")]
-        public string? Challenge { get => _challenge; set => Set(ref _challenge, value); }
+        public string? Challenge { get; set; }
 
         [JsonProperty("Начало челленджа")]
         public string? DateStartProgressing { get; set; }
@@ -25,5 +33,10 @@ namespace MyHelper.Models.Challenges
 
         [JsonProperty("Чек-лист")]
         public IList<Checklist>? Checklist { get; set; }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

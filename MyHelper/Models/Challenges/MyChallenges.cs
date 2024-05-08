@@ -9,6 +9,6 @@ namespace MyHelper.Models.Challenges
         [JsonProperty("Группа")]
         public string? Group { get; set; }
         [JsonProperty("Челленджи")]
-        public BindingList<MyChallenge>? ListChallenges { get; set; }
+        public BindingList<MyChallenge> ListChallenges { get; set; } = [];
     }
 }

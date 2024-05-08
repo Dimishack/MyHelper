@@ -47,6 +47,8 @@
             </Grid.ColumnDefinitions>
             <GroupBox Grid.Column="0" Header="Челленджи">
                 <ListBox ItemsSource="{Binding SelectedGroup.ListChallenges}"
+                         SelectedIndex="0"
+                         SelectedItem="{Binding SelectedChallenge}"
                          VirtualizingPanel.IsVirtualizing="True"
                          VirtualizingPanel.IsContainerVirtualizable="True"
                          VirtualizingPanel.VirtualizationMode="Recycling"
@@ -72,7 +74,8 @@
                                         <TextBlock Text="{Binding Challenge, StringFormat=' Челлендж: {0}'}"/>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text=" Выполняется: "/>
-                                            <CheckBox IsChecked="{Binding IsProgress}"/>
+                                            <CheckBox IsChecked="{Binding IsProgress}">
+                                            </CheckBox>
                                         </StackPanel>
                                         <TextBlock Text="{Binding Note, StringFormat=' Примечание: {0}'}"/>
                                     </StackPanel>
@@ -83,7 +86,38 @@
                 </ListBox>
             </GroupBox>
             <GroupBox Grid.Column="1" Header="На выполнении">
-                <ListBox/>
+                <ListBox ItemsSource="{Binding ChallengesOnProgress}"
+                         VirtualizingPanel.IsVirtualizing="True"
+                         VirtualizingPanel.IsContainerVirtualizable="True"
+                         VirtualizingPanel.VirtualizationMode="Recycling"
+                         VirtualizingPanel.ScrollUnit="Pixel"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="2" BorderBrush="LightBlue"
+                    Padding="5">
+                                <Grid>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding DateStartProgressing, StringFormat=' Дата начала: {0:dd.MM.yyyy}'}"/>
+                                        <TextBlock Text="{Binding Challenge, StringFormat=' Челлендж: {0}'}"/>
+                                        <TextBlock Text="{Binding Note, StringFormat=' Примечание: {0}'}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </GroupBox>
         </Grid>
     </DockPanel>
