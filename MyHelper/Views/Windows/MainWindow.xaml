@@ -9,10 +9,11 @@
         xmlns:purposes="clr-namespace:MyHelper.Models.Purposes"
         xmlns:challenges="clr-namespace:MyHelper.Models.Challenges"
         mc:Ignorable="d"
-        DataContext="{Binding MainWindowViewModel, Source={StaticResource Loctor}}"
+        DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}"
         Title="MyHelper"
         Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
+        xmlns:uc ="clr-namespace:MyHelper.Views.UserControls"
         x:Name="ThisWindow">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -158,71 +159,7 @@
                 </DockPanel>
             </TabItem>
             <TabItem Header="Челленджи">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <DockPanel Grid.Column="0">
-                        <Button Content="Сохранить" Command="{Binding SaveCollectionCommand}" CommandParameter="{Binding MyChallenges}" DockPanel.Dock="Bottom"
-                                Margin="2" Padding="2" />
-                        <ListBox ItemsSource="{Binding MyChallenges}" SelectedItem="{Binding SelectedMyChallenges}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="challenges:MyChallenges">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding ListName}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </DockPanel>
-                    <Grid Grid.Column="1">
-                        <Grid.RowDefinitions>
-                            <RowDefinition MinHeight="25"/>
-                            <RowDefinition MinHeight="25"/>
-                        </Grid.RowDefinitions>
-                        <GroupBox Grid.Row="0">
-                            <GroupBox.Header>
-                                <TextBlock Text="{Binding CountChallengesOnProgressing, StringFormat='На выполнении (Всего {0})'}"/>
-                            </GroupBox.Header>
-                            <DataGrid ItemsSource="{Binding ChallengesOnProgressing}" 
-                                      SelectedIndex="{Binding IndexSelectedChallengeOnProgressing, UpdateSourceTrigger=PropertyChanged}"
-                                      AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Начало" Binding="{Binding DateStartProgressing, StringFormat=yy}"/>
-                                    <DataGridTextColumn Header="Челлендж" Binding="{Binding Challenge}" 
-                                                        Width="Auto"/>
-                                    <DataGridTemplateColumn Header="Чек-лист">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Button Content="Показать" 
-                                                        Command="{Binding ElementName=ThisWindow, Path=DataContext.OpenChecklistChallengeWindowCommand}"/>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="Примечание" Binding="{Binding Note}" Width="*"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </GroupBox>
-                        <GroupBox Grid.Row="1">
-                            <GroupBox.Header>
-                                <TextBlock Text="{Binding CountChallenges, StringFormat='Все (Всего {0})'}"/>
-                            </GroupBox.Header>
-                            <DataGrid ItemsSource="{Binding SelectedMyChallenges.ListChallenges}" SelectedIndex="{Binding IndexSelectedChallenge}"
-                                      AutoGenerateColumns="False" IsReadOnly="False">
-                                <DataGrid.Columns>
-                                    <DataGridCheckBoxColumn Header="Выполняется" Binding="{Binding IsProgress, UpdateSourceTrigger=PropertyChanged}" 
-                                                                MinWidth="85" MaxWidth="85"/>
-                                    <DataGridTextColumn Header="Челлендж" Binding="{Binding Challenge}" ElementStyle="{StaticResource TextWrap}" 
-                                                        Width="Auto"/>
-                                    <DataGridTextColumn Header="Примечание" Binding="{Binding Note}" ElementStyle="{StaticResource TextWrap}" 
-                                                        Width="*"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </GroupBox>
-                        <GridSplitter Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="3" Background="Transparent" Panel.ZIndex="10000"/>
-                    </Grid>
-                </Grid>
+                <uc:ListChallengesUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListChallengesVM}"/>
             </TabItem>
         </TabControl>
     </DockPanel>
