@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -26,7 +27,7 @@ namespace MyHelper.Models.Challenges
         public string? Challenge { get; set; }
 
         [JsonProperty("Начало челленджа")]
-        public string? DateStartProgressing { get; set; }
+        public DateTime? DateStartProgressing { get; set; }
 
         [JsonProperty("Примечание")]
         public string? Note { get; set; }

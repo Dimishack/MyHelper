@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 
 namespace MyHelper.Models.Challenges
@@ -8,8 +10,8 @@ namespace MyHelper.Models.Challenges
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public int NumberDay { get; set; }
-        public string Date { get; set; } = string.Empty;
-        public string DayOfWeek { get; set; } = string.Empty;
+        public DateTime Date { get; set; }
+        public string DayOfWeek => DateTimeFormatInfo.CurrentInfo.GetDayName(Date.DayOfWeek);
 
         private bool _check;
         public bool Check
