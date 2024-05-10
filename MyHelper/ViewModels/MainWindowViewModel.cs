@@ -69,16 +69,6 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region OpenChecklistChallengeWindowCommand - Открытие 2-го окна
-
-        public ICommand OpenChecklistChallengeWindowCommand { get; }
-        private bool CanOpenChecklistChallengeWindowCommandExecute(object p) => true;
-        private void OnOpenChecklistChallengeWindowCommandExecuted(object p)
-        {
-            _openWindows.OpenChecklistChallengeWindow();
-        }
-
-        #endregion
         #endregion
 
         #region Свойства
@@ -223,7 +213,6 @@ namespace MyHelper.ViewModels
 
             CreateNewListPurposesCommand = new LambdaCommand(OnCreateNewListPurposesCommandExecuted, CanCreateNewListPurposesCommandExecute);
             SaveCollectionCommand = new LambdaCommand(OnSaveCollectionCommandExecuted, CanSaveCollectionCommandExecute);
-            OpenChecklistChallengeWindowCommand = new LambdaCommand(OnOpenChecklistChallengeWindowCommandExecuted, CanOpenChecklistChallengeWindowCommandExecute);
 
             #endregion
 
