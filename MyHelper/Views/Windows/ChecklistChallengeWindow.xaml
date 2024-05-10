@@ -6,8 +6,11 @@
         xmlns:local="clr-namespace:MyHelper.Views.Windows"
         xmlns:vm="clr-namespace:MyHelper.ViewModels"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance vm:ChecklistChallengeViewModel,IsDesignTimeCreatable=True}"
-        Title="{Binding Title, StringFormat=' {0}(Чек-лист)'}" Height="500" MaxWidth="300">
+        d:DataContext="{d:DesignInstance vm:ChecklistChallengeViewModel}"
+        Title="{Binding Title, StringFormat=' {0}(Чек-лист)'}" 
+        Height="500" Width="300" 
+        ResizeMode="CanMinimize"
+        Loaded="Window_Loaded">
     <Grid>
         <DockPanel Margin="5">
             <Grid DockPanel.Dock="Bottom" Height="Auto">
@@ -17,31 +20,38 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Column="0" Margin="2">
                     <TextBlock Text="Выполнено/Всего: "/>
-                    <TextBlock Text="{Binding Progess, StringFormat=' {0}/'}"/>
+                    <TextBlock Text="{Binding Progress, StringFormat=' {0}/'}"/>
                     <TextBlock Text="{Binding Count}"/>
                 </StackPanel>
                 <ProgressBar Grid.Column="1" 
-                             Maximum="{Binding Count}" Value="{Binding Progess}" 
+                             Maximum="{Binding Count}" Value="{Binding Progress}" 
                              Margin="2"/>
                 <TextBlock Grid.Column="1" 
                            HorizontalAlignment="Center" Margin="2"
                            FontWeight="Bold" 
                            Text="{Binding Procent, StringFormat=' {0}%'}"/>
             </Grid>
-            <DataGrid ItemsSource="{Binding Checklists}"
-                  AutoGenerateColumns="False" CanUserReorderColumns="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserAddRows="False">
+            <DataGrid x:Name="datagrid" ItemsSource="{Binding Checklists}" SelectedItem="{Binding SelectedDate}"
+                  AutoGenerateColumns="False" 
+                      CanUserReorderColumns="False" 
+                      CanUserDeleteRows="False" 
+                      CanUserSortColumns="False"
+                      CanUserAddRows="False">
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    </Style>
+                </DataGrid.Resources>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Дата" Binding="{Binding Time}" 
+                    <DataGridTextColumn Header="№" Binding="{Binding NumberDay}"
+                                        IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat=' {0:dd.MM.yyyy}'}" 
                                         Width="*" 
                                         IsReadOnly="True">
-                        <DataGridTextColumn.HeaderStyle>
-                            <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.HeaderStyle>
                     </DataGridTextColumn>
-                    <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding Check, UpdateSourceTrigger=PropertyChanged}" 
-                                            Width="*">
+                    <DataGridTextColumn Header="День недели" Binding="{Binding DayOfWeek}"
+                                        IsReadOnly="True"/>
+                    <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding Check, UpdateSourceTrigger=PropertyChanged}">
                         <DataGridCheckBoxColumn.HeaderStyle>
                             <Style TargetType="DataGridColumnHeader">
                                 <Setter Property="HorizontalContentAlignment" Value="Center"/>

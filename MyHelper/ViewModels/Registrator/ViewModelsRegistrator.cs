@@ -8,6 +8,7 @@ namespace MyHelper.ViewModels.Registrator
         public static IServiceCollection AddViewModels(this IServiceCollection services)
         {
             services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<ListChallengesUCViewModel>();
             services.AddTransient<ChecklistChallengeViewModel>();
             services.AddSingleton<ListPurposesUserControlViewModel>();
 

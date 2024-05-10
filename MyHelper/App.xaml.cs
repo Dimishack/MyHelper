@@ -4,7 +4,12 @@ using Microsoft.Extensions.Hosting;
 using MyHelper.Services.Interfaces;
 using MyHelper.Services.Registrator;
 using MyHelper.ViewModels.Registrator;
+using MyHelper.ViewModels.Registrator_Locator;
+using System;
+using System.Globalization;
+using System.Threading;
 using System.Windows;
+using System.Windows.Markup;
 
 namespace MyHelper
 {
@@ -17,6 +22,7 @@ namespace MyHelper
 
         public static IHost Host => __host ??= Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder(Environment.GetCommandLineArgs())
+            //.ConfigureAppConfiguration(cfg => cfg.AddJsonFile("appsetting.json", true, true))
             .ConfigureServices((host, services) => services
             .AddViewModels()
             .AddServices())
@@ -26,6 +32,14 @@ namespace MyHelper
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            var cultureinfo = new CultureInfo("ru-RU");
+            Thread.CurrentThread.CurrentCulture = cultureinfo;
+            Thread.CurrentThread.CurrentUICulture = cultureinfo;
+            CultureInfo.DefaultThreadCurrentCulture = cultureinfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureinfo;
+            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), 
+                new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
+
             var host = Host;
             base.OnStartup(e);
             Services.GetRequiredService<IOpenWindows>().OpenMainWindow();

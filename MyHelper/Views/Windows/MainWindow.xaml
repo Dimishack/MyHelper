@@ -14,6 +14,7 @@
         Title="MyHelper"
         Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
+        xmlns:uc ="clr-namespace:MyHelper.Views.UserControls"
         x:Name="ThisWindow">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
@@ -91,6 +92,7 @@
                 </DockPanel>
             </TabItem>
             <TabItem Header="Челленджи">
+                <uc:ListChallengesUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListChallengesVM}"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>

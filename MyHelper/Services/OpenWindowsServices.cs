@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MyHelper.Models.Purposes;
+using MyHelper.Models.Challenges;
 using MyHelper.Services.Interfaces;
+using MyHelper.ViewModels;
 using MyHelper.Views.Windows;
 using System.Windows;
 
@@ -12,17 +14,21 @@ namespace MyHelper.Services
         private MainWindow? _mainWindow;
         private ChecklistChallengeWindow? _checklistChallengeWindow;
 
-        public void OpenChecklistChallengeWindow()
+        public void OpenChecklistChallengeWindow(MyChallenge challenge)
         {
             if (_checklistChallengeWindow is { } window)
             {
                 window.ShowDialog();
                 return;
             }
-            window = _services.GetRequiredService<ChecklistChallengeWindow>();
+            var viewModel = new ChecklistChallengeViewModel(challenge);
+            window = new ChecklistChallengeWindow()
+            {
+                DataContext = viewModel
+            };
             window.Closed += (_, _) => _checklistChallengeWindow = null;
             _checklistChallengeWindow = window;
-            window.ShowDialog();
+            _checklistChallengeWindow.ShowDialog();
         }
 
         public void OpenMainWindow()
