@@ -1,5 +1,6 @@
 ﻿using MyHelper.Infrastructure.Commands;
 using MyHelper.Models.Challenges;
+using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,21 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    internal class ListChallengesUCViewModel : ViewModel
+    internal class ListChallengesUCViewModel(IOpenWindows openWindows) : ViewModel
     {
+        private readonly IOpenWindows _openWindows = openWindows;
+        private static readonly DateTime DATENOW = DateTime.Today;
+
+        private Dictionary<string, int> _forLengthChecklist = new()
+        {
+            {"Месяц", DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month) },
+            {"Квартал", DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month)
+                + DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month + 1)
+                + DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month + 2)},
+            {"Полгода", (DateTime.IsLeapYear(DATENOW.Year)? 366: 365) / 2 },
+            {"Год", DateTime.IsLeapYear(DATENOW.Year)? 366: 365}
+        };
+
         #region Challenges : ObservableCollection<MyChallenges> - Список челленджей
 
         ///<summary>Список челленджей</summary>
@@ -28,7 +42,16 @@ namespace MyHelper.ViewModels
         private MyChallenges? _selectedGroup;
 
         ///<summary>Выбранная группа</summary>
-        public MyChallenges? SelectedGroup { get => _selectedGroup; set => Set(ref _selectedGroup, value); }
+        public MyChallenges? SelectedGroup
+        {
+            get => _selectedGroup;
+            set
+            {
+                if (!Set(ref _selectedGroup, value)) return;
+
+                OnPropertyChanged(nameof(ChallengesOnProgress));
+            }
+        }
 
         #endregion
 
@@ -79,30 +102,57 @@ namespace MyHelper.ViewModels
                 Challenges[i].ListChallenges.ListChanged += ListChallenges_ListChanged;
         }
 
+        #endregion
+
+        #region OpenCheckListCommand - Команда - открыть чек-лист
+
+        ///<summary>Команда - открыть чек-лист</summary>
+        private ICommand? _openChecklistCommand;
+
+        ///<summary>Команда - открыть чек-лист</summary>
+        public ICommand OpenCheckListCommand => _openChecklistCommand
+            ??= new LambdaCommand(OnOpenCheckListCommandExecuted, CanOpenCheckListCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - открыть чек-лист</summary>
+        private bool CanOpenCheckListCommandExecute(object? p) => p is MyChallenge;
+
+        ///<summary>Логика выполнения - открыть чек-лист</summary>
+        private void OnOpenCheckListCommandExecuted(object? p) => _openWindows.OpenChecklistChallengeWindow((p as MyChallenge)!);
+
+        #endregion
+
+        #endregion
+
+        #region События
+
         private void ListChallenges_ListChanged(object? sender, ListChangedEventArgs e)
         {
             var challengeOnProgressing = SelectedGroup?.ListChallenges.FirstOrDefault(
                 c => c.IsProgress
-                && string.IsNullOrWhiteSpace(c.DateStartProgressing));
+                && c.DateStartProgressing == null);
             if (challengeOnProgressing is not null)
             {
-                SelectedGroup.ListChallenges[challengeOnProgressing.Id].DateStartProgressing = DateTime.Now.ToString("yyyy.MM.dd");
+                SelectedGroup!.ListChallenges[challengeOnProgressing.Id].DateStartProgressing = DATENOW;
+                SelectedGroup.ListChallenges[challengeOnProgressing.Id].Checklist
+                    = Enumerable.Range(0, _forLengthChecklist[SelectedGroup.Group!]).Select(i => new Checklist
+                    {
+                        NumberDay = i + 1,
+                        Date = DATENOW.AddDays(i)
+                    }).ToList();
                 OnPropertyChanged(nameof(ChallengesOnProgress));
                 return;
             }
             var challengesFromProgressing = SelectedGroup?.ListChallenges.FirstOrDefault(
                 c => !c.IsProgress
-                && !string.IsNullOrWhiteSpace(c.DateStartProgressing));
-            if ( challengesFromProgressing is not null )
+                && c.DateStartProgressing != null);
+            if (challengesFromProgressing is not null)
             {
-                SelectedGroup.ListChallenges[challengesFromProgressing.Id].DateStartProgressing = string.Empty;
+                SelectedGroup!.ListChallenges[challengesFromProgressing.Id].DateStartProgressing = null;
+                SelectedGroup!.ListChallenges[challengesFromProgressing.Id].Checklist = null;
                 OnPropertyChanged(nameof(ChallengesOnProgress));
             }
         }
 
         #endregion
-
-        #endregion
-
     }
 }

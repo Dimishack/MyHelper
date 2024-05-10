@@ -10,7 +10,7 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              
              d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance vm:ListChallengesUCViewModel, IsDesignTimeCreatable=True}">
+             d:DataContext="{d:DesignInstance vm:ListChallengesUCViewModel}">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
@@ -19,7 +19,7 @@
     <DockPanel>
         <DockPanel DockPanel.Dock="Left">
             <GroupBox DockPanel.Dock="Top" Header="Группа">
-                <ComboBox ItemsSource="{Binding Challenges}" SelectedIndex="0" SelectedItem="{Binding SelectedGroup}"
+                <ComboBox ItemsSource="{Binding Challenges}" SelectedIndex="1" SelectedItem="{Binding SelectedGroup}"
                           DisplayMemberPath="Group"/>
             </GroupBox>
             <UniformGrid Columns="1">
@@ -74,11 +74,11 @@
                                         <TextBlock Text="{Binding Challenge, StringFormat=' Челлендж: {0}'}"/>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text=" Выполняется: "/>
-                                            <CheckBox IsChecked="{Binding IsProgress}">
-                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding IsProgress}"/>
                                         </StackPanel>
                                         <TextBlock Text="{Binding Note, StringFormat=' Примечание: {0}'}"/>
                                     </StackPanel>
+                                    
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -112,6 +112,14 @@
                                         <TextBlock Text="{Binding DateStartProgressing, StringFormat=' Дата начала: {0:dd.MM.yyyy}'}"/>
                                         <TextBlock Text="{Binding Challenge, StringFormat=' Челлендж: {0}'}"/>
                                         <TextBlock Text="{Binding Note, StringFormat=' Примечание: {0}'}"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text=" Чек-лист:"/>
+                                            <Button Content="Показать" 
+                                                    Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
+                                                    Path=DataContext.OpenCheckListCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Margin="5,0,0,0"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Grid>
                             </Border>
