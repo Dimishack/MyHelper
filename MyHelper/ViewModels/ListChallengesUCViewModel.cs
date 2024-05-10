@@ -4,9 +4,9 @@ using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace MyHelper.ViewModels
@@ -26,36 +26,47 @@ namespace MyHelper.ViewModels
             {"Год", DateTime.IsLeapYear(DATENOW.Year)? 366: 365}
         };
 
-        #region Challenges : ObservableCollection<MyChallenges> - Список челленджей
+        public string[] Groups { get; } = ["Все", "Месяц", "Квартал", "Полгода", "Год"];
 
-        ///<summary>Список челленджей</summary>
-        private ObservableCollection<MyChallenges>? _challenges;
-
-        ///<summary>Список челленджей</summary>
-        public ObservableCollection<MyChallenges>? Challenges { get => _challenges; set => Set(ref _challenges, value); }
-
-        #endregion
-
-        #region SelectedGroup : MyChallenges? - Выбранная группа
+        #region SelectedGroup : string - Выбранная группа
 
         ///<summary>Выбранная группа</summary>
-        private MyChallenges? _selectedGroup;
+        private string _selectedGroup = string.Empty;
 
         ///<summary>Выбранная группа</summary>
-        public MyChallenges? SelectedGroup
+        public string SelectedGroup
         {
             get => _selectedGroup;
             set
             {
                 if (!Set(ref _selectedGroup, value)) return;
 
+                if (value.Contains("все", StringComparison.OrdinalIgnoreCase))
+                    _challengesView.Source = _challenges;
+                else
+                    _challengesView.Source = _challenges.Where(c => c.Duration == value).ToList();
+                OnPropertyChanged(nameof(ChallengesView));
                 OnPropertyChanged(nameof(ChallengesOnProgress));
             }
         }
 
         #endregion
 
-        public IList<MyChallenge>? ChallengesOnProgress => SelectedGroup?.ListChallenges.Where(c => c.IsProgress).ToList();
+        #region Challenges : ObservableCollection<MyChallenges> - Список челленджей
+
+        ///<summary>Список челленджей</summary>
+        private BindingList<MyChallenge>? _challenges;
+
+        ///<summary>Список челленджей</summary>
+        public BindingList<MyChallenge>? Challenges { get => _challenges; set => Set(ref _challenges, value); }
+
+        #endregion
+
+        private readonly CollectionViewSource _challengesView = new();
+        public ICollectionView ChallengesView => _challengesView.View;
+
+        public IList<MyChallenge>? ChallengesOnProgress =>
+            ((IList<MyChallenge>)_challengesView.Source)?.Where(c => c.IsProgress).ToList();
 
         #region SelectedChallenge : MyChallenge? - Выбранный челлендж
 
@@ -86,20 +97,16 @@ namespace MyHelper.ViewModels
         {
             if (_challenges is not null) return;
 
-            var groups = new string[] { "Все", "Месяц", "Квартал", "Полгода", "Год" };
 
-            Challenges = new(Enumerable.Range(0, groups.Length).Select(c => new MyChallenges
+            Challenges = new(Enumerable.Range(0, 10000).Select(c => new MyChallenge
             {
-                Group = groups[c],
-                ListChallenges = new(Enumerable.Range(0, 1000).Select(c => new MyChallenge
-                {
-                    Id = c,
-                    Challenge = $"Challenge {c}",
-                    Checklist = []
-                }).ToList()),
-            }));
-            for (int i = 0; i < Challenges.Count; i++)
-                Challenges[i].ListChallenges.ListChanged += ListChallenges_ListChanged;
+                Id = c,
+                Challenge = $"Challenge {c}",
+                Duration = Groups[Random.Shared.Next(1, Groups.Length)],
+                Checklist = []
+            }).ToList());
+            Challenges.ListChanged += ListChallenges_ListChanged;
+            SelectedGroup = "Все";
         }
 
         #endregion
@@ -127,30 +134,16 @@ namespace MyHelper.ViewModels
 
         private void ListChallenges_ListChanged(object? sender, ListChangedEventArgs e)
         {
-            var challengeOnProgressing = SelectedGroup?.ListChallenges.FirstOrDefault(
-                c => c.IsProgress
-                && c.DateStartProgressing == null);
-            if (challengeOnProgressing is not null)
-            {
-                SelectedGroup!.ListChallenges[challengeOnProgressing.Id].DateStartProgressing = DATENOW;
-                SelectedGroup.ListChallenges[challengeOnProgressing.Id].Checklist
-                    = Enumerable.Range(0, _forLengthChecklist[SelectedGroup.Group!]).Select(i => new Checklist
-                    {
-                        NumberDay = i + 1,
-                        Date = DATENOW.AddDays(i)
-                    }).ToList();
-                OnPropertyChanged(nameof(ChallengesOnProgress));
-                return;
-            }
-            var challengesFromProgressing = SelectedGroup?.ListChallenges.FirstOrDefault(
-                c => !c.IsProgress
-                && c.DateStartProgressing != null);
-            if (challengesFromProgressing is not null)
-            {
-                SelectedGroup!.ListChallenges[challengesFromProgressing.Id].DateStartProgressing = null;
-                SelectedGroup!.ListChallenges[challengesFromProgressing.Id].Checklist = null;
-                OnPropertyChanged(nameof(ChallengesOnProgress));
-            }
+            var isPropgress = _challenges[e.NewIndex].IsProgress;
+            Challenges[e.NewIndex].DateStartProgressing = isPropgress ? DATENOW : null;
+            Challenges[e.NewIndex].Checklist = isPropgress ?
+                Enumerable.Range(0, _forLengthChecklist[_challenges[e.NewIndex].Duration!]).Select(i => new Checklist
+                {
+                    NumberDay = i + 1,
+                    Date = DATENOW.AddDays(i)
+                }).ToList()
+                : null;
+            OnPropertyChanged(nameof(ChallengesOnProgress));
         }
 
         #endregion

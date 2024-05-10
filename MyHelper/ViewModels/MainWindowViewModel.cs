@@ -62,8 +62,6 @@ namespace MyHelper.ViewModels
                 File.WriteAllText(pathBooks, JsonConvert.SerializeObject(p, Formatting.Indented));
             if (p is ObservableCollection<MyTasks>)
                 File.WriteAllText(pathTasks, JsonConvert.SerializeObject(p, Formatting.Indented));
-            if (p is ObservableCollection<MyChallenges>)
-                File.WriteAllText(pathChallenges, JsonConvert.SerializeObject(p, Formatting.Indented));
             MessageBox.Show("Список успешно сохранен", "Успешно!", MessageBoxButton.OK, MessageBoxImage.Asterisk);
         }
 
@@ -74,21 +72,6 @@ namespace MyHelper.ViewModels
         #region Свойства
 
         #region MyChallenges
-        public ObservableCollection<MyChallenges> MyChallenges { get; }
-
-        #region SelectedMyChallenges : MyChallenges - Выбранный тип списка челленджей
-        private MyChallenges? _selectedMyChallenges;
-        public MyChallenges? SelectedMyChallenges
-        {
-            get => _selectedMyChallenges;
-            set
-            {
-                Set(ref _selectedMyChallenges, value);
-                CountChallenges = _selectedMyChallenges.ListChallenges.Count;
-                ChallengesOnProgressing = _selectedMyChallenges.ListChallenges.Where(i => i.IsProgress).ToList();
-            }
-        }
-        #endregion
 
         #region CountChallenges : int - Количество челленджей выбранного списка
         /// <summary>Количество челленджей выбранного списка</summary>

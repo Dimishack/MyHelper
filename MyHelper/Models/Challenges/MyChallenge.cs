@@ -26,6 +26,8 @@ namespace MyHelper.Models.Challenges
         [JsonProperty("Челлендж")]
         public string? Challenge { get; set; }
 
+        public string? Duration { get; set; }
+
         [JsonProperty("Начало челленджа")]
         public DateTime? DateStartProgressing { get; set; }
 
