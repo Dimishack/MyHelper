@@ -90,7 +90,24 @@
                                         </StackPanel>
                                         <TextBlock Text="{Binding Note, StringFormat=' Примечание: {0}'}"/>
                                     </StackPanel>
-                                    
+                                    <Button Content="X" 
+                                            VerticalAlignment="Top" HorizontalAlignment="Right"
+                                            FontWeight="Bold"
+                                            Background="Transparent" BorderThickness="0"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
+                                                      Path=DataContext.DeleteChallengeCommand}"
+                                            CommandParameter="{Binding}">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Foreground" Value="Red"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter Property="Foreground" Value="Green"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                 </Grid>
                             </Border>
                         </DataTemplate>

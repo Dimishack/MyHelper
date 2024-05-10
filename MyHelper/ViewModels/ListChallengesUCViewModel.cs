@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace MyHelper.ViewModels
@@ -42,9 +41,9 @@ namespace MyHelper.ViewModels
                 if (!Set(ref _selectedGroup, value)) return;
 
                 if (value.Contains("все", StringComparison.OrdinalIgnoreCase))
-                    _challengesView.Source = _challenges;
+                    ChallengesView = _challenges;
                 else
-                    _challengesView.Source = _challenges.Where(c => c.Duration == value).ToList();
+                    ChallengesView = new(_challenges.Where(c => c.Duration == value).ToList());
                 OnPropertyChanged(nameof(ChallengesView));
                 OnPropertyChanged(nameof(ChallengesOnProgress));
             }
@@ -62,11 +61,19 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        private readonly CollectionViewSource _challengesView = new();
-        public ICollectionView ChallengesView => _challengesView.View;
+        #region ChallengesView : IList<MyChallenge> - Вывод списка челленджей
 
+        ///<summary>Вывод списка челленджей</summary>
+        private BindingList<MyChallenge>? _challengesView;
+
+        ///<summary>Вывод списка челленджей</summary>
+        public BindingList<MyChallenge>? ChallengesView { get => _challengesView; set => Set(ref _challengesView, value); }
+
+        #endregion
+
+        /// <summary> Челленджи в прогрессе</summary>
         public IList<MyChallenge>? ChallengesOnProgress =>
-            ((IList<MyChallenge>)_challengesView.Source)?.Where(c => c.IsProgress).ToList();
+            (_challengesView)?.Where(c => c.IsProgress).ToList();
 
         #region SelectedChallenge : MyChallenge? - Выбранный челлендж
 
@@ -125,6 +132,28 @@ namespace MyHelper.ViewModels
 
         ///<summary>Логика выполнения - открыть чек-лист</summary>
         private void OnOpenCheckListCommandExecuted(object? p) => _openWindows.OpenChecklistChallengeWindow((p as MyChallenge)!);
+
+        #endregion
+
+        #region DeleteChallengeCommand - Команда - удалить челлендж
+
+        ///<summary>Команда - удалить челлендж</summary>
+        private ICommand? _deleteChallengeCommand;
+
+        ///<summary>Команда - удалить челлендж</summary>
+        public ICommand DeleteChallengeCommand => _deleteChallengeCommand
+            ??= new LambdaCommand(OnDeleteChallengeCommandExecuted, CanDeleteChallengeCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - удалить челлендж</summary>
+        private bool CanDeleteChallengeCommandExecute(object? p) => p is MyChallenge;
+
+        ///<summary>Логика выполнения - удалить челлендж</summary>
+        private void OnDeleteChallengeCommandExecuted(object? p)
+        {
+            var challenge = (p as MyChallenge)!;
+            Challenges.Remove(challenge);
+            ChallengesView.Remove(challenge);
+        }
 
         #endregion
 
