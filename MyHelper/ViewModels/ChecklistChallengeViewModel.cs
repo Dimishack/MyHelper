@@ -1,5 +1,6 @@
 ﻿using MyHelper.Models.Challenges;
 using MyHelper.ViewModels.Base;
+using System;
 using System.ComponentModel;
 using System.Linq;
 
@@ -7,7 +8,6 @@ namespace MyHelper.ViewModels
 {
     class ChecklistChallengeViewModel : ViewModel
     {
-        private readonly MainWindowViewModel? _mainWindowViewModel;
 
         #region Title : string? - Заголовок окна
         /// <summary>Заголовок окна</summary>
@@ -20,11 +20,11 @@ namespace MyHelper.ViewModels
         }
         #endregion
 
-        #region CheckLists : BindingList<Checklist>? - Чек-лист
+        #region CheckLists : BindingList<Checklist> - Чек-лист
         /// <summary>Чек-лист</summary>
-        private BindingList<Checklist>? _checklists;
+        private BindingList<Checklist> _checklists;
         /// <summary>Чек-лист</summary>
-        public BindingList<Checklist>? Checklists
+        public BindingList<Checklist> Checklists
         {
             get => _checklists;
             set => Set(ref _checklists, value);
@@ -44,12 +44,12 @@ namespace MyHelper.ViewModels
 
         #region Progress : int - Количества выполненных чеков
         /// <summary>Количества выполненных чеков</summary>
-        private int _progess;
+        private int _progress;
         /// <summary>Количества выполненных чеков</summary>
-        public int Progess
+        public int Progress
         {
-            get => _progess;
-            set => Set(ref _progess, value);
+            get => _progress;
+            set => Set(ref _progress, value);
         }
         #endregion
 
@@ -61,34 +61,36 @@ namespace MyHelper.ViewModels
         {
             get => _procent;
             set => Set(ref _procent, value);
-        } 
+        }
         #endregion
 
-        public ChecklistChallengeViewModel() : this(null)
-        {
+        #region SelectedDate : Checklist - Выбранная дата
 
-        }
+        ///<summary>Выбранная дата</summary>
+        private Checklist? _selectedDate;
 
-        public ChecklistChallengeViewModel(MainWindowViewModel? mainWindowViewModel)
+        ///<summary>Выбранная дата</summary>
+        public Checklist? SelectedDate { get => _selectedDate; set => Set(ref _selectedDate, value); }
+
+        #endregion
+
+
+        public ChecklistChallengeViewModel(MyChallenge checklist)
         {
-            _mainWindowViewModel = mainWindowViewModel;
-            var list = _mainWindowViewModel?.ChallengesOnProgressing?[_mainWindowViewModel.IndexSelectedChallengeOnProgressing] ?? null;
-            if (list is not null)
-            {
-                _title = list.Challenge;
-                _checklists = new BindingList<Checklist>(list.Checklist!);
-                _checklists.ListChanged += Checklists_ListChanged; 
-                _count = _checklists?.Count ?? 0;
-                _progess = _checklists?.Where(i => i.Check).Count() ?? 0;
-                _procent = double.Round((double)_progess / (_count == 0 ? 1 : _count) * 100D, 2);
-            }
+            _title = checklist.Challenge;
+            _checklists = new(checklist.Checklist!);
+            _count = _checklists.Count;
+            _progress = _checklists.Where(i => i.Check).Count();
+            _procent = double.Round((double)_progress / (_count == 0 ? 1 : _count) * 100D, 2);
+            _checklists.ListChanged += Checklists_ListChanged;
+            _selectedDate = _checklists.FirstOrDefault(c => c.Date == DateTime.Today);
         }
 
         private void Checklists_ListChanged(object? sender, ListChangedEventArgs e)
         {
             Count = _checklists?.Count ?? 0;
-            Progess = _checklists?.Where(i => i.Check).Count() ?? 0;
-            Procent = double.Round((double)_progess / (_count == 0 ? 1 : _count) * 100D, 2);
+            Progress = _checklists?.Where(i => i.Check).Count() ?? 0;
+            Procent = double.Round((double)_progress / (_count == 0 ? 1 : _count) * 100D, 2);
         }
     }
 }
