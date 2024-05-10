@@ -10,6 +10,7 @@ namespace MyHelper.Models.Challenges
     {
         public int Id { get; set; }
         private bool _isProgress;
+
         [JsonProperty("Выполняется?")]
         public bool IsProgress
         {
@@ -21,11 +22,11 @@ namespace MyHelper.Models.Challenges
                 OnPropertyChanged();
             }
         }
-        private string? _challenge;
 
         [JsonProperty("Челлендж")]
         public string? Challenge { get; set; }
 
+        [JsonProperty("Продолжительность")]
         public string? Duration { get; set; }
 
         [JsonProperty("Начало челленджа")]

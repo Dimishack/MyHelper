@@ -77,7 +77,7 @@
                                                     <Setter Property="Visibility" Value="Collapsed"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
-                    Path=DataContext.SelectedGroup}" Value="Все">
+                                                            Path=DataContext.SelectedGroup}" Value="Все">
                                                             <Setter Property="Visibility" Value="Visible"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>

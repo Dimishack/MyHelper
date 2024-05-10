@@ -54,10 +54,10 @@ namespace MyHelper.ViewModels
         #region Challenges : ObservableCollection<MyChallenges> - Список челленджей
 
         ///<summary>Список челленджей</summary>
-        private BindingList<MyChallenge>? _challenges;
+        private BindingList<MyChallenge> _challenges = [];
 
         ///<summary>Список челленджей</summary>
-        public BindingList<MyChallenge>? Challenges { get => _challenges; set => Set(ref _challenges, value); }
+        public BindingList<MyChallenge> Challenges { get => _challenges; set => Set(ref _challenges, value); }
 
         #endregion
 
@@ -132,6 +132,23 @@ namespace MyHelper.ViewModels
 
         ///<summary>Логика выполнения - открыть чек-лист</summary>
         private void OnOpenCheckListCommandExecuted(object? p) => _openWindows.OpenChecklistChallengeWindow((p as MyChallenge)!);
+
+        #endregion
+
+        #region CreateChallengeCommand - Команда - создать челлендж
+
+        ///<summary>Команда - создать челлендж</summary>
+        private ICommand? _createChallengeCommand;
+
+        ///<summary>Команда - создать челлендж</summary>
+        public ICommand CreateChallengeCommand => _createChallengeCommand
+            ??= new LambdaCommand(OnCreateChallengeCommandExecuted);
+
+        ///<summary>Логика выполнения - создать челлендж</summary>
+        private void OnCreateChallengeCommandExecuted(object? p)
+        {
+
+        }
 
         #endregion
 
