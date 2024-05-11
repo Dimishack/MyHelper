@@ -21,15 +21,22 @@
                 <StackPanel Orientation="Horizontal" Grid.Column="0" Margin="2">
                     <TextBlock Text="Выполнено/Всего: "/>
                     <TextBlock Text="{Binding Progress, StringFormat=' {0}/'}"/>
-                    <TextBlock Text="{Binding Count}"/>
+                    <TextBlock Text="{Binding Checklists.Count}"/>
                 </StackPanel>
                 <ProgressBar Grid.Column="1" 
-                             Maximum="{Binding Count}" Value="{Binding Progress}" 
-                             Margin="2"/>
+                             Maximum="1" Value="{Binding Procent, Mode=OneWay}" 
+                             Margin="2">
+                    <ProgressBar.Foreground>
+                        <LinearGradientBrush>
+                            <GradientStop Offset="0" Color="Red"/>
+                            <GradientStop Offset="{Binding OffsetLimeGreenColor, Mode=OneWay}" Color="LimeGreen"/>
+                        </LinearGradientBrush>
+                    </ProgressBar.Foreground>
+                </ProgressBar>
                 <TextBlock Grid.Column="1" 
                            HorizontalAlignment="Center" Margin="2"
                            FontWeight="Bold" 
-                           Text="{Binding Procent, StringFormat=' {0}%'}"/>
+                           Text="{Binding Procent, StringFormat=' {0:p1}'}"/>
             </Grid>
             <DataGrid x:Name="datagrid" ItemsSource="{Binding Checklists}" SelectedItem="{Binding SelectedDate}"
                   AutoGenerateColumns="False" 

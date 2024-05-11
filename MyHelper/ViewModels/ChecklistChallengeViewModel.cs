@@ -30,37 +30,16 @@ namespace MyHelper.ViewModels
         }
         #endregion
 
-        #region Count : int - Количество чека
-        /// <summary>Количество чека</summary>
-        private int _count;
-        /// <summary>Количество чека</summary>
-        public int Count
-        {
-            get => _count;
-            set => Set(ref _count, value);
-        }
-        #endregion
-
         #region Progress : int - Количества выполненных чеков
+
         /// <summary>Количества выполненных чеков</summary>
-        private int _progress;
-        /// <summary>Количества выполненных чеков</summary>
-        public int Progress
-        {
-            get => _progress;
-            set => Set(ref _progress, value);
-        }
+        public int Progress => _checklists.Where(i => i.Check).Count();
         #endregion
 
         #region Procent : double - Процент выполненных чеков
+
         /// <summary>Процент выполненных чеков</summary>
-        private double _procent;
-        /// <summary>Процент выполненных чеков</summary>
-        public double Procent
-        {
-            get => _procent;
-            set => Set(ref _procent, value);
-        }
+        public double Procent => (double)Progress / (_checklists.Count == 0 ? 1 : _checklists.Count);
         #endregion
 
         #region SelectedDate : Checklist - Выбранная дата
@@ -73,23 +52,26 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region OffsetLimeGreenColor : double - Местоположение лаймового цвета в ProgressBar'e
+
+        /// <summary>Местоположение лаймового цвета в ProgressBar'e</summary>
+        public double OffsetLimeGreenColor => 2.0 - Procent;
+
+        #endregion 
 
         public ChecklistChallengeViewModel(MyChallenge checklist)
         {
             _title = checklist.Challenge;
             _checklists = new(checklist.Checklist!);
-            _count = _checklists.Count;
-            _progress = _checklists.Where(i => i.Check).Count();
-            _procent = double.Round((double)_progress / (_count == 0 ? 1 : _count) * 100D, 2);
             _checklists.ListChanged += Checklists_ListChanged;
             _selectedDate = _checklists.FirstOrDefault(c => c.Date == DateTime.Today);
         }
 
         private void Checklists_ListChanged(object? sender, ListChangedEventArgs e)
         {
-            Count = _checklists?.Count ?? 0;
-            Progress = _checklists?.Where(i => i.Check).Count() ?? 0;
-            Procent = double.Round((double)_progress / (_count == 0 ? 1 : _count) * 100D, 2);
+            OnPropertyChanged(nameof(Progress));
+            OnPropertyChanged(nameof(Procent));
+            OnPropertyChanged(nameof(OffsetLimeGreenColor));
         }
     }
 }
