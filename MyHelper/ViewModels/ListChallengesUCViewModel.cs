@@ -2,10 +2,8 @@
 using MyHelper.Models.Challenges;
 using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace MyHelper.ViewModels
@@ -54,10 +52,10 @@ namespace MyHelper.ViewModels
         #region Challenges : ObservableCollection<MyChallenges> - Список челленджей
 
         ///<summary>Список челленджей</summary>
-        private BindingList<MyChallenge> _challenges = [];
+        private BindingList<MyChallenge>? _challenges;
 
         ///<summary>Список челленджей</summary>
-        public BindingList<MyChallenge> Challenges { get => _challenges; set => Set(ref _challenges, value); }
+        public BindingList<MyChallenge>? Challenges { get => _challenges; set => Set(ref _challenges, value); }
 
         #endregion
 
@@ -147,7 +145,35 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - создать челлендж</summary>
         private void OnCreateChallengeCommandExecuted(object? p)
         {
+            var challenge = new MyChallenge();
+            if (!_openWindows.OpenCreator_EditorChallengeWindow(challenge, _selectedGroup, "Создать челлендх")) return;
 
+            challenge.Id = _challenges.Count;
+            Challenges.Add(challenge);
+        }
+
+        #endregion
+
+        #region EditChallengeCommand - Команда - редактировать челлендж
+
+        ///<summary>Команда - редактировать челлендж</summary>
+        private ICommand? _editChallengeCommand;
+
+        ///<summary>Команда - редактировать челлендж</summary>
+        public ICommand EditChallengeCommand => _editChallengeCommand
+            ??= new LambdaCommand(OnEditChallengeCommandExecuted, CanEditChallengeCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - редактировать челлендж</summary>
+        private bool CanEditChallengeCommandExecute(object? p) => _selectedChallenge is not null;
+
+        ///<summary>Логика выполнения - редактировать челлендж</summary>
+        private void OnEditChallengeCommandExecuted(object? p)
+        {
+            if(!_openWindows.OpenCreator_EditorChallengeWindow(
+                _selectedChallenge!, 
+                _selectedChallenge!.Duration, 
+                "Редактировать челлендж")) return;
+            CollectionViewSource.GetDefaultView(Challenges).Refresh();
         }
 
         #endregion
@@ -181,14 +207,22 @@ namespace MyHelper.ViewModels
         private void ListChallenges_ListChanged(object? sender, ListChangedEventArgs e)
         {
             var isPropgress = _challenges[e.NewIndex].IsProgress;
-            Challenges[e.NewIndex].DateStartProgressing = isPropgress ? DATENOW : null;
-            Challenges[e.NewIndex].Checklist = isPropgress ?
+            if (isPropgress)
+            {
+                var startDate = _openWindows.OpenSelectStartDateWindow(_challenges[e.NewIndex]);
+                Challenges[e.NewIndex].DateStartProgressing = startDate;
+                Challenges[e.NewIndex].Checklist =
                 Enumerable.Range(0, _forLengthChecklist[_challenges[e.NewIndex].Duration!]).Select(i => new Checklist
                 {
                     NumberDay = i + 1,
-                    Date = DATENOW.AddDays(i)
-                }).ToList()
-                : null;
+                    Date = startDate.AddDays(i)
+                }).ToList();
+            }
+            else
+            {
+                Challenges[e.NewIndex].DateStartProgressing = null;
+                Challenges[e.NewIndex].Checklist = null;
+            }
             OnPropertyChanged(nameof(ChallengesOnProgress));
         }
 
