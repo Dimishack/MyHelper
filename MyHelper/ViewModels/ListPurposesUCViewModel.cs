@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    class ListPurposesUserControlViewModel(IOpenWindows openWindows, IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile) : ViewModel
+    class ListPurposesUCViewModel(IOpenWindows openWindows, IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile) : ViewModel
     {
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
@@ -154,21 +154,20 @@ namespace MyHelper.ViewModels
             if (_listMyPurposes is not null) return;
 
             ((Command)SaveListMyPurposesCommand).Executable = false;
-            if (_workWithJSONFile.ReadFile(@"Data/Purposes/Purposes.json", out IList<MyPurposes>? listPurposes)
+            if (_workWithJSONFile.ReadFile(@"Data/Purposes.json", out IList<MyPurposes>? listPurposes)
                 && listPurposes is not null)
                 ListMyPurposes = new(listPurposes);
             else
             {
-                ListMyPurposes = new(Enumerable.Range(0, 1000).Select(p => new MyPurposes
+                ListMyPurposes = new()
                 {
-                    Year = DateTime.Now.Year + p,
-                    Name = $"Name {p}",
-                    ListPurposes = new(Enumerable.Range(1, 1000).Select(p => new MyPurpose
+                    new MyPurposes
                     {
-                        Purpose = p.ToString(),
-                    }).ToList()),
-
-                }));
+                        Year = 0,
+                            Name = "Пожизненные цели",
+                            ListPurposes = []
+                    }
+                };
                 ((Command)SaveListMyPurposesCommand).Executable = true;
             }
             for (int i = 0; i < ListMyPurposes.Count; i++)
@@ -215,7 +214,7 @@ namespace MyHelper.ViewModels
 
         ///<summary>Проверка возможности выполнения - Команда удаления списка целей</summary>
         private bool CanDeleteYearCommandExecute(object? p) => SelectedListMyPurposes is not null
-            && !SelectedListMyPurposes.Name.Equals("все цели", StringComparison.CurrentCultureIgnoreCase);
+            && !SelectedListMyPurposes.Name.Equals("пожизненные цели", StringComparison.CurrentCultureIgnoreCase);
 
         ///<summary>Логика выполнения - Команда удаления списка целей</summary>
         private void OnDeleteYearCommandExecuted(object? p)
@@ -237,7 +236,7 @@ namespace MyHelper.ViewModels
 
         ///<summary>Проверка возможности выполнения - Команда редактирования списка целей</summary>
         private bool CanEditYearCommandExecute(object? p) => SelectedListMyPurposes is not null
-            && !SelectedListMyPurposes.Name.Equals("все цели", StringComparison.CurrentCultureIgnoreCase);
+            && !SelectedListMyPurposes.Name.Equals("пожизненные цели", StringComparison.CurrentCultureIgnoreCase);
 
         ///<summary>Логика выполнения - Команда редактирования списка целей</summary>
         private void OnEditYearCommandExecuted(object? p)
@@ -333,7 +332,7 @@ namespace MyHelper.ViewModels
         private void OnSaveListMyPurposesCommandExecuted(object? p)
         {
             SelectedSorting = "Сначала старые записи";
-            _workWithJSONFile.WriteFile(@"Data/Purposes/Purposes.json", p);
+            _workWithJSONFile.WriteFile(@"Data/Purposes.json", p);
             _userDialog.InformationMessage("Список целей успешно сохранен");
             ((Command)SaveListMyPurposesCommand).Executable = false;
         }

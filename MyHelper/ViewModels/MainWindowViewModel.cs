@@ -23,7 +23,7 @@ namespace MyHelper.ViewModels
         const string pathBooks = @"Data\Books.json";
         const string pathChallenges = @"Data\Challenges.json";
 
-        public ListPurposesUserControlViewModel ListPurposes { get; }
+        public ListPurposesUCViewModel ListPurposes { get; }
 
         #region Команды
 
@@ -133,7 +133,7 @@ namespace MyHelper.ViewModels
             else MyBooks = [];
         }
 
-        public MainWindowViewModel(ListPurposesUserControlViewModel listPurposes, IOpenWindows openWindows) : this()
+        public MainWindowViewModel(ListPurposesUCViewModel listPurposes, IOpenWindows openWindows) : this()
         {
             ListPurposes = listPurposes;
             _openWindows = openWindows;
