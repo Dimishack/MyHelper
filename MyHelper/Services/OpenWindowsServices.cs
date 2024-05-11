@@ -14,23 +14,6 @@ namespace MyHelper.Services
         private MainWindow? _mainWindow;
         private ChecklistChallengeWindow? _checklistChallengeWindow;
 
-        public void OpenChecklistChallengeWindow(MyChallenge challenge)
-        {
-            if (_checklistChallengeWindow is { } window)
-            {
-                window.ShowDialog();
-                return;
-            }
-            var viewModel = new ChecklistChallengeViewModel(challenge);
-            window = new ChecklistChallengeWindow()
-            {
-                DataContext = viewModel
-            };
-            window.Closed += (_, _) => _checklistChallengeWindow = null;
-            _checklistChallengeWindow = window;
-            _checklistChallengeWindow.ShowDialog();
-        }
-
         public void OpenMainWindow()
         {
             if (_mainWindow is { } window)
@@ -44,6 +27,55 @@ namespace MyHelper.Services
             window.Show();
         }
 
+        public void OpenChecklistChallengeWindow(MyChallenge challenge)
+        {
+            if (_checklistChallengeWindow is { } window)
+            {
+                window.ShowDialog();
+                return;
+            }
+            var viewModel = new ChecklistChallengeViewModel(challenge);
+            window = new ChecklistChallengeWindow()
+            {
+                DataContext = viewModel,
+                Owner = App.ActivedWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            window.Closed += (_, _) => _checklistChallengeWindow = null;
+            _checklistChallengeWindow = window;
+            _checklistChallengeWindow.ShowDialog();
+        }
+
+        public bool OpenCreator_EditorChallengeWindow(MyChallenge challenge, string duration, string title)
+        {
+            var window = new Creator_EditorChallengeWindow
+            {
+                Title = title,
+                Challenge = challenge.Challenge,
+                Duration = duration.Contains("Все")? "Месяц" : duration,
+                Note = challenge.Note,
+                Owner = App.ActivedWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            if (window.ShowDialog() != true) return false;
+            challenge.Challenge = window.Challenge;
+            challenge.Duration = window.Duration;
+            challenge.Note = window.Note;
+            return true;
+        }
+
+        public DateTime OpenSelectStartDateWindow(MyChallenge challenge)
+        {
+            var window = new SelectStartDateWindow
+            {
+                Challenge = challenge.Challenge,
+                Owner = App.ActivedWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            window.ShowDialog();
+            return window.StartDate;
+        }
+
         public bool OpenCreator_EditorPurposeWindow(MyPurpose purpose, string title)
         {
             var window = new Creator_EditorPurposeWindow
@@ -52,7 +84,7 @@ namespace MyHelper.Services
                 Purpose = purpose.Purpose ?? String.Empty,
                 Note = purpose.Note ?? String.Empty,
                 Owner = App.ActivedWindow,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
             if (window.ShowDialog() != true) return false;
             purpose.Purpose = window.Purpose;
