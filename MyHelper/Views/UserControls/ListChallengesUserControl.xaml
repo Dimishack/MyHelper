@@ -35,7 +35,7 @@
                     <TextBlock TextAlignment="Center" Margin="5">Редактировать <LineBreak/> челлендж</TextBlock>
                 </Button>
                 <Separator/>
-                <Button>
+                <Button Command="{Binding SaveChallengesCommand}" CommandParameter="{Binding Challenges}">
                     <TextBlock TextAlignment="Center" Margin="5">Сохранить <LineBreak/> списки</TextBlock>
                 </Button>
             </UniformGrid>

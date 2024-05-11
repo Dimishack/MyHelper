@@ -1,4 +1,5 @@
 ﻿using MyHelper.Infrastructure.Commands;
+using MyHelper.Infrastructure.Commands.Base;
 using MyHelper.Models.Challenges;
 using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
@@ -8,11 +9,12 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    internal class ListChallengesUCViewModel(IOpenWindows openWindows, IUserDialog userDialog) : ViewModel
+    internal class ListChallengesUCViewModel(IOpenWindows openWindows, IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile) : ViewModel
     {
+        private static readonly DateTime DATENOW = DateTime.Today;
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
-        private static readonly DateTime DATENOW = DateTime.Today;
+        private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
 
         private Dictionary<string, int> _forLengthChecklist = new()
         {
@@ -103,14 +105,14 @@ namespace MyHelper.ViewModels
         {
             if (_challenges is not null) return;
 
-
-            Challenges = new(Enumerable.Range(0, 10000).Select(c => new MyChallenge
+            if (_workWithJSONFile.ReadFile(@"Data\Challenges.json", out IList<MyChallenge>? challenges)
+                && challenges is not null)
             {
-                Id = c,
-                Challenge = $"Challenge {c}",
-                Duration = Groups[Random.Shared.Next(1, Groups.Length)],
-                Checklist = []
-            }).ToList());
+                Challenges = new(challenges);
+                ((Command)SaveChallengesCommand).Executable = false;
+            }
+            else
+                Challenges = [];
             Challenges.ListChanged += ListChallenges_ListChanged;
             SelectedGroup = "Все";
         }
@@ -151,8 +153,8 @@ namespace MyHelper.ViewModels
 
             challenge.Id = _challenges.Count;
             Challenges.Add(challenge);
-            if(!ChallengesView.Contains(challenge))
-            ChallengesView.Add(challenge);
+            if (!ChallengesView.Contains(challenge))
+                ChallengesView.Add(challenge);
             _userDialog.InformationMessage("Челлендж добавлен!");
         }
 
@@ -173,8 +175,8 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - редактировать челлендж</summary>
         private void OnEditChallengeCommandExecuted(object? p)
         {
-            if(!_openWindows.OpenCreator_EditorChallengeWindow(
-                _selectedChallenge!, 
+            if (!_openWindows.OpenCreator_EditorChallengeWindow(
+                _selectedChallenge!,
                 _selectedChallenge!.Duration,
                 "Редактировать челлендж")) return;
             CollectionViewSource.GetDefaultView(ChallengesView).Refresh();
@@ -201,6 +203,30 @@ namespace MyHelper.ViewModels
             var challenge = (p as MyChallenge)!;
             Challenges.Remove(challenge);
             ChallengesView.Remove(challenge);
+        }
+
+        #endregion
+
+        #region SaveChallengesCommand - Команда - сохранить челленджи
+
+        ///<summary>Команда - сохранить челленджи</summary>
+        private ICommand? _saveChallengesCommand;
+
+        ///<summary>Команда - сохранить челленджи</summary>
+        public ICommand SaveChallengesCommand => _saveChallengesCommand
+            ??= new LambdaCommand(OnSaveChallengesCommandExecuted, CanSaveChallengesCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - сохранить челленджи</summary>
+        private bool CanSaveChallengesCommandExecute(object? p) =>
+            p is not null
+            && p is IList<MyChallenge>;
+
+        ///<summary>Логика выполнения - сохранить челленджи</summary>
+        private void OnSaveChallengesCommandExecuted(object? p)
+        {
+            if (_workWithJSONFile.WriteFile(@"Data\Challenges.json", p) == Task.FromResult(false)) return;
+            _userDialog.InformationMessage("Список челленджей сохранен!");
+            ((Command)SaveChallengesCommand).Executable = false;
         }
 
         #endregion
@@ -233,6 +259,7 @@ namespace MyHelper.ViewModels
                 OnPropertyChanged(nameof(ChallengesOnProgress));
             }
             catch (Exception) { }
+            finally { ((Command)SaveChallengesCommand).Executable = true; }
         }
 
         #endregion
