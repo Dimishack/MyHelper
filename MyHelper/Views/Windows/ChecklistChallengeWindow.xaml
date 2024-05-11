@@ -48,6 +48,16 @@
                     <Style TargetType="DataGridColumnHeader">
                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
                     </Style>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DayOfWeek}" Value="Saturday">
+                                <Setter Property="Background" Value="SandyBrown"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding DayOfWeek}" Value="Sunday">
+                                <Setter Property="Background" Value="SandyBrown"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
                 </DataGrid.Resources>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="№" Binding="{Binding NumberDay}"
