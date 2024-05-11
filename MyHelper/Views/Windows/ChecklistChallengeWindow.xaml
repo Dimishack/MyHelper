@@ -36,7 +36,7 @@
                 <TextBlock Grid.Column="1" 
                            HorizontalAlignment="Center" Margin="2"
                            FontWeight="Bold" 
-                           Text="{Binding Procent, StringFormat=' {0:p1}'}"/>
+                           Text="{Binding Procent, StringFormat=' {0:p2}'}"/>
             </Grid>
             <DataGrid x:Name="datagrid" ItemsSource="{Binding Checklists}" SelectedItem="{Binding SelectedDate}"
                   AutoGenerateColumns="False" 

@@ -89,7 +89,7 @@
                             </LinearGradientBrush>
                         </ProgressBar.Foreground>
                     </ProgressBar>
-                    <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat=p1}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="{Binding Percent, StringFormat=p2}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Grid>
                 <ListBox ItemsSource="{Binding SelectedListPurposesView}" SelectedItem="{Binding SelectedMyPurpose}">
                     <ListBox.ItemTemplate>
