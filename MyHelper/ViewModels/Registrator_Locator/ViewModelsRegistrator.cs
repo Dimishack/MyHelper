@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MyHelper.Views.Windows;
 
-namespace MyHelper.ViewModels.Registrator
+namespace MyHelper.ViewModels.Registrator_Locator
 {
     internal static class ViewModelsRegistrator
     {
