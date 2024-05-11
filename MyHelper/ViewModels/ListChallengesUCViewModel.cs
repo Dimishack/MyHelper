@@ -180,6 +180,8 @@ namespace MyHelper.ViewModels
                 _selectedChallenge!.Duration,
                 "Редактировать челлендж")) return;
             CollectionViewSource.GetDefaultView(ChallengesView).Refresh();
+            OnPropertyChanged(nameof(ChallengesOnProgress));
+            ((Command)SaveChallengesCommand).Executable = true;
             _userDialog.InformationMessage("Челлендж отредактирован!");
         }
 
@@ -256,10 +258,13 @@ namespace MyHelper.ViewModels
                     Challenges[e.NewIndex].DateStartProgressing = null;
                     Challenges[e.NewIndex].Checklist = null;
                 }
-                OnPropertyChanged(nameof(ChallengesOnProgress));
             }
             catch (Exception) { }
-            finally { ((Command)SaveChallengesCommand).Executable = true; }
+            finally
+            {
+                OnPropertyChanged(nameof(ChallengesOnProgress));
+                ((Command)SaveChallengesCommand).Executable = true;
+            }
         }
 
         #endregion

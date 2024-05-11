@@ -61,7 +61,7 @@
                          SelectedItem="{Binding SelectedChallenge}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderThickness="2" BorderBrush="LightBlue"
+                            <Border BorderThickness="2" Background="WhiteSmoke" BorderBrush="SandyBrown"
                                     Padding="5">
                                 <Grid>
                                     <StackPanel Orientation="Vertical" Margin="5">
@@ -90,7 +90,7 @@
                     </ListBox.Resources>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderThickness="2" BorderBrush="LightBlue" Padding="5"
+                            <Border BorderThickness="2" BorderBrush="SandyBrown" Padding="5"
                                     Background="{Binding Checklist, Converter={StaticResource DateTimeOnBrush}}">
                                 <Grid>
                                     <StackPanel Orientation="Vertical">
