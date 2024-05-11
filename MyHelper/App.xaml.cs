@@ -1,13 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyHelper.Services.Interfaces;
 using MyHelper.Services.Registrator;
-using MyHelper.ViewModels.Registrator;
 using MyHelper.ViewModels.Registrator_Locator;
-using System;
 using System.Globalization;
-using System.Threading;
 using System.Windows;
 using System.Windows.Markup;
 

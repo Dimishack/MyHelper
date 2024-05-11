@@ -4,10 +4,7 @@ namespace MyHelper.Views.Windows
 {
     public partial class ChecklistChallengeWindow : Window
     {
-        public ChecklistChallengeWindow()
-        {
-            InitializeComponent();
-        }
+        public ChecklistChallengeWindow() => InitializeComponent();
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
