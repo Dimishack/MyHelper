@@ -91,6 +91,9 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        private readonly CollectionViewSource _selectedListPurposesView = new();
+        public ICollectionView SelectedListPurposesView => _selectedListPurposesView.View;
+
         #region SelectedMyPurpose : MyPurpose - Выбранная цель
 
         ///<summary>Выбранная цель</summary>
@@ -173,9 +176,6 @@ namespace MyHelper.ViewModels
         }
 
         #endregion
-
-        private readonly CollectionViewSource _selectedListPurposesView = new();
-        public ICollectionView SelectedListPurposesView => _selectedListPurposesView.View;
 
         #region CreateNewYearCommand - Команда создания нового списка целей
 
