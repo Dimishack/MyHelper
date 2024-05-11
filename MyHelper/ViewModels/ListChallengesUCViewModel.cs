@@ -8,9 +8,10 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    internal class ListChallengesUCViewModel(IOpenWindows openWindows) : ViewModel
+    internal class ListChallengesUCViewModel(IOpenWindows openWindows, IUserDialog userDialog) : ViewModel
     {
         private readonly IOpenWindows _openWindows = openWindows;
+        private readonly IUserDialog _userDialog = userDialog;
         private static readonly DateTime DATENOW = DateTime.Today;
 
         private Dictionary<string, int> _forLengthChecklist = new()
@@ -150,6 +151,9 @@ namespace MyHelper.ViewModels
 
             challenge.Id = _challenges.Count;
             Challenges.Add(challenge);
+            if(!ChallengesView.Contains(challenge))
+            ChallengesView.Add(challenge);
+            _userDialog.InformationMessage("Челлендж добавлен!");
         }
 
         #endregion
@@ -171,9 +175,10 @@ namespace MyHelper.ViewModels
         {
             if(!_openWindows.OpenCreator_EditorChallengeWindow(
                 _selectedChallenge!, 
-                _selectedChallenge!.Duration, 
+                _selectedChallenge!.Duration,
                 "Редактировать челлендж")) return;
-            CollectionViewSource.GetDefaultView(Challenges).Refresh();
+            CollectionViewSource.GetDefaultView(ChallengesView).Refresh();
+            _userDialog.InformationMessage("Челлендж отредактирован!");
         }
 
         #endregion
@@ -206,24 +211,28 @@ namespace MyHelper.ViewModels
 
         private void ListChallenges_ListChanged(object? sender, ListChangedEventArgs e)
         {
-            var isPropgress = _challenges[e.NewIndex].IsProgress;
-            if (isPropgress)
+            try
             {
-                var startDate = _openWindows.OpenSelectStartDateWindow(_challenges[e.NewIndex]);
-                Challenges[e.NewIndex].DateStartProgressing = startDate;
-                Challenges[e.NewIndex].Checklist =
-                Enumerable.Range(0, _forLengthChecklist[_challenges[e.NewIndex].Duration!]).Select(i => new Checklist
+                var isPropgress = _challenges[e.NewIndex].IsProgress;
+                if (isPropgress)
                 {
-                    NumberDay = i + 1,
-                    Date = startDate.AddDays(i)
-                }).ToList();
+                    var startDate = _openWindows.OpenSelectStartDateWindow(_challenges[e.NewIndex]);
+                    Challenges[e.NewIndex].DateStartProgressing = startDate;
+                    Challenges[e.NewIndex].Checklist =
+                    Enumerable.Range(0, _forLengthChecklist[_challenges[e.NewIndex].Duration!]).Select(i => new Checklist
+                    {
+                        NumberDay = i + 1,
+                        Date = startDate.AddDays(i)
+                    }).ToList();
+                }
+                else
+                {
+                    Challenges[e.NewIndex].DateStartProgressing = null;
+                    Challenges[e.NewIndex].Checklist = null;
+                }
+                OnPropertyChanged(nameof(ChallengesOnProgress));
             }
-            else
-            {
-                Challenges[e.NewIndex].DateStartProgressing = null;
-                Challenges[e.NewIndex].Checklist = null;
-            }
-            OnPropertyChanged(nameof(ChallengesOnProgress));
+            catch (Exception) { }
         }
 
         #endregion
