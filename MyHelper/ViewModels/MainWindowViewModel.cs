@@ -7,7 +7,6 @@ using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -132,98 +131,13 @@ namespace MyHelper.ViewModels
                 JsonConvert.DeserializeObject<ObservableCollection<MyBooks>>(File.ReadAllText(pathBooks)) is ObservableCollection<MyBooks> books)
                 MyBooks = new ObservableCollection<MyBooks>(books);
             else MyBooks = [];
-
-            for (int i = 0; i < MyChallenges.Count; i++)
-                MyChallenges[i].ListChallenges.ListChanged += ListChallenges_ListChanged;
-            for (int i = 0; i < MyPurposes.Count; i++)
-                MyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
-            for (int i = 0; i < MyPurposes.Count; i++)
-                MyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
         }
 
         public MainWindowViewModel(ListPurposesUserControlViewModel listPurposes, IOpenWindows openWindows) : this()
         {
             ListPurposes = listPurposes;
             _openWindows = openWindows;
-        private void ListChallenges_ListChanged(object? sender, ListChangedEventArgs e)
-        {
-            switch (e.ListChangedType)
-            {
-                case ListChangedType.ItemChanged:
-                case ListChangedType.ItemDeleted:
-                    if (sender is not BindingList<MyChallenge> listChallenges) return;
-                    if (IndexSelectedChallenge > -1)
-                    {
-                        if (listChallenges[IndexSelectedChallenge].IsProgress && listChallenges[IndexSelectedChallenge].DateStartProgressing is null)
-                        {
-                            listChallenges[IndexSelectedChallenge].DateStartProgressing
-                                = DateTime.Now.ToString("yyyy.MM.dd");
-        private void ListPurposes_ListChanged(object? sender, ListChangedEventArgs e)
-        {
-            switch (e.ListChangedType)
-            {
-                case ListChangedType.ItemDeleted:
-                case ListChangedType.ItemChanged:
-                    if (sender is not BindingList<MyPurpose> listPurposes) return;
-                    CompletedPurposes = (ushort)listPurposes.Where(i => i.IsCompleted).Count();
-                    ListPurposesCount = listPurposes.Count;
-                    if (ListPurposesCount > 0)
-                        Procent = String.Format("{0:0.#}%", CompletedPurposes / (float)ListPurposesCount * 100F);
-                    break;
-            }
         }
 
-        //private void ListChallenges_ListChanged(object? sender, ListChangedEventArgs e)
-        //{
-        //    switch (e.ListChangedType)
-        //    {
-        //        case ListChangedType.ItemChanged:
-        //        case ListChangedType.ItemDeleted:
-        //            if (sender is not BindingList<MyChallenge> listChallenges) return;
-        //            if (IndexSelectedChallenge > -1)
-        //            {
-        //                if (listChallenges[IndexSelectedChallenge].IsProgress && listChallenges[IndexSelectedChallenge].DateStartProgressing is null)
-        //                {
-        //                    listChallenges[IndexSelectedChallenge].DateStartProgressing
-        //                        = DateTime.Now.ToString("yyyy.MM.dd");
-                            listChallenges[IndexSelectedChallenge].DateStartProgressing
-                                = DateTime.Now.ToString("yyyy.MM.dd");
-
-        //                    DateTime dateNow = DateTime.Now;
-        //                    int year = dateNow.Year;
-        //                    int month = dateNow.Month;
-        //                    int dayOfMonth = DateTime.DaysInMonth(year, month);
-        //                    int dayOfYear = DateTime.IsLeapYear(year) ? 366 : 365;
-        //                    var typeChallenges = new Dictionary<string, int>
-        //                    {
-        //                        {"Месяц", dayOfMonth},
-        //                        {"Квартал", dayOfMonth + DateTime.DaysInMonth(year, month+1) + DateTime.DaysInMonth(year, month+2)},
-        //                        {"Полгода", dayOfYear / 2 },
-        //                        {"Год", dayOfYear }
-        //                    };
-        //                    var checklist = new List<Checklist>();
-        //                    foreach (var value in Enumerable.Range(0, typeChallenges[SelectedMyChallenges.ListName]))
-        //                        checklist.Add(new Checklist($"{dateNow.AddDays(value):yyyy.MM.dd} ({value + 1})", false));
-        //                    listChallenges[IndexSelectedChallenge].Checklist = new List<Checklist>(checklist);
-        //                    listChallenges[IndexSelectedChallenge].DateStartProgressing
-        //                        = DateTime.Now.ToString("yyyy.MM.dd");
-        //                }
-        //                else if (!listChallenges[IndexSelectedChallenge].IsProgress && listChallenges[IndexSelectedChallenge].DateStartProgressing is not null)
-        //                {
-        //                    listChallenges[IndexSelectedChallenge].DateStartProgressing = default;
-        //                    listChallenges[IndexSelectedChallenge].Checklist = null;
-        //                }
-                            
-        //            }
-        //            var listChallengesOnProgressing = listChallenges.Where(i => i.IsProgress).ToList();
-        //            if (!ChallengesOnProgressing.SequenceEqual(listChallengesOnProgressing))
-        //                ChallengesOnProgressing = listChallengesOnProgressing;
-        //            if (CountChallengesOnProgressing != listChallengesOnProgressing.Count)
-        //                CountChallengesOnProgressing = listChallengesOnProgressing.Count;
-        //            if (CountChallenges != listChallenges.Count)
-        //                CountChallenges = listChallenges.Count;
-        //            break;
-        //    }
-        //}
     }
 }
