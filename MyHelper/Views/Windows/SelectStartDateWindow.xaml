@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyHelper.Views.Windows"
         mc:Ignorable="d" 
-        Height="250" Width="400"
+        xmlns:commands="clr-namespace:MyHelper.Infrastructure.Commands"
+        ResizeMode="CanMinimize"
+        Height="200" Width="400"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Grid Margin="10">
         <Grid.Resources>
@@ -14,7 +16,10 @@
                     <Trigger Property="Grid.Column" Value="0">
                         <Setter Property="FontWeight" Value="Bold"/>
                         <Setter Property="HorizontalAlignment" Value="Right"/>
-                        <Setter Property="Margin" Value="5"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Trigger>
+                    <Trigger Property="Grid.Column" Value="1">
+                        <Setter Property="Margin" Value="0,5"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -36,18 +41,15 @@
         <TextBlock Grid.Column="0" Grid.Row="2" Text="Дата начала: "/>
         <TextBlock Grid.Column="1" Grid.Row="1"
                    Text="{Binding Challenge}"/>
-        <DatePicker Grid.Column="1" Grid.Row="2"
-                    SelectedDate="{Binding StartDate}"/>
-        <UniformGrid Grid.Column="1" Grid.Row="3" Rows="1"
-                 VerticalAlignment="Bottom" HorizontalAlignment="Right">
-            <UniformGrid.Resources>
-                <Style TargetType="Button">
-                    <Setter Property="Padding" Value="20,10"/>
-                    <Setter Property="Margin" Value="10,10,0,10"/>
-                </Style>
-            </UniformGrid.Resources>
-            <Button IsDefault="True" Content="OK" FontWeight="Bold"/>
-            <Button IsCancel="True" Content="Cancel"/>
-        </UniformGrid>
+        <DatePicker Grid.Column="1" Grid.Row="2" Language="ru-RU"
+                    SelectedDate="{Binding StartDate}"
+                    DisplayDateStart="{Binding StartDate, Mode=OneTime}"/>
+        <Button Grid.Column="1" Grid.Row="3" IsDefault="True" Content="OK" FontWeight="Bold"
+                Margin="0,10" Padding="5"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=local:SelectStartDateWindow}}">
+            <Button.Command>
+                <commands:CloseDialogCommand/>
+            </Button.Command>
+        </Button>
     </Grid>
 </Window>
