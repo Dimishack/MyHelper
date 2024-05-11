@@ -40,74 +40,42 @@
             </UniformGrid>
         </DockPanel>
         <Grid>
+            <Grid.Resources>
+                <Style TargetType="TextBlock" x:Key="VisDuration">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
+            Path=DataContext.SelectedGroup}" Value="Все">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <GroupBox Grid.Column="0" Header="Челленджи">
                 <ListBox ItemsSource="{Binding ChallengesView}"
-                         SelectedIndex="0"
-                         SelectedItem="{Binding SelectedChallenge}"
-                         VirtualizingPanel.IsVirtualizing="True"
-                         VirtualizingPanel.IsContainerVirtualizable="True"
-                         VirtualizingPanel.VirtualizationMode="Recycling"
-                         VirtualizingPanel.ScrollUnit="Pixel"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                         ScrollViewer.VerticalScrollBarVisibility="Visible">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel/>
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
+                         SelectedItem="{Binding SelectedChallenge}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border BorderThickness="2" BorderBrush="LightBlue"
                                     Padding="5">
                                 <Grid>
-                                    <StackPanel Orientation="Vertical">
+                                    <StackPanel Orientation="Vertical" Margin="5">
                                         <TextBlock Text="{Binding Challenge, StringFormat=' Челлендж: {0}'}"/>
-                                        <TextBlock Text="{Binding Duration, StringFormat=' Продолжительность: {0}'}">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
-                                                            Path=DataContext.SelectedGroup}" Value="Все">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
+                                        <TextBlock Text="{Binding Duration, StringFormat=' Продолжительность: {0}'}"
+                                                   Style="{StaticResource VisDuration}"/>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text=" Выполняется: "/>
                                             <CheckBox IsChecked="{Binding IsProgress}"/>
                                         </StackPanel>
                                         <TextBlock Text="{Binding Note, StringFormat=' Примечание: {0}'}"/>
                                     </StackPanel>
-                                    <Button Content="X" 
-                                            VerticalAlignment="Top" HorizontalAlignment="Right"
-                                            FontWeight="Bold"
-                                            Background="Transparent" BorderThickness="0"
+                                    <Button Style="{StaticResource ForDeleteInListBoxes}"
                                             Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
-                                                      Path=DataContext.DeleteChallengeCommand}"
-                                            CommandParameter="{Binding}">
-                                        <Button.Style>
-                                            <Style TargetType="Button">
-                                                <Setter Property="Foreground" Value="Red"/>
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsPressed" Value="True">
-                                                        <Setter Property="Foreground" Value="Green"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                    </Button>
+                                                      Path=DataContext.DeleteChallengeCommand}"/>
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -115,44 +83,16 @@
                 </ListBox>
             </GroupBox>
             <GroupBox Grid.Column="1" Header="На выполнении">
-                <ListBox ItemsSource="{Binding ChallengesOnProgress}"
-                         VirtualizingPanel.IsVirtualizing="True"
-                         VirtualizingPanel.IsContainerVirtualizable="True"
-                         VirtualizingPanel.VirtualizationMode="Recycling"
-                         VirtualizingPanel.ScrollUnit="Pixel"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                         ScrollViewer.VerticalScrollBarVisibility="Visible">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel/>
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
+                <ListBox ItemsSource="{Binding ChallengesOnProgress}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderThickness="2" BorderBrush="LightBlue"
-                    Padding="5">
+                            <Border BorderThickness="2" BorderBrush="LightBlue" Padding="5">
                                 <Grid>
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Text="{Binding DateStartProgressing, StringFormat=' Дата начала: {0:dd.MM.yyyy}'}"/>
                                         <TextBlock Text="{Binding Challenge, StringFormat=' Челлендж: {0}'}"/>
-                                        <TextBlock Text="{Binding Duration, StringFormat=' Продолжительность: {0}'}">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
-                    Path=DataContext.SelectedGroup}" Value="Все">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
+                                        <TextBlock Text="{Binding Duration, StringFormat=' Продолжительность: {0}'}"
+                                                   Style="{StaticResource VisDuration}"/>
                                         <TextBlock Text="{Binding Note, StringFormat=' Примечание: {0}'}"/>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text=" Чек-лист:"/>

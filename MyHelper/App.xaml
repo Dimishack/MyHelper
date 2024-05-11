@@ -8,6 +8,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Infrastructure/Styles/TextWrap.xaml"/>
                 <ResourceDictionary Source="Infrastructure/Styles/DataGrid.xaml"/>
+                <ResourceDictionary Source="Infrastructure/Styles/ListBoxes.xaml"/>
+                <ResourceDictionary Source="Infrastructure/Styles/Buttons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <vm:ViewModelsLocator x:Key="Locator"/>
         </ResourceDictionary>

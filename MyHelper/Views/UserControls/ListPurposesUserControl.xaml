@@ -18,30 +18,6 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <DockPanel>
-        <DockPanel.Resources>
-            <Style TargetType="ListBox">
-                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>
-                <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
-                <Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="True"/>
-                <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
-                <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
-                <Setter Property="ItemContainerStyle">
-                    <Setter.Value>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="ItemsPanel">
-                    <Setter.Value>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel/>
-                        </ItemsPanelTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </DockPanel.Resources>
         <GroupBox DockPanel.Dock="Left" Header="Года">
             <DockPanel>
                 <UniformGrid DockPanel.Dock="Bottom" Columns="1">
@@ -119,32 +95,19 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Background="WhiteSmoke" BorderBrush="SandyBrown" BorderThickness="2"
-                                    HorizontalAlignment="Stretch" Margin="5">
+                                    Padding="5">
                                 <Grid>
-                                    <StackPanel Orientation="Vertical" Margin="10">
+                                    <StackPanel Orientation="Vertical" Margin="5">
                                         <TextBlock Text="{Binding Purpose, StringFormat='Цель: {0}'}"/>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="Выполнено: "/>
                                             <CheckBox IsChecked="{Binding IsCompleted}"/>
                                         </StackPanel>
                                         <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
-                                    </StackPanel> 
-                                    <Button Content="X" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                            BorderThickness="0" Background="Transparent" FontWeight="Bold"
-                                            Padding="5"
-                                            Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=DataContext.DeletePurposeCommand}"
-                                            CommandParameter="{Binding}">
-                                        <Button.Resources>
-                                            <Style TargetType="Button">
-                                                <Setter Property="Foreground" Value="Red"/>
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsPressed" Value="True">
-                                                        <Setter Property="Foreground" Value="Green"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Resources>
-                                    </Button>
+                                    </StackPanel>
+                                    <Button Style="{StaticResource ForDeleteInListBoxes}"
+                                            Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
+                                            Path=DataContext.DeletePurposeCommand}"/>
                                 </Grid>
                             </Border>
                         </DataTemplate>
