@@ -24,27 +24,27 @@ namespace MyHelper.Views.Windows
             InitializeComponent();
         }
 
-        public string Note
+        public string? Note
         {
-            get { return (string)GetValue(NoteProperty); }
+            get { return (string?)GetValue(NoteProperty); }
             set { SetValue(NoteProperty, value); }
         }
 
         public static readonly DependencyProperty NoteProperty =
             DependencyProperty.Register("Note", typeof(string), 
                 typeof(Creator_EditorChallengeWindow), 
-                new PropertyMetadata(string.Empty));
+                new PropertyMetadata(null));
 
-        public string Challenge
+        public string? Challenge
         {
-            get { return (string)GetValue(ChallengeProperty); }
+            get { return (string?)GetValue(ChallengeProperty); }
             set { SetValue(ChallengeProperty, value); }
         }
 
         public static readonly DependencyProperty ChallengeProperty =
             DependencyProperty.Register("Challenge", typeof(string), 
                 typeof(Creator_EditorChallengeWindow), 
-                new PropertyMetadata(string.Empty));
+                new PropertyMetadata(null));
 
 
 
@@ -57,7 +57,7 @@ namespace MyHelper.Views.Windows
         public static readonly DependencyProperty DurationsProperty =
             DependencyProperty.Register("Durations", typeof(string[]), 
                 typeof(Creator_EditorChallengeWindow), 
-                new PropertyMetadata(null));
+                new PropertyMetadata(new string[] {"Месяц", "Квартал", "Полгода", "Год"}));
 
 
 
