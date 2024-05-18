@@ -11,7 +11,7 @@ namespace MyHelper.Models.Challenges
 
         public int NumberDay { get; set; }
         public DateTime Date { get; set; }
-        public string DayOfWeek => DateTimeFormatInfo.CurrentInfo.GetDayName(Date.DayOfWeek);
+        public DayOfWeek DayWeek => Date.DayOfWeek;
 
         private bool _check;
         public bool Check

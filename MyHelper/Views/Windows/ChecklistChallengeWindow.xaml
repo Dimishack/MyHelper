@@ -39,26 +39,28 @@
                            Text="{Binding Procent, StringFormat=' {0:p2}'}"/>
             </Grid>
             <DataGrid x:Name="datagrid" ItemsSource="{Binding Checklists}" SelectedItem="{Binding SelectedDate}"
-                  AutoGenerateColumns="False" 
+                      AutoGenerateColumns="False" 
                       CanUserReorderColumns="False" 
                       CanUserDeleteRows="False" 
                       CanUserSortColumns="False"
                       CanUserAddRows="False">
-                <DataGrid.Resources>
+                <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">
                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
                     </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding DayOfWeek}" Value="Saturday">
+                            <DataTrigger Binding="{Binding DayWeek}" Value="Saturday">
                                 <Setter Property="Background" Value="SandyBrown"/>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding DayOfWeek}" Value="Sunday">
+                            <DataTrigger Binding="{Binding DayWeek}" Value="Sunday">
                                 <Setter Property="Background" Value="SandyBrown"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </DataGrid.Resources>
+                </DataGrid.RowStyle>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="№" Binding="{Binding NumberDay}"
                                         IsReadOnly="True"/>
@@ -66,7 +68,7 @@
                                         Width="*" 
                                         IsReadOnly="True">
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="День недели" Binding="{Binding DayOfWeek}"
+                    <DataGridTextColumn Header="День недели" Binding="{Binding DayWeek}"
                                         IsReadOnly="True"/>
                     <DataGridCheckBoxColumn Header="Выполнено" Binding="{Binding Check, UpdateSourceTrigger=PropertyChanged}">
                         <DataGridCheckBoxColumn.HeaderStyle>
