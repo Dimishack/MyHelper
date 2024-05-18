@@ -132,7 +132,11 @@ namespace MyHelper.ViewModels
         private bool CanOpenCheckListCommandExecute(object? p) => p is MyChallenge;
 
         ///<summary>Логика выполнения - открыть чек-лист</summary>
-        private void OnOpenCheckListCommandExecuted(object? p) => _openWindows.OpenChecklistChallengeWindow((p as MyChallenge)!);
+        private void OnOpenCheckListCommandExecuted(object? p)
+        {
+            _openWindows.OpenChecklistChallengeWindow((p as MyChallenge)!);
+            ((Command)SaveChallengesCommand).Executable = true;
+        }
 
         #endregion
 
@@ -241,13 +245,15 @@ namespace MyHelper.ViewModels
         {
             try
             {
-                var isPropgress = _challenges[e.NewIndex].IsProgress;
+                var index = 0;
+                if ((index = e.OldIndex) == -1) return;
+                var isPropgress = _challenges[index].IsProgress;
                 if (isPropgress)
                 {
-                    var startDate = _openWindows.OpenSelectStartDateWindow(_challenges[e.NewIndex]);
-                    Challenges[e.NewIndex].DateStartProgressing = startDate;
-                    Challenges[e.NewIndex].Checklist =
-                    Enumerable.Range(0, _forLengthChecklist[_challenges[e.NewIndex].Duration!]).Select(i => new Checklist
+                    var startDate = _openWindows.OpenSelectStartDateWindow(_challenges[index]);
+                    Challenges[index].DateStartProgressing = startDate;
+                    Challenges[index].Checklist =
+                    Enumerable.Range(0, _forLengthChecklist[_challenges[index].Duration!]).Select(i => new Checklist
                     {
                         NumberDay = i + 1,
                         Date = startDate.AddDays(i)
@@ -255,8 +261,8 @@ namespace MyHelper.ViewModels
                 }
                 else
                 {
-                    Challenges[e.NewIndex].DateStartProgressing = null;
-                    Challenges[e.NewIndex].Checklist = null;
+                    Challenges[index].DateStartProgressing = null;
+                    Challenges[index].Checklist = null;
                 }
             }
             catch (Exception) { }

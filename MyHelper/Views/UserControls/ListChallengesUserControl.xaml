@@ -36,7 +36,7 @@
                 </Button>
                 <Separator/>
                 <Button Command="{Binding SaveChallengesCommand}" CommandParameter="{Binding Challenges}">
-                    <TextBlock TextAlignment="Center" Margin="5">Сохранить <LineBreak/> списки</TextBlock>
+                    <TextBlock TextAlignment="Center" Margin="5">Сохранить <LineBreak/> челленджи</TextBlock>
                 </Button>
             </UniformGrid>
         </DockPanel>
