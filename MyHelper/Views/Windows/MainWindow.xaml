@@ -39,7 +39,13 @@
                     <Grid>
                         <DataGrid ItemsSource="{Binding MyTasks}" AutoGenerateColumns="False">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Задачи" Binding="{Binding Task}" Width="Auto"/>
+                                <DataGridTextColumn Header="Задачи" Binding="{Binding Task}" Width="*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="TextWrapping" Value="Wrap"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
                                 <DataGridCheckBoxColumn Header="Важность" Binding="{Binding Prompt}" MinWidth="65" MaxWidth="65"/>
                                 <DataGridCheckBoxColumn Header="Срочность" Binding="{Binding Important}" MinWidth="70" MaxWidth="70"/>
                                 <DataGridTemplateColumn Header="Срок" Width="Auto">
@@ -54,7 +60,13 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellEditingTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Примечание" Binding="{Binding Note}" Width="*"/>
+                                <DataGridTextColumn Header="Примечание" Binding="{Binding Note}" Width="*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="TextWrapping" Value="Wrap"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
