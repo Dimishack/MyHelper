@@ -267,6 +267,7 @@ namespace MyHelper.ViewModels
         {
             var purpose = new MyPurpose();
             if (!_openWindows.OpenCreator_EditorPurposeWindow(purpose, "Создать цель")) return;
+            purpose.Id = SelectedListMyPurposes.ListPurposes.Count;
             SelectedListMyPurposes?.ListPurposes.Add(purpose);
             _userDialog.InformationMessage("Цель успешно добавлена в список");
         }
