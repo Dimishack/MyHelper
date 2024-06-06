@@ -18,7 +18,7 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <DockPanel>
-        <DockPanel DockPanel.Dock="Left">
+        <DockPanel DockPanel.Dock="Right">
             <GroupBox DockPanel.Dock="Top" Header="Группа">
                 <ComboBox ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedGroup}"/>
             </GroupBox>
