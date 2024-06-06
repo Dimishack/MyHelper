@@ -38,7 +38,6 @@ namespace MyHelper
 
             var host = Host;
             base.OnStartup(e);
-            Services.GetRequiredService<IOpenWindows>().OpenMainWindow();
             await host.StartAsync();
         }
 

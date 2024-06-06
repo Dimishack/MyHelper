@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:MyHelper.ViewModels.Registrator_Locator"
-             xmlns:local="clr-namespace:MyHelper">
+             xmlns:local="clr-namespace:MyHelper"
+             StartupUri="Views/Windows/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
