@@ -24,19 +24,18 @@
             </GroupBox>
             <UniformGrid Columns="1">
                 <UniformGrid.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Margin" Value="5"/>
-                    </Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ForPanels}"/>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource ForPanelsInButton}"/>
                 </UniformGrid.Resources>
                 <Button Command="{Binding CreateChallengeCommand}">
-                    <TextBlock TextAlignment="Center" Margin="5">Создать <LineBreak/> челлендж</TextBlock>
+                    <TextBlock>Создать <LineBreak/> челлендж</TextBlock>
                 </Button>
                 <Button Command="{Binding EditChallengeCommand}">
-                    <TextBlock TextAlignment="Center" Margin="5">Редактировать <LineBreak/> челлендж</TextBlock>
+                    <TextBlock>Редактировать <LineBreak/> челлендж</TextBlock>
                 </Button>
                 <Separator/>
                 <Button Command="{Binding SaveChallengesCommand}" CommandParameter="{Binding Challenges}">
-                    <TextBlock TextAlignment="Center" Margin="5">Сохранить <LineBreak/> челленджи</TextBlock>
+                    <TextBlock>Сохранить <LineBreak/> челленджи</TextBlock>
                 </Button>
             </UniformGrid>
         </DockPanel>

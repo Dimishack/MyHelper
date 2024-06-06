@@ -48,12 +48,8 @@
             </GroupBox>
             <UniformGrid Columns="1">
                 <UniformGrid.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Margin" Value="3,5"/>
-                    </Style>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="TextAlignment" Value="Center"/>
-                    </Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource ForPanels}"/>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource ForPanelsInButton}"/>
                 </UniformGrid.Resources>
                 <Button Content="Создать цель" 
                             Command="{Binding CreateNewPurposeCommand}"/>

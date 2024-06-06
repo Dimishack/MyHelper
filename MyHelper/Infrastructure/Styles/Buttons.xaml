@@ -16,4 +16,12 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style TargetType="Button" x:Key="ForPanels">
+        <Setter Property="Margin" Value="3,5"/>
+    </Style>
+    <Style TargetType="TextBlock" x:Key="ForPanelsInButton">
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="5"/>
+    </Style>
 </ResourceDictionary>

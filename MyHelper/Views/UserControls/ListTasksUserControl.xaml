@@ -5,11 +5,84 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MyHelper.Views.UserControls"
              
+             xmlns:f5="http://schemas.fontawesome.com/icons/"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
              
              d:DataContext="{d:DesignInstance {x:Type vm:ListTasksUCViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <DockPanel>
-        <TextBlock Text="{Binding Test}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <GroupBox DockPanel.Dock="Left" Header="Группы">
+            <DockPanel>
+                <UniformGrid DockPanel.Dock="Bottom" Columns="1">
+                    <UniformGrid.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Padding" Value="3"/>
+                            <Setter Property="Margin" Value="1,3"/>
+                            <Setter Property="Height" Value="20"/>
+                        </Style>
+                    </UniformGrid.Resources>
+                    <Button>
+                        <f5:ImageAwesome Icon="Solid_Plus" Foreground="LimeGreen"/>
+                    </Button>
+                    <Button>
+                        <f5:ImageAwesome Icon="Solid_Edit" Foreground="Blue"/>
+                    </Button>
+                    <Button>
+                        <f5:ImageAwesome Icon="Solid_Minus" Width="20" Foreground="Red"/>
+                    </Button>
+                </UniformGrid>
+                <ListBox ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedGroup}"/>
+            </DockPanel>
+        </GroupBox>
+        <DockPanel DockPanel.Dock="Right" Width="120">
+            <GroupBox DockPanel.Dock="Top" Header="Сортировка">
+                <ComboBox ItemsSource="{Binding Sorting.Keys}" SelectedItem="{Binding SelectedSorting}"/>
+            </GroupBox>
+            <UniformGrid Columns="1">
+                <UniformGrid.Resources>
+                    <Style TargetType="Button" BasedOn="{StaticResource ForPanels}"/>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource ForPanelsInButton}"/>
+                </UniformGrid.Resources>
+                <Button>
+                    <TextBlock>Добавить <LineBreak/> задачу </TextBlock>
+                </Button>
+                <Button>
+                    <TextBlock>Редактировать <LineBreak/> задачу</TextBlock>
+                </Button>
+                <Separator/>
+                <Button>
+                    <TextBlock>Сохранить <LineBreak/> список задач</TextBlock>
+                </Button>
+            </UniformGrid>
+        </DockPanel>
+        <GroupBox Header="Задачи">
+            <ListBox ItemsSource="{Binding ListTasksView}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderThickness="2" Background="WhiteSmoke" BorderBrush="SandyBrown"
+                                    Padding="5">
+                            <StackPanel Orientation="Vertical" Margin="5,3">
+                                <TextBlock Text="{Binding Task, StringFormat='Задача: {0}'}"
+                                       FontWeight="Bold"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Важность/Срочность: "/>
+                                    <CheckBox IsChecked="{Binding Prompt}"/>
+                                    <TextBlock Text="/"/>
+                                    <CheckBox IsChecked="{Binding Important}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Term, StringFormat='Срок: {0}'}"/>
+                                <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
     </DockPanel>
 </UserControl>
