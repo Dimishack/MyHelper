@@ -7,10 +7,13 @@ namespace MyHelper.ViewModels.Registrator_Locator
     {
         public static IServiceCollection AddViewModels(this IServiceCollection services)
         {
-            services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<ListChallengesUCViewModel>();
-            services.AddTransient<ChecklistChallengeViewModel>();
-            services.AddSingleton<ListPurposesUCViewModel>();
+            services
+                .AddSingleton<MainWindowViewModel>()
+                .AddSingleton<ListChallengesUCViewModel>()
+                .AddTransient<ChecklistChallengeViewModel>()
+                .AddSingleton<ListPurposesUCViewModel>()
+                .AddSingleton<ListTasksUCViewModel>()
+                ;
 
             services.AddTransient(
                 s =>

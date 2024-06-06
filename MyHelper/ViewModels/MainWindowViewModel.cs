@@ -3,7 +3,6 @@ using MyHelper.Models.Books;
 using MyHelper.Models.Challenges;
 using MyHelper.Models.MyTasks;
 using MyHelper.Models.Purposes;
-using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
@@ -16,14 +15,9 @@ namespace MyHelper.ViewModels
     class MainWindowViewModel : ViewModel
     {
 
-        private readonly IOpenWindows _openWindows = null;
-
         const string pathTasks = @"Data\Tasks.json";
         const string pathPurposes = @"Data\Purposes.json";
         const string pathBooks = @"Data\Books.json";
-        const string pathChallenges = @"Data\Challenges.json";
-
-        public ListPurposesUCViewModel ListPurposes { get; }
 
         #region Команды
 
@@ -132,12 +126,5 @@ namespace MyHelper.ViewModels
                 MyBooks = new ObservableCollection<MyBooks>(books);
             else MyBooks = [];
         }
-
-        public MainWindowViewModel(ListPurposesUCViewModel listPurposes, IOpenWindows openWindows) : this()
-        {
-            ListPurposes = listPurposes;
-            _openWindows = openWindows;
-        }
-
     }
 }

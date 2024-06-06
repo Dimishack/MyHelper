@@ -23,54 +23,10 @@
     <DockPanel>
         <TabControl>
             <TabItem Header="Цели">
-                <uc:ListPurposesUserControl DataContext="{Binding ListPurposes}"/>
+                <uc:ListPurposesUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListPurposesVM}"/>
             </TabItem>
             <TabItem Header="Задачи">
-                <DockPanel>
-                    <Grid DockPanel.Dock="Bottom">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding MyTasks.Count, StringFormat='Всего: {0}'}" Margin="3" VerticalAlignment="Center"/>
-                        <Button Grid.Column="1" Content="Сохранить" Command="{Binding SaveCollectionCommand}" CommandParameter="{Binding MyTasks}"
-                                Margin="3" Padding="5"/>
-                    </Grid>
-                    <Grid>
-                        <DataGrid ItemsSource="{Binding MyTasks}" AutoGenerateColumns="False">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Задачи" Binding="{Binding Task}" Width="*">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="TextWrapping" Value="Wrap"/>
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-                                <DataGridCheckBoxColumn Header="Важность" Binding="{Binding Prompt}" MinWidth="65" MaxWidth="65"/>
-                                <DataGridCheckBoxColumn Header="Срочность" Binding="{Binding Important}" MinWidth="70" MaxWidth="70"/>
-                                <DataGridTemplateColumn Header="Срок" Width="Auto">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate DataType="tasks:MyTasks">
-                                            <TextBlock Text="{Binding Term, StringFormat='yyyy.MM.dd'}"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                    <DataGridTemplateColumn.CellEditingTemplate>
-                                        <DataTemplate DataType="tasks:MyTasks">
-                                            <DatePicker SelectedDate="{Binding Term}"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellEditingTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Примечание" Binding="{Binding Note}" Width="*">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="TextWrapping" Value="Wrap"/>
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Grid>
-                </DockPanel>
+                <uc:ListTasksUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListTasksVM}"/>
             </TabItem>
             <TabItem Header="Книги" Height="20" VerticalAlignment="Top">
                 <DockPanel>
