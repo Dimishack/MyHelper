@@ -159,15 +159,25 @@ namespace MyHelper.ViewModels
                 ListMyPurposes = new(listPurposes);
             else
             {
-                ListMyPurposes = new()
+                //ListMyPurposes = new()
+                //{
+                //    new MyPurposes
+                //    {
+                //        Year = 0,
+                //            Name = "Пожизненные цели",
+                //            ListPurposes = []
+                //    }
+                //};
+                ListMyPurposes = new(Enumerable.Range(0, 100).Select(i => new MyPurposes
                 {
-                    new MyPurposes
+                    Year = i,
+                    Name = $"Name {i}",
+                    ListPurposes = new(Enumerable.Range(0,10000).Select(j => new MyPurpose
                     {
-                        Year = 0,
-                            Name = "Пожизненные цели",
-                            ListPurposes = []
-                    }
-                };
+                        Id = j,
+                        Purpose = $"Purpose {j}"
+                    }).ToList())
+                }));
                 ((Command)SaveListMyPurposesCommand).Executable = true;
             }
             for (int i = 0; i < ListMyPurposes.Count; i++)
@@ -281,14 +291,13 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда удаления цели</summary>
         public ICommand DeletePurposeCommand => _deletePurposeCommand
-            ??= new LambdaCommand(OnDeletePurposeCommandExecuted, CanDeletePurposeCommandExecute);
+            ??= new LambdaCommand<MyPurpose?>(OnDeletePurposeCommandExecuted, CanDeletePurposeCommandExecute);
 
         ///<summary>Проверка возможности выполнения - Команда удаления цели</summary>
-        private bool CanDeletePurposeCommandExecute(object? p) => p is not null
-            && p is MyPurpose;
+        private bool CanDeletePurposeCommandExecute(MyPurpose? p) => p is not null;
 
         ///<summary>Логика выполнения - Команда удаления цели</summary>
-        private void OnDeletePurposeCommandExecuted(object? p)
+        private void OnDeletePurposeCommandExecuted(MyPurpose? p)
             => SelectedListMyPurposes!.ListPurposes.Remove((p as MyPurpose)!);
 
         #endregion
@@ -324,16 +333,14 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда сохранения списка целей</summary>
         public ICommand SaveListMyPurposesCommand => _saveListMyPurposesCommand
-            ??= new LambdaCommand(OnSaveListMyPurposesCommandExecuted, CanSaveListMyPurposesCommandExecute);
-
-        ///<summary>Проверка возможности выполнения - Команда сохранения списка целей</summary>
-        private bool CanSaveListMyPurposesCommandExecute(object? p) => true;
+            ??= new LambdaCommandAsync(OnSaveListMyPurposesCommandExecuted);
 
         ///<summary>Логика выполнения - Команда сохранения списка целей</summary>
-        private void OnSaveListMyPurposesCommandExecuted(object? p)
+        private async Task OnSaveListMyPurposesCommandExecuted(object? p)
         {
             SelectedSorting = "Сначала старые записи";
-            _workWithJSONFile.WriteFile(@"Data/Purposes.json", p);
+            if (!await _workWithJSONFile.WriteFileAsync(@"Data/Purposes.json", p)) return;
+
             _userDialog.InformationMessage("Список целей успешно сохранен");
             ((Command)SaveListMyPurposesCommand).Executable = false;
         }

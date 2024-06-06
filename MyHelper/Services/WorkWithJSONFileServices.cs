@@ -1,6 +1,7 @@
 ﻿using MyHelper.Services.Interfaces;
 using Newtonsoft.Json;
 using System.IO;
+using System.Windows;
 
 namespace MyHelper.Services
 {
@@ -21,16 +22,17 @@ namespace MyHelper.Services
             }
         }
 
-        public async Task<bool> WriteFile(string filePath, object? data)
+        public async Task<bool> WriteFileAsync(string filePath, object? data)
         {
             try
             {
                 using (var writer = new StreamWriter(filePath))
-                    await writer.WriteAsync(JsonConvert.SerializeObject(data, Formatting.Indented));
+                    await writer.WriteAsync(JsonConvert.SerializeObject(data, Formatting.Indented)).ConfigureAwait(false);
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                MessageBox.Show(ex.Message);
                 return false;
             }
         }

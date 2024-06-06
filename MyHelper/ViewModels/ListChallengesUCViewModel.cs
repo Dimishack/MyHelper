@@ -230,7 +230,7 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - сохранить челленджи</summary>
         private void OnSaveChallengesCommandExecuted(object? p)
         {
-            if (_workWithJSONFile.WriteFile(@"Data\Challenges.json", p) == Task.FromResult(false)) return;
+            if (_workWithJSONFile.WriteFileAsync(@"Data\Challenges.json", p) == Task.FromResult(false)) return;
             _userDialog.InformationMessage("Список челленджей сохранен!");
             ((Command)SaveChallengesCommand).Executable = false;
         }

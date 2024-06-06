@@ -11,4 +11,24 @@ namespace MyHelper.Infrastructure.Commands
 
         protected override void Execute(object? parameter) => _execute(parameter);
     }
+
+    internal class LambdaCommand<T>(Action<T> execute, Func<T, bool>? canExecute = null) : Command
+    {
+        private readonly Action<T> _execute = execute;
+        private readonly Func<T, bool>? _canExecute = canExecute;
+
+        protected override bool CanExecute(object? parameter)
+        {
+            if (parameter is not T val) return false;
+            return _canExecute?.Invoke(val) ?? true;
+        }
+
+        protected override void Execute(object? parameter)
+        {
+            if(!CanExecute(parameter) || parameter is not T val) return;
+            _execute(val);
+        }
+
+        
+    }
 }
