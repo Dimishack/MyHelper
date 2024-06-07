@@ -2,6 +2,7 @@
 using MyHelper.Models.MyTasks;
 using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
+using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
@@ -9,7 +10,7 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    internal class ListTasksUCViewModel(IWorkWithJSONFile workWithJSONFile, 
+    internal class ListTasksUCViewModel(IWorkWithJSONFile workWithJSONFile,
         IOpenWindows openWindows,
         IUserDialog userDialog) : ViewModel
     {
@@ -75,9 +76,9 @@ namespace MyHelper.ViewModels
                 if (!Set(ref _selectedGroup, value)) return;
 
                 if (value.Contains("Все"))
-                    _listTasksView.Source = _listTasks?.ToList();
+                    _listTasksView.Source = new ObservableCollection<MyTask>(_listTasks);
                 else
-                    _listTasksView.Source = _listTasks?.Where(i => i.Group == value).ToList();
+                    _listTasksView.Source = new ObservableCollection<MyTask>(_listTasks?.Where(i => i.Group == value));
                 OnPropertyChanged(nameof(ListTasksView));
             }
         }
@@ -159,11 +160,11 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - добавить новую задачу</summary>
         private void OnAddNewTaskCommandExecuted(object? p)
         {
-            var newTask = new MyTask() { Id = _listTasks.Count};
+            var newTask = new MyTask() { Id = _listTasks.Count };
             if (!_openWindows.OpenCreator_EditorTaskWindow(newTask, _groups, "Добавить задачу")) return;
             ListTasks.Add(newTask);
-            ((IList<MyTask>)_listTasksView.Source).Add(newTask);
-            _listTasksView.View.Refresh();
+            ((ObservableCollection<MyTask>)_listTasksView.Source).Add(newTask);
+            ListTasksView.Refresh();
             _userDialog.InformationMessage("Задача успешно добавлена!");
 
         }
@@ -185,9 +186,30 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - редактировать задачу</summary>
         private void OnEditTaskCommandExecuted(MyTask? p)
         {
-            if (!_openWindows.OpenCreator_EditorTaskWindow(_selectedTask!, _groups, "Редактировать задачу")) return;
+            if (!_openWindows.OpenCreator_EditorTaskWindow(p!, _groups, "Редактировать задачу")) return;
             _listTasksView.View.Refresh();
             _userDialog.InformationMessage("Задача упешно отредактирована!");
+        }
+
+        #endregion
+
+        #region DeleteTaskCommand - Команда - удалить задачу
+
+        ///<summary>Команда - удалить задачу</summary>
+        private ICommand? _deleteTaskCommand;
+
+        ///<summary>Команда - удалить задачу</summary>
+        public ICommand DeleteTaskCommand => _deleteTaskCommand
+            ??= new LambdaCommand<MyTask?>(OnDeleteTaskCommandExecuted, CanDeleteTaskCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - удалить задачу</summary>
+        private bool CanDeleteTaskCommandExecute(MyTask? p) => p is not null;
+
+        ///<summary>Логика выполнения - удалить задачу</summary>
+        private void OnDeleteTaskCommandExecuted(MyTask? p)
+        {
+            ListTasks.Remove(p);
+            ((ObservableCollection<MyTask>)_listTasksView.Source).Remove(p);
         }
 
         #endregion

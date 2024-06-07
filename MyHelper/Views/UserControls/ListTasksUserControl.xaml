@@ -68,18 +68,24 @@
                     <DataTemplate>
                         <Border BorderThickness="2" Background="WhiteSmoke" BorderBrush="SandyBrown"
                                     Padding="5">
-                            <StackPanel Orientation="Vertical" Margin="5,3">
-                                <TextBlock Text="{Binding Task, StringFormat='Задача: {0}'}"
+                            <Grid>
+                                <StackPanel Orientation="Vertical" Margin="5,3">
+                                    <TextBlock Text="{Binding Task, StringFormat='Задача: {0}'}"
                                        FontWeight="Bold"/>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Важность/Срочность: "/>
-                                    <CheckBox IsChecked="{Binding Prompt}"/>
-                                    <TextBlock Text="/"/>
-                                    <CheckBox IsChecked="{Binding Important}"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Важность/Срочность: "/>
+                                        <CheckBox IsChecked="{Binding Prompt}"/>
+                                        <TextBlock Text="/"/>
+                                        <CheckBox IsChecked="{Binding Important}"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Term, StringFormat='Срок: {0:d}'}"/>
+                                    <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
                                 </StackPanel>
-                                <TextBlock Text="{Binding Term, StringFormat='Срок: {0:d}'}"/>
-                                <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
-                            </StackPanel>
+                                <Button Style="{StaticResource ForDeleteInListBoxes}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
+                                    Path=DataContext.DeleteTaskCommand}"
+                                        CommandParameter="{Binding}"/>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
