@@ -1,6 +1,6 @@
 ﻿namespace MyHelper.Models.MyTasks
 {
-    internal class MyTasks
+    internal class MyTask
     {
         public int Id { get; set; }
         public string? Task { get; set; }

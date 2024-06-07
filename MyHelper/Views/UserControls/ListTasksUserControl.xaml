@@ -49,10 +49,11 @@
                     <Style TargetType="Button" BasedOn="{StaticResource ForPanels}"/>
                     <Style TargetType="TextBlock" BasedOn="{StaticResource ForPanelsInButton}"/>
                 </UniformGrid.Resources>
-                <Button>
+                <Button Command="{Binding AddNewTaskCommand}">
                     <TextBlock>Добавить <LineBreak/> задачу </TextBlock>
                 </Button>
-                <Button>
+                <Button Command="{Binding EditTaskCommand}"
+                        CommandParameter="{Binding SelectedTask}">
                     <TextBlock>Редактировать <LineBreak/> задачу</TextBlock>
                 </Button>
                 <Separator/>
@@ -62,7 +63,7 @@
             </UniformGrid>
         </DockPanel>
         <GroupBox Header="Задачи">
-            <ListBox ItemsSource="{Binding ListTasksView}">
+            <ListBox ItemsSource="{Binding ListTasksView}" SelectedItem="{Binding SelectedTask}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border BorderThickness="2" Background="WhiteSmoke" BorderBrush="SandyBrown"
@@ -76,7 +77,7 @@
                                     <TextBlock Text="/"/>
                                     <CheckBox IsChecked="{Binding Important}"/>
                                 </StackPanel>
-                                <TextBlock Text="{Binding Term, StringFormat='Срок: {0}'}"/>
+                                <TextBlock Text="{Binding Term, StringFormat='Срок: {0:d}'}"/>
                                 <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
                             </StackPanel>
                         </Border>

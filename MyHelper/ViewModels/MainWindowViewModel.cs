@@ -34,7 +34,7 @@ namespace MyHelper.ViewModels
                 File.WriteAllText(pathPurposes, JsonConvert.SerializeObject(p, Formatting.Indented));
             if (p is ObservableCollection<MyBooks>)
                 File.WriteAllText(pathBooks, JsonConvert.SerializeObject(p, Formatting.Indented));
-            if (p is ObservableCollection<MyTasks>)
+            if (p is ObservableCollection<MyTask>)
                 File.WriteAllText(pathTasks, JsonConvert.SerializeObject(p, Formatting.Indented));
             MessageBox.Show("Список успешно сохранен", "Успешно!", MessageBoxButton.OK, MessageBoxImage.Asterisk);
         }
@@ -105,7 +105,7 @@ namespace MyHelper.ViewModels
         #endregion
 
         public ObservableCollection<MyBooks> MyBooks { get; }
-        public ObservableCollection<MyTasks> MyTasks { get; }
+        public ObservableCollection<MyTask> MyTasks { get; }
 
         #endregion
 
@@ -118,8 +118,8 @@ namespace MyHelper.ViewModels
             #endregion
 
             if (File.Exists(pathTasks) &&
-                JsonConvert.DeserializeObject<ObservableCollection<MyTasks>>(File.ReadAllText(pathTasks)) is ObservableCollection<MyTasks> tasks)
-                MyTasks = new ObservableCollection<MyTasks>(tasks);
+                JsonConvert.DeserializeObject<ObservableCollection<MyTask>>(File.ReadAllText(pathTasks)) is ObservableCollection<MyTask> tasks)
+                MyTasks = new ObservableCollection<MyTask>(tasks);
             else MyTasks = [];
             if (File.Exists(pathBooks) &&
                 JsonConvert.DeserializeObject<ObservableCollection<MyBooks>>(File.ReadAllText(pathBooks)) is ObservableCollection<MyBooks> books)

@@ -1,6 +1,7 @@
 ﻿using MyHelper.Models.Purposes;
 
 using MyHelper.Models.Challenges;
+using MyHelper.Models.MyTasks;
 
 namespace MyHelper.Services.Interfaces
 {
@@ -11,5 +12,6 @@ namespace MyHelper.Services.Interfaces
         bool OpenCreator_EditorChallengeWindow(MyChallenge challenge, string duration, string title);
         DateTime OpenSelectStartDateWindow(MyChallenge challenge);
         void OpenChecklistChallengeWindow(MyChallenge challenge);
+        bool OpenCreator_EditorTaskWindow(MyTask task, IList<string> groups, string title);
     }
 }

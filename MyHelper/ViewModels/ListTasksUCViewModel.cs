@@ -9,9 +9,13 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    internal class ListTasksUCViewModel(IWorkWithJSONFile workWithJSONFile) : ViewModel
+    internal class ListTasksUCViewModel(IWorkWithJSONFile workWithJSONFile, 
+        IOpenWindows openWindows,
+        IUserDialog userDialog) : ViewModel
     {
         private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
+        private readonly IOpenWindows _openWindows = openWindows;
+        private readonly IUserDialog _userDialog = userDialog;
 
         #region Свойства
 
@@ -57,9 +61,6 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        private readonly CollectionViewSource _listTasksView = new();
-        public ICollectionView ListTasksView => _listTasksView.View;
-
         #region SelectedGroup : string - Выбранная группа
 
         ///<summary>Выбранная группа</summary>
@@ -86,10 +87,23 @@ namespace MyHelper.ViewModels
         #region ListTasks : ObservableCollection<MyTasks> - Список задач
 
         ///<summary>Список задач</summary>
-        private ObservableCollection<MyTasks> _listTasks = [];
+        private ObservableCollection<MyTask> _listTasks = [];
 
         ///<summary>Список задач</summary>
-        public ObservableCollection<MyTasks> ListTasks { get => _listTasks; set => Set(ref _listTasks, value); }
+        public ObservableCollection<MyTask> ListTasks { get => _listTasks; set => Set(ref _listTasks, value); }
+
+        #endregion
+
+        private readonly CollectionViewSource _listTasksView = new();
+        public ICollectionView ListTasksView => _listTasksView.View;
+
+        #region SelectedTask : MyTask? - Выбранная задача
+
+        ///<summary>Выбранная задача</summary>
+        private MyTask? _selectedTask;
+
+        ///<summary>Выбранная задача</summary>
+        public MyTask? SelectedTask { get => _selectedTask; set => Set(ref _selectedTask, value); }
 
         #endregion
 
@@ -112,11 +126,11 @@ namespace MyHelper.ViewModels
             if (_listTasks.Count > 0) return;
 
             var groups = Enumerable.Range(0, 10).Select(i => $"Group {i}").ToList();
-            if (_workWithJSONFile.ReadFile(@"Data/MyTasks.json", out IList<MyTasks>? listTasks) && listTasks is not null)
+            if (_workWithJSONFile.ReadFile(@"Data/MyTask.json", out IList<MyTask>? listTasks) && listTasks is not null)
                 ListTasks = new(listTasks);
             else
             {
-                ListTasks = new(Enumerable.Range(0, 10000).Select(i => new MyTasks
+                ListTasks = new(Enumerable.Range(0, 10000).Select(i => new MyTask
                 {
                     Id = i,
                     Task = $"Task {i}",
@@ -129,6 +143,51 @@ namespace MyHelper.ViewModels
                 Groups.Add(group);
             }
             SelectedGroup = "Все";
+        }
+
+        #endregion
+
+        #region AddNewTaskCommand - Команда - добавить новую задачу
+
+        ///<summary>Команда - добавить новую задачу</summary>
+        private ICommand? _addNewTaskCommand;
+
+        ///<summary>Команда - добавить новую задачу</summary>
+        public ICommand AddNewTaskCommand => _addNewTaskCommand
+            ??= new LambdaCommand(OnAddNewTaskCommandExecuted);
+
+        ///<summary>Логика выполнения - добавить новую задачу</summary>
+        private void OnAddNewTaskCommandExecuted(object? p)
+        {
+            var newTask = new MyTask() { Id = _listTasks.Count};
+            if (!_openWindows.OpenCreator_EditorTaskWindow(newTask, _groups, "Добавить задачу")) return;
+            ListTasks.Add(newTask);
+            ((IList<MyTask>)_listTasksView.Source).Add(newTask);
+            _listTasksView.View.Refresh();
+            _userDialog.InformationMessage("Задача успешно добавлена!");
+
+        }
+
+        #endregion
+
+        #region EditTaskCommand - Команда - редактировать задачу
+
+        ///<summary>Команда - редактировать задачу</summary>
+        private ICommand? _editTaskCommand;
+
+        ///<summary>Команда - редактировать задачу</summary>
+        public ICommand EditTaskCommand => _editTaskCommand
+            ??= new LambdaCommand<MyTask?>(OnEditTaskCommandExecuted, CanEditTaskCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - редактировать задачу</summary>
+        private bool CanEditTaskCommandExecute(MyTask? p) => p is not null;
+
+        ///<summary>Логика выполнения - редактировать задачу</summary>
+        private void OnEditTaskCommandExecuted(MyTask? p)
+        {
+            if (!_openWindows.OpenCreator_EditorTaskWindow(_selectedTask!, _groups, "Редактировать задачу")) return;
+            _listTasksView.View.Refresh();
+            _userDialog.InformationMessage("Задача упешно отредактирована!");
         }
 
         #endregion
