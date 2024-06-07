@@ -1,8 +1,8 @@
 ﻿using MyHelper.Infrastructure.Commands;
+using MyHelper.Infrastructure.Commands.Base;
 using MyHelper.Models.MyTasks;
 using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
-using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
@@ -14,9 +14,12 @@ namespace MyHelper.ViewModels
         IOpenWindows openWindows,
         IUserDialog userDialog) : ViewModel
     {
+        private const string FILEPATH = @"Data/Tasks.json"; 
         private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
+
+        private bool _isLoad = true;
 
         #region Свойства
 
@@ -124,11 +127,14 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - загрузка окна</summary>
         private void OnLoadedCommandExecuted(object? p)
         {
-            if (_listTasks.Count > 0) return;
+            if (!_isLoad) return;
 
             var groups = Enumerable.Range(0, 10).Select(i => $"Group {i}").ToList();
-            if (_workWithJSONFile.ReadFile(@"Data/MyTask.json", out IList<MyTask>? listTasks) && listTasks is not null)
+            if (_workWithJSONFile.ReadFile(FILEPATH, out IList<MyTask>? listTasks) && listTasks is not null)
+            {
                 ListTasks = new(listTasks);
+                ((Command)SaveTasksCommand).Executable = false;
+            }
             else
             {
                 ListTasks = new(Enumerable.Range(0, 10000).Select(i => new MyTask
@@ -144,6 +150,7 @@ namespace MyHelper.ViewModels
                 Groups.Add(group);
             }
             SelectedGroup = "Все";
+            _isLoad = false;
         }
 
         #endregion
@@ -162,10 +169,12 @@ namespace MyHelper.ViewModels
         {
             var newTask = new MyTask() { Id = _listTasks.Count };
             if (!_openWindows.OpenCreator_EditorTaskWindow(newTask, _groups, "Добавить задачу")) return;
+
             ListTasks.Add(newTask);
             ((ObservableCollection<MyTask>)_listTasksView.Source).Add(newTask);
             ListTasksView.Refresh();
             _userDialog.InformationMessage("Задача успешно добавлена!");
+            ((Command)SaveTasksCommand).Executable = true;
 
         }
 
@@ -187,8 +196,10 @@ namespace MyHelper.ViewModels
         private void OnEditTaskCommandExecuted(MyTask? p)
         {
             if (!_openWindows.OpenCreator_EditorTaskWindow(p!, _groups, "Редактировать задачу")) return;
+
             _listTasksView.View.Refresh();
             _userDialog.InformationMessage("Задача упешно отредактирована!");
+            ((Command)SaveTasksCommand).Executable = true;
         }
 
         #endregion
@@ -210,6 +221,27 @@ namespace MyHelper.ViewModels
         {
             ListTasks.Remove(p);
             ((ObservableCollection<MyTask>)_listTasksView.Source).Remove(p);
+            ((Command)SaveTasksCommand).Executable = true;
+        }
+
+        #endregion
+
+        #region SaveTasksCommand - Команда - сохранить список задач
+
+        ///<summary>Команда - сохранить список задач</summary>
+        private ICommand? _saveTasksCommand;
+
+        ///<summary>Команда - сохранить список задач</summary>
+        public ICommand SaveTasksCommand => _saveTasksCommand
+            ??= new LambdaCommandAsync(OnSaveTasksCommandExecuted);
+
+        ///<summary>Логика выполнения - сохранить список задач</summary>
+        private async Task OnSaveTasksCommandExecuted(object? p)
+        {
+            if(!await _workWithJSONFile.WriteFileAsync(FILEPATH, _listTasks)) return;
+
+            _userDialog.InformationMessage("Список задач успешно сохранен");
+            ((Command)SaveTasksCommand).Executable = false;
         }
 
         #endregion
