@@ -18,13 +18,6 @@ namespace MyHelper.ViewModels.Registrator_Locator
             services.AddTransient(
                 s =>
                 {
-                    var model = s.GetRequiredService<MainWindowViewModel>();
-                    var window = new MainWindow { DataContext = model };
-                    return window;
-                });
-            services.AddTransient(
-                s =>
-                {
                     var model = s.GetRequiredService<ChecklistChallengeViewModel>();
                     var window = new ChecklistChallengeWindow { DataContext = model };
                     return window;
