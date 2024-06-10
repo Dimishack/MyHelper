@@ -18,27 +18,16 @@
     </i:Interaction.Triggers>
     <DockPanel>
         <GroupBox DockPanel.Dock="Left" Header="Группы">
-            <DockPanel>
-                <UniformGrid DockPanel.Dock="Bottom" Columns="1">
-                    <UniformGrid.Resources>
-                        <Style TargetType="Button">
-                            <Setter Property="Padding" Value="3"/>
-                            <Setter Property="Margin" Value="1,3"/>
-                            <Setter Property="Height" Value="20"/>
-                        </Style>
-                    </UniformGrid.Resources>
-                    <Button>
-                        <f5:ImageAwesome Icon="Solid_Plus" Foreground="LimeGreen"/>
-                    </Button>
-                    <Button>
-                        <f5:ImageAwesome Icon="Solid_Edit" Foreground="Blue"/>
-                    </Button>
-                    <Button>
-                        <f5:ImageAwesome Icon="Solid_Minus" Width="20" Foreground="Red"/>
-                    </Button>
-                </UniformGrid>
-                <ListBox ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedGroup}"/>
-            </DockPanel>
+            <ListBox ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedGroup}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Key}"/>
+                            <TextBlock Text="{Binding Value, StringFormat=' ({0})'}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </GroupBox>
         <DockPanel DockPanel.Dock="Right" Width="120">
             <GroupBox DockPanel.Dock="Top" Header="Сортировка">

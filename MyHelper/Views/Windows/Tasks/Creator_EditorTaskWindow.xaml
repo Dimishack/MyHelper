@@ -80,7 +80,8 @@
             </StackPanel>
             <DatePicker Grid.Column="1" Grid.Row="2" SelectedDate="{Binding Term}" 
                         Language="RU-ru"/>
-            <ComboBox Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedGroup}"/>
+            <ComboBox Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Groups}" Text="{Binding SelectedGroup}"
+                      IsEditable="True" MaxDropDownHeight="120" StaysOpenOnEdit="True" IsTextSearchEnabled="False"/>
             <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding Note}"/>
         </Grid>
     </DockPanel>

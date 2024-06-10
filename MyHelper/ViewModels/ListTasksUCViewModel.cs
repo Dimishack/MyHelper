@@ -10,11 +10,18 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    internal class ListTasksUCViewModel(IWorkWithJSONFile workWithJSONFile,
+    internal enum ChangeGroup
+    {
+        AddTask = 0,
+        ModifyTask = 1,
+        DeleteTask = 2
+    }
+    internal class ListTasksUCViewModel(
+        IWorkWithJSONFile workWithJSONFile,
         IOpenWindows openWindows,
         IUserDialog userDialog) : ViewModel
     {
-        private const string FILEPATH = @"Data/Tasks.json"; 
+        private const string FILEPATH = @"Data/Tasks.json";
         private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
@@ -55,13 +62,13 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region Groups : IList<string> - Группы
+        #region Groups : Dictionary<string, int> - Группы
 
         ///<summary>Группы</summary>
-        private IList<string> _groups = ["Все"];
+        private Dictionary<string, int> _groups = new() { { "Все", 0 } };
 
         ///<summary>Группы</summary>
-        public IList<string> Groups { get => _groups; set => Set(ref _groups, value); }
+        public Dictionary<string, int> Groups { get => _groups; set => Set(ref _groups, value); }
 
         #endregion
 
@@ -76,12 +83,12 @@ namespace MyHelper.ViewModels
             get => _selectedGroup;
             set
             {
-                if (!Set(ref _selectedGroup, value)) return;
+                if (!Set(ref _selectedGroup, value) || value is null) return;
 
                 if (value.Contains("Все"))
                     _listTasksView.Source = new ObservableCollection<MyTask>(_listTasks);
                 else
-                    _listTasksView.Source = new ObservableCollection<MyTask>(_listTasks?.Where(i => i.Group == value));
+                    _listTasksView.Source = new ObservableCollection<MyTask>(_listTasks?.Where(i => value.Contains(i.Group)));
                 OnPropertyChanged(nameof(ListTasksView));
             }
         }
@@ -141,14 +148,14 @@ namespace MyHelper.ViewModels
                 {
                     Id = i,
                     Task = $"Task {i}",
+                    Term = DateTime.Today,
                     Group = groups[Random.Shared.Next(0, groups.Count)],
                 }).ToList());
             }
             SelectedSorting = "Сначала старые записи";
-            foreach (var group in _listTasks.Select(i => i.Group).Distinct().Order().ToList())
-            {
-                Groups.Add(group);
-            }
+            foreach (var group in _listTasks.GroupBy(i => i.Group).OrderBy(j => j.Key))
+                Groups.Add(group.Key, group.Count());
+            Groups["Все"] = _listTasks.Count;
             SelectedGroup = "Все";
             _isLoad = false;
         }
@@ -168,10 +175,11 @@ namespace MyHelper.ViewModels
         private void OnAddNewTaskCommandExecuted(object? p)
         {
             var newTask = new MyTask() { Id = _listTasks.Count };
-            if (!_openWindows.OpenCreator_EditorTaskWindow(newTask, _groups, "Добавить задачу")) return;
+            if (!_openWindows.OpenCreator_EditorTaskWindow(newTask, _groups.GetKeys(), "Добавить задачу")) return;
 
             ListTasks.Add(newTask);
             ((ObservableCollection<MyTask>)_listTasksView.Source).Add(newTask);
+            OnChangingGroups(ChangeGroup.AddTask, newTask.Group);
             ListTasksView.Refresh();
             _userDialog.InformationMessage("Задача успешно добавлена!");
             ((Command)SaveTasksCommand).Executable = true;
@@ -195,7 +203,11 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - редактировать задачу</summary>
         private void OnEditTaskCommandExecuted(MyTask? p)
         {
-            if (!_openWindows.OpenCreator_EditorTaskWindow(p!, _groups, "Редактировать задачу")) return;
+            var oldGroup = p!.Group;
+            if (!_openWindows.OpenCreator_EditorTaskWindow(p, _groups.GetKeys(), "Редактировать задачу")) return;
+
+            if (oldGroup != p.Group)
+                OnChangingGroups(ChangeGroup.ModifyTask, p.Group, oldGroup);
 
             _listTasksView.View.Refresh();
             _userDialog.InformationMessage("Задача упешно отредактирована!");
@@ -219,6 +231,7 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - удалить задачу</summary>
         private void OnDeleteTaskCommandExecuted(MyTask? p)
         {
+            OnChangingGroups(ChangeGroup.DeleteTask, p!.Group);
             ListTasks.Remove(p);
             ((ObservableCollection<MyTask>)_listTasksView.Source).Remove(p);
             ((Command)SaveTasksCommand).Executable = true;
@@ -238,7 +251,7 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - сохранить список задач</summary>
         private async Task OnSaveTasksCommandExecuted(object? p)
         {
-            if(!await _workWithJSONFile.WriteFileAsync(FILEPATH, _listTasks)) return;
+            if (!await _workWithJSONFile.WriteFileAsync(FILEPATH, _listTasks)) return;
 
             _userDialog.InformationMessage("Список задач успешно сохранен");
             ((Command)SaveTasksCommand).Executable = false;
@@ -248,5 +261,47 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region Методы
+
+        private void OnChangingGroups(ChangeGroup changeGroup, string? group = null, string? oldGroup = null)
+        {
+            switch (changeGroup)
+            {
+                case ChangeGroup.AddTask:
+                    if (group is not null)
+                    {
+                        if (!_groups.ContainsKey(group))
+                            Groups.Add(group, 0);
+                        Groups[group]++;
+                    }
+                    Groups["Все"]++;
+                    break;
+                case ChangeGroup.ModifyTask:
+                    if (group is not null && oldGroup is not null)
+                    {
+                        Groups[oldGroup]--;
+                        if (Groups[oldGroup] <= 0)
+                            Groups.Remove(group);
+                        if (!_groups.ContainsKey(group))
+                            Groups.Add(group, 0);
+                        Groups[group]++;
+                    }
+                    break;
+                case ChangeGroup.DeleteTask:
+                    if (group is not null)
+                    {
+                        Groups[group]--;
+                        if (Groups[group] <= 0)
+                            Groups.Remove(group);
+                    }
+                    Groups["Все"]--;
+                    break;
+                default:
+                    break;
+            }
+            CollectionViewSource.GetDefaultView(Groups).Refresh();
+        }
+
+        #endregion
     }
 }

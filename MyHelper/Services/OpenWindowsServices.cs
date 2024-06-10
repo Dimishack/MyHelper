@@ -39,7 +39,7 @@ namespace MyHelper.Services
             {
                 Title = title,
                 Challenge = challenge.Challenge,
-                Duration = duration.Contains("Все")? "Месяц" : duration,
+                Duration = duration.Contains("Все") ? "Месяц" : duration,
                 Note = challenge.Note,
                 Owner = App.ActivedWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
@@ -88,7 +88,7 @@ namespace MyHelper.Services
                 Year = listPurposes.Year,
                 Name = listPurposes.Name ?? "",
                 Owner = App.ActivedWindow,
-                WindowStartupLocation= WindowStartupLocation.CenterOwner
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             if (window.ShowDialog() != true) return false;
             listPurposes.Year = window.Year;
@@ -106,7 +106,7 @@ namespace MyHelper.Services
                 Task = task.Task,
                 Prompt = task.Prompt,
                 Important = task.Important,
-                Term = task.Term,
+                Term = task.Term ?? DateTime.Today,
                 SelectedGroup = task.Group ?? string.Empty,
                 Note = task.Note,
                 Groups = groups,
@@ -119,7 +119,7 @@ namespace MyHelper.Services
             task.Prompt = window.Prompt;
             task.Important = window.Important;
             task.Term = window.Term;
-            task.Group = window.SelectedGroup == string.Empty? null : window.SelectedGroup;
+            task.Group = window.SelectedGroup == string.Empty ? null : window.SelectedGroup;
             task.Note = window.Note;
             return true;
         }
