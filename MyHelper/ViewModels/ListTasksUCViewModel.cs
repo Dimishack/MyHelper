@@ -65,7 +65,7 @@ namespace MyHelper.ViewModels
         #region Groups : Dictionary<string, int> - Группы
 
         ///<summary>Группы</summary>
-        private Dictionary<string, int> _groups = new() { { "Все", 0 } };
+        private Dictionary<string, int> _groups = [];
 
         ///<summary>Группы</summary>
         public Dictionary<string, int> Groups { get => _groups; set => Set(ref _groups, value); }
@@ -88,7 +88,10 @@ namespace MyHelper.ViewModels
                 if (value.Contains("Все"))
                     _listTasksView.Source = new ObservableCollection<MyTask>(_listTasks);
                 else
-                    _listTasksView.Source = new ObservableCollection<MyTask>(_listTasks?.Where(i => value.Contains(i.Group)));
+                    _listTasksView.Source = new ObservableCollection<MyTask>(_listTasks.Where(
+                        i => 
+                        !string.IsNullOrWhiteSpace(i.Group) &&
+                        value.Contains(i.Group)));
                 OnPropertyChanged(nameof(ListTasksView));
             }
         }
@@ -142,14 +145,23 @@ namespace MyHelper.ViewModels
                 ListTasks = new(listTasks);
                 ((Command)SaveTasksCommand).Executable = false;
             }
+            else
+            {
+                ListTasks = new(Enumerable.Range(0, 1000).Select(i => new MyTask
+                {
+                    Id = i,
+                    Task = $"Task {i}",
+                    Term = DateTime.Today,
+                }));
+            }
             SelectedSorting = "Сначала старые записи";
+            Groups.Add("Все", ListTasks.Count);
             foreach (var group in _listTasks.GroupBy(i => i.Group).OrderBy(j => j.Key))
             {
-                if (group.Key is null) continue;
+                if (string.IsNullOrWhiteSpace(group.Key)) continue;
                 Groups.Add(group.Key, group.Count());
-
             }
-            Groups["Все"] = _listTasks.Count;
+            CollectionViewSource.GetDefaultView(Groups).Refresh();
             SelectedGroup = "Все";
             _isLoad = false;
         }
@@ -226,8 +238,8 @@ namespace MyHelper.ViewModels
         private void OnDeleteTaskCommandExecuted(MyTask? p)
         {
             var index = _listTasks.IndexOf(p!);
-            OnChangingGroups(ChangeGroup.DeleteTask, p.Group);
-            ListTasks.Remove(p);
+            OnChangingGroups(ChangeGroup.DeleteTask, p?.Group);
+            ListTasks.Remove(p!);
             ((ObservableCollection<MyTask>)_listTasksView.Source).Remove(p);
             for (int i = index; i < _listTasks.Count; i++)
                 ListTasks[i].Id--;

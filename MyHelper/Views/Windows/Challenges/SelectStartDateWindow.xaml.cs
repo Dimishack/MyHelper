@@ -6,9 +6,9 @@ namespace MyHelper.Views.Windows
     {
         public SelectStartDateWindow() => InitializeComponent();
 
-        public string Challenge
+        public string? Challenge
         {
-            get { return (string)GetValue(ChallengeProperty); }
+            get { return (string?)GetValue(ChallengeProperty); }
             set { SetValue(ChallengeProperty, value); }
         }
 

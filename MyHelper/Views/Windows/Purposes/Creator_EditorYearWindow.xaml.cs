@@ -18,15 +18,15 @@ namespace MyHelper.Views.Windows
         }
         #endregion
 
-        #region Name : string - Название года
+        #region NameYear : string - Название года
 
-        public static readonly DependencyProperty NameProperty =
-            DependencyProperty.Register("Name", typeof(string), typeof(Creator_EditorYearWindow), new PropertyMetadata(default(string)));
+        public static readonly DependencyProperty NameYearProperty =
+            DependencyProperty.Register("NameYear", typeof(string), typeof(Creator_EditorYearWindow), new PropertyMetadata(default(string)));
 
-        public string Name
+        public string NameYear
         {
-            get => (string)GetValue(NameProperty);
-            set => SetValue(NameProperty, value);
+            get => (string)GetValue(NameYearProperty);
+            set => SetValue(NameYearProperty, value);
         }
 
         #endregion
