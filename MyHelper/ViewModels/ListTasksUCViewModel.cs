@@ -142,19 +142,13 @@ namespace MyHelper.ViewModels
                 ListTasks = new(listTasks);
                 ((Command)SaveTasksCommand).Executable = false;
             }
-            else
-            {
-                ListTasks = new(Enumerable.Range(0, 10000).Select(i => new MyTask
-                {
-                    Id = i,
-                    Task = $"Task {i}",
-                    Term = DateTime.Today,
-                    Group = groups[Random.Shared.Next(0, groups.Count)],
-                }).ToList());
-            }
             SelectedSorting = "Сначала старые записи";
             foreach (var group in _listTasks.GroupBy(i => i.Group).OrderBy(j => j.Key))
+            {
+                if (group.Key is null) continue;
                 Groups.Add(group.Key, group.Count());
+
+            }
             Groups["Все"] = _listTasks.Count;
             SelectedGroup = "Все";
             _isLoad = false;
@@ -231,9 +225,12 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - удалить задачу</summary>
         private void OnDeleteTaskCommandExecuted(MyTask? p)
         {
-            OnChangingGroups(ChangeGroup.DeleteTask, p!.Group);
+            var index = _listTasks.IndexOf(p!);
+            OnChangingGroups(ChangeGroup.DeleteTask, p.Group);
             ListTasks.Remove(p);
             ((ObservableCollection<MyTask>)_listTasksView.Source).Remove(p);
+            for (int i = index; i < _listTasks.Count; i++)
+                ListTasks[i].Id--;
             ((Command)SaveTasksCommand).Executable = true;
         }
 
@@ -251,6 +248,10 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - сохранить список задач</summary>
         private async Task OnSaveTasksCommandExecuted(object? p)
         {
+            //for (int i = 0; i < _listTasks.Count; i++)
+            //{
+            //    ListTasks[i].Id = i;
+            //}
             if (!await _workWithJSONFile.WriteFileAsync(FILEPATH, _listTasks)) return;
 
             _userDialog.InformationMessage("Список задач успешно сохранен");
