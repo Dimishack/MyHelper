@@ -159,25 +159,15 @@ namespace MyHelper.ViewModels
                 ListMyPurposes = new(listPurposes);
             else
             {
-                //ListMyPurposes = new()
-                //{
-                //    new MyPurposes
-                //    {
-                //        Year = 0,
-                //            Name = "Пожизненные цели",
-                //            ListPurposes = []
-                //    }
-                //};
-                ListMyPurposes = new(Enumerable.Range(0, 100).Select(i => new MyPurposes
+                ListMyPurposes = new()
                 {
-                    Year = i,
-                    Name = $"Name {i}",
-                    ListPurposes = new(Enumerable.Range(0,10000).Select(j => new MyPurpose
+                    new MyPurposes
                     {
-                        Id = j,
-                        Purpose = $"Purpose {j}"
-                    }).ToList())
-                }));
+                        Year = 0,
+                            Name = "Пожизненные цели",
+                            ListPurposes = []
+                    }
+                };
                 ((Command)SaveListMyPurposesCommand).Executable = true;
             }
             for (int i = 0; i < ListMyPurposes.Count; i++)
@@ -298,7 +288,7 @@ namespace MyHelper.ViewModels
 
         ///<summary>Логика выполнения - Команда удаления цели</summary>
         private void OnDeletePurposeCommandExecuted(MyPurpose? p)
-            => SelectedListMyPurposes!.ListPurposes.Remove((p as MyPurpose)!);
+            => SelectedListMyPurposes!.ListPurposes.Remove(p!);
 
         #endregion
 

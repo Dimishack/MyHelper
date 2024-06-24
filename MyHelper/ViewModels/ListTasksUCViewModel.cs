@@ -89,7 +89,7 @@ namespace MyHelper.ViewModels
                     _listTasksView.Source = new ObservableCollection<MyTask>(_listTasks);
                 else
                     _listTasksView.Source = new ObservableCollection<MyTask>(_listTasks.Where(
-                        i => 
+                        i =>
                         !string.IsNullOrWhiteSpace(i.Group) &&
                         value.Contains(i.Group)));
                 OnPropertyChanged(nameof(ListTasksView));
@@ -139,20 +139,10 @@ namespace MyHelper.ViewModels
         {
             if (!_isLoad) return;
 
-            var groups = Enumerable.Range(0, 10).Select(i => $"Group {i}").ToList();
             if (_workWithJSONFile.ReadFile(FILEPATH, out IList<MyTask>? listTasks) && listTasks is not null)
             {
                 ListTasks = new(listTasks);
                 ((Command)SaveTasksCommand).Executable = false;
-            }
-            else
-            {
-                ListTasks = new(Enumerable.Range(0, 1000).Select(i => new MyTask
-                {
-                    Id = i,
-                    Task = $"Task {i}",
-                    Term = DateTime.Today,
-                }));
             }
             SelectedSorting = "Сначала старые записи";
             Groups.Add("Все", ListTasks.Count);
@@ -290,11 +280,14 @@ namespace MyHelper.ViewModels
                     Groups["Все"]++;
                     break;
                 case ChangeGroup.ModifyTask:
-                    if (group is not null && oldGroup is not null)
+                    if (group is not null)
                     {
-                        Groups[oldGroup]--;
-                        if (Groups[oldGroup] <= 0)
-                            Groups.Remove(group);
+                        if (oldGroup is not null)
+                        {
+                            Groups[oldGroup]--;
+                            if (Groups[oldGroup] <= 0)
+                                Groups.Remove(oldGroup);
+                        }
                         if (!_groups.ContainsKey(group))
                             Groups.Add(group, 0);
                         Groups[group]++;
