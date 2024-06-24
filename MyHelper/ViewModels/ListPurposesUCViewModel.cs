@@ -18,7 +18,7 @@ namespace MyHelper.ViewModels
         private readonly IUserDialog _userDialog = userDialog;
         private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
 
-        #region Свойства
+        #region Properties...
 
         public Dictionary<string, SortDescription> Sorting { get; } = new()
         {
@@ -138,7 +138,8 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region Команды
+        #region Commands...
+
         #region LoadCommand - Загрузка окна
 
         ///<summary>Загрузка окна</summary>
@@ -146,29 +147,30 @@ namespace MyHelper.ViewModels
 
         ///<summary>Загрузка окна</summary>
         public ICommand LoadCommand => _loadCommand
-            ??= new LambdaCommand(OnLoadCommandExecuted);
+            ??= new LambdaCommandAsync(OnLoadCommandExecuted);
 
         ///<summary>Логика выполнения - Загрузка окна</summary>
-        private void OnLoadCommandExecuted(object? p)
+        private async Task OnLoadCommandExecuted(object? p)
         {
             if (_listMyPurposes is not null) return;
 
-            ((Command)SaveListMyPurposesCommand).Executable = false;
-            if (_workWithJSONFile.ReadFile(@"Data/Purposes.json", out IList<MyPurposes>? listPurposes)
-                && listPurposes is not null)
-                ListMyPurposes = new(listPurposes);
+            ObservableCollection<MyPurposes>? purposes;
+            if ((purposes = await _workWithJSONFile.ReadFileAsync<ObservableCollection<MyPurposes>>(@"Data/Purposes.json")) is not null)
+            {
+                ListMyPurposes = purposes;
+                ((Command)SaveListMyPurposesCommand).Executable = false;
+            }
             else
             {
-                ListMyPurposes = new()
-                {
+                ListMyPurposes =
+                [
                     new MyPurposes
                     {
                         Year = 0,
                             Name = "Пожизненные цели",
                             ListPurposes = []
                     }
-                };
-                ((Command)SaveListMyPurposesCommand).Executable = true;
+                ];
             }
             for (int i = 0; i < ListMyPurposes.Count; i++)
                 ListMyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
@@ -336,9 +338,10 @@ namespace MyHelper.ViewModels
         }
 
         #endregion
+
         #endregion
 
-        #region События
+        #region Events...
 
         private void ListPurposes_ListChanged(object? sender, ListChangedEventArgs e)
         {
@@ -357,7 +360,7 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region Методы
+        #region Methods...
 
         private void UpdatePropertyChanged([CallerMemberName] string? propertyName = null)
         {

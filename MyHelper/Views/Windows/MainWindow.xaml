@@ -16,10 +16,8 @@
         Title="MyHelper"
         Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
+        DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowVM}"
         x:Name="ThisWindow">
-    <Window.DataContext>
-        <vm:MainWindowViewModel/>
-    </Window.DataContext>
     <DockPanel>
         <TabControl>
             <TabItem Header="Цели">

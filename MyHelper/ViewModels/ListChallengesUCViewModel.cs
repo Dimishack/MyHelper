@@ -15,8 +15,10 @@ namespace MyHelper.ViewModels
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
         private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
+        private bool _isFirstLoad = true;
+        #region Properties...
 
-        private Dictionary<string, int> _forLengthChecklist = new()
+        private readonly Dictionary<string, int> _forLengthChecklist = new()
         {
             {"Месяц", DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month) },
             {"Квартал", DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month)
@@ -55,10 +57,10 @@ namespace MyHelper.ViewModels
         #region Challenges : ObservableCollection<MyChallenges> - Список челленджей
 
         ///<summary>Список челленджей</summary>
-        private BindingList<MyChallenge>? _challenges;
+        private BindingList<MyChallenge> _challenges = [];
 
         ///<summary>Список челленджей</summary>
-        public BindingList<MyChallenge>? Challenges { get => _challenges; set => Set(ref _challenges, value); }
+        public BindingList<MyChallenge> Challenges { get => _challenges; set => Set(ref _challenges, value); }
 
         #endregion
 
@@ -86,35 +88,33 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region Команды
+        #endregion
 
-        #region LoadedCommand - Команда - Загрузка
+        #region Commands...
 
-        ///<summary>Команда - Загрузка</summary>
+        #region LoadedCommand - Команда - Загрузка окна
+
+        ///<summary>Команда - Загрузка окна</summary>
         private ICommand? _loadedCommand;
 
-        ///<summary>Команда - Загрузка</summary>
+        ///<summary>Команда - Загрузка окна</summary>
         public ICommand LoadedCommand => _loadedCommand
-            ??= new LambdaCommand(OnLoadedCommandExecuted, CanLoadedCommandExecute);
+            ??= new LambdaCommandAsync(OnLoadedCommandExecuted);
 
-        ///<summary>Проверка возможности выполнения - Загрузка</summary>
-        private bool CanLoadedCommandExecute(object? p) => true;
-
-        ///<summary>Логика выполнения - Загрузка</summary>
-        private void OnLoadedCommandExecuted(object? p)
+        ///<summary>Логика выполнения - Загрузка окна</summary>
+        private async Task OnLoadedCommandExecuted(object? p)
         {
-            if (_challenges is not null) return;
+            if (!_isFirstLoad) return;
 
-            if (_workWithJSONFile.ReadFile(@"Data\Challenges.json", out IList<MyChallenge>? challenges)
-                && challenges is not null)
+            BindingList<MyChallenge>? challenges;
+            if ((challenges = await _workWithJSONFile.ReadFileAsync<BindingList<MyChallenge>>(@"Data\Challenges.json")) is not null)
             {
-                Challenges = new(challenges);
+                Challenges = challenges;
                 ((Command)SaveChallengesCommand).Executable = false;
             }
-            else
-                Challenges = [];
             Challenges.ListChanged += ListChallenges_ListChanged;
             SelectedGroup = "Все";
+            _isFirstLoad = false;
         }
 
         #endregion
@@ -220,7 +220,7 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда - сохранить челленджи</summary>
         public ICommand SaveChallengesCommand => _saveChallengesCommand
-            ??= new LambdaCommand(OnSaveChallengesCommandExecuted, CanSaveChallengesCommandExecute);
+            ??= new LambdaCommandAsync(OnSaveChallengesCommandExecuted, CanSaveChallengesCommandExecute);
 
         ///<summary>Проверка возможности выполнения - сохранить челленджи</summary>
         private bool CanSaveChallengesCommandExecute(object? p) =>
@@ -228,9 +228,10 @@ namespace MyHelper.ViewModels
             && p is IList<MyChallenge>;
 
         ///<summary>Логика выполнения - сохранить челленджи</summary>
-        private void OnSaveChallengesCommandExecuted(object? p)
+        private async Task OnSaveChallengesCommandExecuted(object? p)
         {
-            if (_workWithJSONFile.WriteFileAsync(@"Data\Challenges.json", p) == Task.FromResult(false)) return;
+            if (!await _workWithJSONFile.WriteFileAsync(@"Data\Challenges.json", p)) return;
+
             _userDialog.InformationMessage("Список челленджей сохранен!");
             ((Command)SaveChallengesCommand).Executable = false;
         }
@@ -239,7 +240,7 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region События
+        #region Events...
 
         private void ListChallenges_ListChanged(object? sender, ListChangedEventArgs e)
         {

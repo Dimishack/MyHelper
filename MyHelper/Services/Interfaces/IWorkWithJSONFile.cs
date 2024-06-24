@@ -1,8 +1,11 @@
-﻿namespace MyHelper.Services.Interfaces
+﻿
+namespace MyHelper.Services.Interfaces
 {
     internal interface IWorkWithJSONFile
     {
-        bool ReadFile<T>(string filePath, out T? readData);
+        T? ReadFile<T>(string filePath);
+        Task<T?> ReadFileAsync<T>(string filePath);
+        bool WriteFile(string filePath, object? data);
         Task<bool> WriteFileAsync(string filePath, object? data);
     }
 }

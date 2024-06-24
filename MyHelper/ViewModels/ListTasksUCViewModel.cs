@@ -28,7 +28,7 @@ namespace MyHelper.ViewModels
 
         private bool _isLoad = true;
 
-        #region Свойства
+        #region Properties...
 
         public Dictionary<string, SortDescription> Sorting { get; } = new()
         {
@@ -123,7 +123,7 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region Команды
+        #region Commands...
 
         #region LoadedCommand - Команда - загрузка окна
 
@@ -132,16 +132,17 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда - загрузка окна</summary>
         public ICommand LoadedCommand => _loadedCommand
-            ??= new LambdaCommand(OnLoadedCommandExecuted);
+            ??= new LambdaCommandAsync(OnLoadedCommandExecuted);
 
         ///<summary>Логика выполнения - загрузка окна</summary>
-        private void OnLoadedCommandExecuted(object? p)
+        private async Task OnLoadedCommandExecuted(object? p)
         {
             if (!_isLoad) return;
 
-            if (_workWithJSONFile.ReadFile(FILEPATH, out IList<MyTask>? listTasks) && listTasks is not null)
+            ObservableCollection<MyTask>? tasks;
+            if ((tasks = await _workWithJSONFile.ReadFileAsync<ObservableCollection<MyTask>>(FILEPATH)) is not null)
             {
-                ListTasks = new(listTasks);
+                ListTasks = new(tasks);
                 ((Command)SaveTasksCommand).Executable = false;
             }
             SelectedSorting = "Сначала старые записи";
@@ -264,7 +265,7 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region Методы
+        #region Methods...
 
         private void OnChangingGroups(ChangeGroup changeGroup, string? group = null, string? oldGroup = null)
         {

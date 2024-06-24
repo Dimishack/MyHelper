@@ -3,10 +3,11 @@ using MyHelper.Models.Books;
 using MyHelper.Models.Challenges;
 using MyHelper.Models.MyTasks;
 using MyHelper.Models.Purposes;
+using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
-using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 
@@ -15,9 +16,8 @@ namespace MyHelper.ViewModels
     class MainWindowViewModel : ViewModel
     {
 
-        const string pathTasks = @"Data\Tasks.json";
-        const string pathPurposes = @"Data\Purposes.json";
         const string pathBooks = @"Data\Books.json";
+        private readonly IWorkWithJSONFile _workJSON;
 
         #region Команды
 
@@ -30,12 +30,8 @@ namespace MyHelper.ViewModels
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            if (p is ObservableCollection<MyPurposes>)
-                File.WriteAllText(pathPurposes, JsonConvert.SerializeObject(p, Formatting.Indented));
             if (p is ObservableCollection<MyBooks>)
-                File.WriteAllText(pathBooks, JsonConvert.SerializeObject(p, Formatting.Indented));
-            if (p is ObservableCollection<MyTask>)
-                File.WriteAllText(pathTasks, JsonConvert.SerializeObject(p, Formatting.Indented));
+                _workJSON.WriteFile(pathBooks, p);
             MessageBox.Show("Список успешно сохранен", "Успешно!", MessageBoxButton.OK, MessageBoxImage.Asterisk);
         }
 
@@ -109,7 +105,7 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(IWorkWithJSONFile workJSON)
         {
             #region Команды
 
@@ -117,12 +113,10 @@ namespace MyHelper.ViewModels
 
             #endregion
 
-            if (File.Exists(pathTasks) &&
-                JsonConvert.DeserializeObject<ObservableCollection<MyTask>>(File.ReadAllText(pathTasks)) is ObservableCollection<MyTask> tasks)
-                MyTasks = new ObservableCollection<MyTask>(tasks);
-            else MyTasks = [];
-            if (File.Exists(pathBooks) &&
-                JsonConvert.DeserializeObject<ObservableCollection<MyBooks>>(File.ReadAllText(pathBooks)) is ObservableCollection<MyBooks> books)
+            _workJSON = workJSON;
+
+            ObservableCollection<MyBooks>? books;
+            if((books = _workJSON.ReadFile<ObservableCollection<MyBooks>>(pathBooks)) is not null)
                 MyBooks = new ObservableCollection<MyBooks>(books);
             else MyBooks = [];
         }

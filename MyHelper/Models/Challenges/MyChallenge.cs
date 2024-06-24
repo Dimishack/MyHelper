@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace MyHelper.Models.Challenges
@@ -9,9 +6,8 @@ namespace MyHelper.Models.Challenges
     internal class MyChallenge : INotifyPropertyChanged
     {
         public int Id { get; set; }
-        private bool _isProgress;
 
-        [JsonProperty("Выполняется?")]
+        private bool _isProgress;
         public bool IsProgress
         {
             get => _isProgress;
@@ -22,20 +18,14 @@ namespace MyHelper.Models.Challenges
                 OnPropertyChanged();
             }
         }
-
-        [JsonProperty("Челлендж")]
         public string? Challenge { get; set; }
 
-        [JsonProperty("Продолжительность")]
         public string? Duration { get; set; }
 
-        [JsonProperty("Начало челленджа")]
         public DateTime? DateStartProgressing { get; set; }
 
-        [JsonProperty("Примечание")]
         public string? Note { get; set; }
 
-        [JsonProperty("Чек-лист")]
         public IList<Checklist>? Checklist { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
