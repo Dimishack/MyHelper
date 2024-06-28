@@ -27,36 +27,7 @@
                 <uc:ListTasksUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListTasksVM}"/>
             </TabItem>
             <TabItem Header="Книги" Height="20" VerticalAlignment="Top">
-                <DockPanel>
-                    <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Column="0" FontSize="12">
-                            <Label.Content>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Всего: "/>
-                                    <TextBlock Text="{Binding MyBooks.Count}"/>
-                                </StackPanel>
-                            </Label.Content>
-                        </Label>
-                        <Button Content="Сохранить" Grid.Column="1"
-                            Command="{Binding SaveCollectionCommand}" CommandParameter="{Binding MyBooks}"/>
-                    </Grid>
-                    <DataGrid ItemsSource="{Binding MyBooks}"
-                          AutoGenerateColumns="False">
-                        <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Header="Прочитан" Binding="{Binding IsRead}"
-                                                MinWidth="65" MaxWidth="65"/>
-                            <DataGridTextColumn Header="Автор" Binding="{Binding Author}"
-                                            Width="Auto"/>
-                            <DataGridTextColumn Header="Название" Binding="{Binding Title}"
-                                            Width="*"/>
-
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </DockPanel>
+                <uc:ListBooksUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListBooksVM}"/>
             </TabItem>
             <TabItem Header="Челленджи">
                 <uc:ListChallengesUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListChallengesVM}"/>

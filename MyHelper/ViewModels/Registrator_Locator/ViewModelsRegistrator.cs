@@ -13,6 +13,7 @@ namespace MyHelper.ViewModels.Registrator_Locator
                 .AddTransient<ChecklistChallengeViewModel>()
                 .AddSingleton<ListPurposesUCViewModel>()
                 .AddSingleton<ListTasksUCViewModel>()
+                .AddSingleton<ListBooksUCViewModel>()
                 ;
 
             services.AddTransient(
