@@ -16,6 +16,7 @@ namespace MyHelper.ViewModels
         private readonly IUserDialog _userDialog = userDialog;
         private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
         private bool _isFirstLoad = true;
+
         #region Properties...
 
         private readonly Dictionary<string, int> _forLengthChecklist = new()

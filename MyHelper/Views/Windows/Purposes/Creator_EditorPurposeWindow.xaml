@@ -15,15 +15,16 @@
                    FontSize="16" FontWeight="Bold"
                    Margin="0,5"/>
         <UniformGrid DockPanel.Dock="Bottom" Rows="1" HorizontalAlignment="Right">
-            <Button Content="Ok" FontWeight="Bold"
-                    Padding="35,5" Margin="10,5" IsDefault="True"
+            <UniformGrid.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource ForUGInCreator_Editors}"/>
+            </UniformGrid.Resources>
+            <Button IsDefault="True"
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=local:Creator_EditorPurposeWindow}}">
                 <Button.Command>
                     <commands:CloseDialogCommand DialogResult="True"/>
                 </Button.Command>
             </Button>
-            <Button Content="Cancel" IsCancel="True"
-                    Padding="35,5" Margin="10,5"
+            <Button IsCancel="True"
                     CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=local:Creator_EditorPurposeWindow}}">
                 <Button.Command>
                     <commands:CloseDialogCommand DialogResult="False"/>

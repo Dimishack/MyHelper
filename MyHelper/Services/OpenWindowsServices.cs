@@ -6,6 +6,8 @@ using MyHelper.ViewModels;
 using MyHelper.Views.Windows;
 using System.Windows;
 using MyHelper.Models.MyTasks;
+using MyHelper.Models.Books;
+using MyHelper.Views.Windows.Books;
 
 namespace MyHelper.Services
 {
@@ -121,6 +123,25 @@ namespace MyHelper.Services
             task.Term = window.Term;
             task.Group = window.SelectedGroup == string.Empty ? null : window.SelectedGroup;
             task.Note = window.Note;
+            return true;
+        }
+
+        public bool OpenCreator_EditorBookWindow(MyBook book, string title)
+        {
+            var window = new Creator_EditorBookWindow
+            {
+                Title = title,
+                Author = book.Author,
+                NameBook = book.Name,
+                Pages = book.Pages,
+                Owner = App.ActivedWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            if (window.ShowDialog() != true) return false;
+
+            book.Name = window.NameBook;
+            book.Author = window.Author;
+            book.Pages = window.Pages;
             return true;
         }
     }
