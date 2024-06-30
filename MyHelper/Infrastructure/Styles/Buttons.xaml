@@ -24,4 +24,18 @@
         <Setter Property="TextAlignment" Value="Center"/>
         <Setter Property="Margin" Value="5"/>
     </Style>
+
+    <Style TargetType="Button" x:Key="ForUGInCreator_Editors">
+        <Setter Property="Margin" Value="10,5"/>
+        <Setter Property="Padding" Value="35,10"/>
+        <Style.Triggers>
+            <Trigger Property="IsDefault" Value="True">
+                <Setter Property="Content" Value="OK"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+            </Trigger>
+            <Trigger Property="IsCancel" Value="True">
+                <Setter Property="Content" Value="Cancel"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>

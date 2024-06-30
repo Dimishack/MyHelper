@@ -3,4 +3,7 @@
     <Style TargetType="TextBlock" >
         <Setter Property="TextWrapping" Value="Wrap"/>
     </Style>
+    <Style TargetType="TextBox">
+        <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
 </ResourceDictionary>
