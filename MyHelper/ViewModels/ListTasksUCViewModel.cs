@@ -26,7 +26,7 @@ namespace MyHelper.ViewModels
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
 
-        private bool _isLoad = true;
+        private bool _isFirstLoad = true;
 
         #region Properties...
 
@@ -98,13 +98,13 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region ListTasks : ObservableCollection<MyTasks> - Список задач
+        #region ListTasks : BindingList<MyTasks> - Список задач
 
         ///<summary>Список задач</summary>
-        private ObservableCollection<MyTask> _listTasks = [];
+        private BindingList<MyTask> _listTasks = [];
 
         ///<summary>Список задач</summary>
-        public ObservableCollection<MyTask> ListTasks { get => _listTasks; set => Set(ref _listTasks, value); }
+        public BindingList<MyTask> ListTasks { get => _listTasks; set => Set(ref _listTasks, value); }
 
         #endregion
 
@@ -132,19 +132,20 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда - загрузка окна</summary>
         public ICommand LoadedCommand => _loadedCommand
-            ??= new LambdaCommandAsync(OnLoadedCommandExecuted);
+            ??= new LambdaCommandAsync(OnLoadedCommandExecuted, CanLoadedCommandExecute);
+
+        private bool CanLoadedCommandExecute(object? arg) => _isFirstLoad;
 
         ///<summary>Логика выполнения - загрузка окна</summary>
         private async Task OnLoadedCommandExecuted(object? p)
         {
-            if (!_isLoad) return;
-
-            ObservableCollection<MyTask>? tasks;
-            if ((tasks = await _workWithJSONFile.ReadFileAsync<ObservableCollection<MyTask>>(FILEPATH)) is not null)
+            BindingList<MyTask>? tasks;
+            if ((tasks = await _workWithJSONFile.ReadFileAsync<BindingList<MyTask>>(FILEPATH)) is not null)
             {
-                ListTasks = new(tasks);
+                ListTasks = tasks;
                 ((Command)SaveTasksCommand).Executable = false;
             }
+            ListTasks.ListChanged += ListTasks_ListChanged;
             SelectedSorting = "Сначала старые записи";
             Groups.Add("Все", ListTasks.Count);
             foreach (var group in _listTasks.GroupBy(i => i.Group).OrderBy(j => j.Key))
@@ -154,7 +155,12 @@ namespace MyHelper.ViewModels
             }
             CollectionViewSource.GetDefaultView(Groups).Refresh();
             SelectedGroup = "Все";
-            _isLoad = false;
+            _isFirstLoad = false;
+        }
+
+        private void ListTasks_ListChanged(object? sender, ListChangedEventArgs e)
+        {
+            ((Command)SaveTasksCommand).Executable = true;
         }
 
         #endregion
