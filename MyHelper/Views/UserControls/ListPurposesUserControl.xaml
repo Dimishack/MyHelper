@@ -90,11 +90,22 @@
                 <ListBox ItemsSource="{Binding SelectedListPurposesView}" SelectedItem="{Binding SelectedMyPurpose}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="WhiteSmoke" BorderBrush="SandyBrown" BorderThickness="2"
+                            <Border BorderBrush="SandyBrown" BorderThickness="2"
                                     Padding="5">
+                                <Border.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="WhiteSmoke"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                                <Setter Property="Background" Value="LightGreen"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Resources>
                                 <Grid>
                                     <StackPanel Orientation="Vertical" Margin="5">
-                                        <TextBlock Text="{Binding Purpose, StringFormat='Цель: {0}'}"/>
+                                        <TextBlock Text="{Binding Purpose, StringFormat='Цель: {0}'}"
+                                                   FontWeight="Bold"/>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="Выполнено: "/>
                                             <CheckBox IsChecked="{Binding IsCompleted}"/>

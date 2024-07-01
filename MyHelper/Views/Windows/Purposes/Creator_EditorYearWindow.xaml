@@ -67,9 +67,9 @@
                      />
             <TextBox Grid.Column="1" Grid.Row="1" 
                      KeyDown="TextBox_KeyDown" 
-                     Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+                     Text="{Binding NameYear, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock Grid.Column="1" Grid.Row="2" 
-                       Text="{Binding Name.Length, StringFormat=' {0}/50'}"/>
+                       Text="{Binding NameYear.Length, StringFormat=' {0}/50'}"/>
         </Grid>
     </DockPanel>
 </Window>

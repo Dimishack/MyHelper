@@ -88,13 +88,13 @@ namespace MyHelper.Services
             {
                 Title = title,
                 Year = listPurposes.Year,
-                Name = listPurposes.Name ?? "",
+                NameYear = listPurposes.Name ?? "",
                 Owner = App.ActivedWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             if (window.ShowDialog() != true) return false;
             listPurposes.Year = window.Year;
-            listPurposes.Name = window.Name;
+            listPurposes.Name = window.NameYear;
 
             return true;
         }

@@ -124,6 +124,7 @@ namespace MyHelper.ViewModels
                 _listBooksOnReading[index] = p!;
             CollectionViewSource.GetDefaultView(ListBooks).Refresh();
             _userDialog.InformationMessage("Книга отредактирована");
+            ((Command)SaveBooksCommand).Executable = true;
         }
 
         #endregion
