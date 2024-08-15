@@ -283,14 +283,18 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда удаления цели</summary>
         public ICommand DeletePurposeCommand => _deletePurposeCommand
-            ??= new LambdaCommand<MyPurpose?>(OnDeletePurposeCommandExecuted, CanDeletePurposeCommandExecute);
+            ??= new LambdaCommand<MyPurpose>(OnDeletePurposeCommandExecuted);
 
-        ///<summary>Проверка возможности выполнения - Команда удаления цели</summary>
-        private bool CanDeletePurposeCommandExecute(MyPurpose? p) => p is not null;
 
         ///<summary>Логика выполнения - Команда удаления цели</summary>
-        private void OnDeletePurposeCommandExecuted(MyPurpose? p)
-            => SelectedListMyPurposes!.ListPurposes.Remove(p!);
+        private void OnDeletePurposeCommandExecuted(MyPurpose p)
+        {
+            int index = _selectedListMyPurposes!.ListPurposes.IndexOf(p);
+            for (int i = index + 1; i < _selectedListMyPurposes.ListPurposes.Count; i++)
+                _selectedListMyPurposes.ListPurposes[i].Id--;
+            SelectedListMyPurposes!.ListPurposes.RemoveAt(index);
+
+        }
 
         #endregion
 
