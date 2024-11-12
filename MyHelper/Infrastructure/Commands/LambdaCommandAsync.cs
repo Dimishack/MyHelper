@@ -17,7 +17,7 @@ namespace MyHelper.Infrastructure.Commands
             if (!CanExecute(parameter)) return;
 
             Task task = _executeAsync(parameter);
-            Interlocked.Exchange(ref _executingAction, task);
+            _ = Interlocked.Exchange(ref _executingAction, task);
             _executingAction = task;
             OnCanExecuteChanged();
             try
@@ -49,7 +49,7 @@ namespace MyHelper.Infrastructure.Commands
             if (!CanExecute(parameter) || parameter is not T val) return;
 
             Task task = _executeAsync(val);
-            Interlocked.Exchange(ref _executingAction, task);
+            _ = Interlocked.Exchange(ref _executingAction, task);
             _executingAction = task;
             OnCanExecuteChanged();
             try

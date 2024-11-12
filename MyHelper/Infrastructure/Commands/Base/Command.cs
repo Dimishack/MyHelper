@@ -1,6 +1,4 @@
-﻿using JetBrains.Annotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace MyHelper.Infrastructure.Commands.Base
 {
@@ -33,7 +31,7 @@ namespace MyHelper.Infrastructure.Commands.Base
 
         private event EventHandler? CanExecuteChangedHandlers;
 
-        protected virtual void OnCanExecuteChanged([CanBeNull] EventArgs? e = null)
+        protected virtual void OnCanExecuteChanged(EventArgs? e = null)
         {
             this.CanExecuteChangedHandlers?.Invoke(this, e ?? EventArgs.Empty);
         }

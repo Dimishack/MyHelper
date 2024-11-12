@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using MyHelper.Services.Interfaces;
+﻿using Microsoft.Extensions.Hosting;
 using MyHelper.Services.Registrator;
 using MyHelper.ViewModels.Registrator_Locator;
 using System.Globalization;
@@ -11,8 +9,8 @@ namespace MyHelper
 {
     public partial class App : Application
     {
-        public static Window ActivedWindow => Current.Windows.Cast<Window>().FirstOrDefault(w => w.IsActive);
-        public static Window FocusedWindow => Current.Windows.Cast<Window>().FirstOrDefault(w => w.IsFocused);
+        public static Window ActivedWindow => Current.Windows.Cast<Window>().FirstOrDefault(w => w.IsActive) ?? Current.MainWindow;
+        public static Window FocusedWindow => Current.Windows.Cast<Window>().FirstOrDefault(w => w.IsFocused) ?? Current.MainWindow;
 
         private static IHost? __host;
 
@@ -28,14 +26,6 @@ namespace MyHelper
 
         protected override async void OnStartup(StartupEventArgs e)
         {
-            var cultureinfo = new CultureInfo("ru-RU");
-            Thread.CurrentThread.CurrentCulture = cultureinfo;
-            Thread.CurrentThread.CurrentUICulture = cultureinfo;
-            CultureInfo.DefaultThreadCurrentCulture = cultureinfo;
-            CultureInfo.DefaultThreadCurrentUICulture = cultureinfo;
-            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), 
-                new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
-
             var host = Host;
             base.OnStartup(e);
             await host.StartAsync();
