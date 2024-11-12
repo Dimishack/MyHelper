@@ -37,6 +37,10 @@ namespace MyHelper
         protected override async void OnStartup(StartupEventArgs e)
         {
             var host = Host;
+
+            using (var scope = Services.CreateScope())
+                await scope.ServiceProvider.GetRequiredService<DbInitializer>().InitializeAsync();
+
             base.OnStartup(e);
             await host.StartAsync();
         }
