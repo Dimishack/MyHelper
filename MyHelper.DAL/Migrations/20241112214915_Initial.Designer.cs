@@ -8,14 +8,14 @@ using MyHelper.DAL.Context;
 namespace MyHelper.DAL.Migrations
 {
     [DbContext(typeof(MyHelperDB))]
-    [Migration("20241112203952_Initial")]
+    [Migration("20241112214915_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.9");
+                .HasAnnotation("ProductVersion", "3.1.32");
 
             modelBuilder.Entity("MyHelper.DAL.Entyties.Target", b =>
                 {

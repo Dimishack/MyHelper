@@ -30,6 +30,7 @@ namespace MyHelper.Data
                         throw new InvalidOperationException($"Тип подключения {type} не поддерживается");
                 }
             })
+            .AddTransient<DbInitializer>()
             ;
     }
 }
