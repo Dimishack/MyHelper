@@ -3,7 +3,7 @@ using MyHelper.DAL.Entyties;
 
 namespace MyHelper.DAL.Context
 {
-    internal class MyHelperDB : DbContext
+    public class MyHelperDB : DbContext
     {
         public DbSet<TargetsGroup> TargetsGroups { get; set; }
 

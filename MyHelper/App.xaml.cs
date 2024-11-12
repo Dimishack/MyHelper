@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MyHelper.Data;
 using MyHelper.Services.Registrator;
 using MyHelper.ViewModels.Registrator_Locator;
 using System.Globalization;
@@ -14,13 +16,21 @@ namespace MyHelper
 
         private static IHost? __host;
 
-        public static IHost Host => __host ??= Microsoft.Extensions.Hosting.Host
-            .CreateDefaultBuilder(Environment.GetCommandLineArgs())
-            //.ConfigureAppConfiguration(cfg => cfg.AddJsonFile("appsetting.json", true, true))
-            .ConfigureServices((host, services) => services
+        //public static IHost Host => __host ??= Microsoft.Extensions.Hosting.Host
+        //    .CreateDefaultBuilder(Environment.GetCommandLineArgs())
+        //    //.ConfigureAppConfiguration(cfg => cfg.AddJsonFile("appsetting.json", true, true))
+        //    .ConfigureServices((host, services) => services
+        //    .AddViewModels()
+        //    .AddServices())
+        //    .Build();
+
+        public static IHost Host => __host ??= Program.CreateHostBuilder(Environment.GetCommandLineArgs()).Build();
+        internal static void ConfigureServices(HostBuilderContext host, IServiceCollection services) => services
+            .AddDatabase(host.Configuration.GetSection("Database"))
             .AddViewModels()
-            .AddServices())
-            .Build();
+            .AddServices()
+
+            ;
 
         public static IServiceProvider Services => Host.Services;
 
