@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MyHelper.DAL.Context;
 using Microsoft.EntityFrameworkCore;
+using MyHelper.DAL;
 
 namespace MyHelper.Data
 {
@@ -31,6 +32,7 @@ namespace MyHelper.Data
                 }
             })
             .AddTransient<DbInitializer>()
+            .AddRepositoriesInDB()
             ;
     }
 }

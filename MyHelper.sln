@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyHelperWPFTest", "Tests\My
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyHelper.DAL", "MyHelper.DAL\MyHelper.DAL.csproj", "{DE170282-4FB3-4782-9CB8-82111E582836}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyHelper.Interfaces", "MyHelper.Interfaces\MyHelper.Interfaces.csproj", "{5A1FB9B1-7090-4071-A2DB-C1565F8DFAA3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{DE170282-4FB3-4782-9CB8-82111E582836}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE170282-4FB3-4782-9CB8-82111E582836}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE170282-4FB3-4782-9CB8-82111E582836}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A1FB9B1-7090-4071-A2DB-C1565F8DFAA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A1FB9B1-7090-4071-A2DB-C1565F8DFAA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A1FB9B1-7090-4071-A2DB-C1565F8DFAA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A1FB9B1-7090-4071-A2DB-C1565F8DFAA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

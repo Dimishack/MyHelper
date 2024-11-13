@@ -2,13 +2,8 @@
 using Microsoft.Extensions.Logging;
 using MyHelper.DAL.Context;
 using MyHelper.DAL.Entyties;
-using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
 
 namespace MyHelper.Data
 {
@@ -36,10 +31,17 @@ namespace MyHelper.Data
             var timer = Stopwatch.StartNew();
             _logger.LogInformation("Инициализация целей...");
 
+            var rnd = new Random();
             _targetsGroup = new TargetsGroup()
             {
                 Name = "Targets",
                 Year = (uint)_year,
+                Targets = new Collection<Target>(Enumerable.Range(1, 10).Select(i => new Target()
+                {
+                    IsComplete = Random.Shared.Next(0, 2) == 1,
+                    Name = "Targets " + i,
+                    Note = "Note" + i
+                }).ToList())
             };
             await _db.TargetsGroups.AddAsync(_targetsGroup);
             await _db.SaveChangesAsync();
