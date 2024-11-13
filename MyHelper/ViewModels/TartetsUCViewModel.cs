@@ -1,15 +1,12 @@
-﻿using MyHelper.DAL.Entyties;
-using MyHelper.Infrastructure.Attributes;
+﻿using Microsoft.EntityFrameworkCore;
+using MyHelper.DAL.Entyties;
 using MyHelper.Infrastructure.Commands;
-using MyHelper.Infrastructure.Commands.Base;
 using MyHelper.Interfaces;
-using MyHelper.Models.Purposes;
 using MyHelper.Models.Targets;
 using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -27,151 +24,43 @@ namespace MyHelper.ViewModels
 
         #region Properties...
 
-        #region Targets : ObservableCollection<TargetsGroup> - Список групп с целями
+        #region GroupsTargets : ObservableCollection<TargetsGroup> - Список групп с целями
 
         ///<summary>Список групп с целями</summary>
-        public ObservableCollection<TargetsModel> Targets { get; } = [];
+        public ObservableCollection<TargetsModel> GroupsTargets { get; } = [];
 
         #endregion
 
         #region SelectedTargets : TargetsModel - Выбранный список целей
 
         ///<summary>Выбранный список целей</summary>
-        private TargetsModel _selectedTargets;
+        private TargetsModel? _selectedTargets;
 
         ///<summary>Выбранный список целей</summary>
-        public TargetsModel SelectedTargets { get => _selectedTargets; set => Set(ref _selectedTargets, value); }
-
-        #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public Dictionary<string, SortDescription> Sorting { get; } = new()
+        public TargetsModel? SelectedTargets
         {
-            { "Сначала старые записи", new SortDescription("Id", ListSortDirection.Ascending) },
-            { "Сначала новые записи", new SortDescription("Id", ListSortDirection.Descending) },
-            { "Сначала выполненные", new SortDescription("IsCompleted", ListSortDirection.Descending) },
-            { "Сначала невыполненные", new SortDescription("IsCompleted", ListSortDirection.Ascending) },
-            { "Цели (по возрастанию)", new SortDescription("Purpose", ListSortDirection.Ascending) },
-            { "Цели (по убыванию)", new SortDescription("Purpose", ListSortDirection.Descending) },
-        };
-
-        #region SelectedSorting : string - Выбранная сортировка
-
-        ///<summary>Выбранная сортировка</summary>
-        private string _selectedSorting = "Сначала старые записи";
-
-        ///<summary>Выбранная сортировка</summary>
-        public string SelectedSorting
-        {
-            get => _selectedSorting;
+            get => _selectedTargets;
             set
             {
-                Set(ref _selectedSorting, value);
-                if (_selectedListPurposesView.View is not null)
+                if (_selectedTargets == value) return;
+                _selectedTargets?.Targets.Clear();
+                if (value is not null)
                 {
-                    _selectedListPurposesView.View.SortDescriptions.Clear();
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    GC.Collect();
-                    _selectedListPurposesView.View.SortDescriptions.Add(Sorting[value]);
+                    var targets = _targetsRepository.Items.Include(g => g.Targets).First(ts => ts.Id == value.Id).Targets;
+                    if (targets == null) return;
+                    foreach (var target in targets)
+                        value.Targets.Add(new TargetModel(target));
                 }
+                Set(ref _selectedTargets, value);
+                OnPropertyChanged(nameof(SelectedTargetsView));
+
             }
         }
 
         #endregion
 
-        #region ListMyPurposes : ObservableCollection<MyPurposes> - Коллекция списков целей
-
-        ///<summary>Коллекция списков целей</summary>
-        private ObservableCollection<MyPurposes>? _listMyPurposes;
-
-        ///<summary>Коллекция списков целей</summary>
-        public ObservableCollection<MyPurposes>? ListMyPurposes { get => _listMyPurposes; set => Set(ref _listMyPurposes, value); }
-
-        #endregion
-
-        #region SelectedListMyPurposes : MyPurposes - Выбранный список целей
-
-        ///<summary>Выбранный список целей</summary>
-        private MyPurposes? _selectedListMyPurposes;
-
-        ///<summary>Выбранный список целей</summary>
-        [DependencyOn(nameof(MyPurposesCount))]
-        [DependencyOn(nameof(CompletingMyPurposesCount))]
-        [DependencyOn(nameof(Percent))]
-        [DependencyOn(nameof(OffsetLimeGreenColor))]
-        public MyPurposes? SelectedListMyPurposes
-        {
-            get => _selectedListMyPurposes;
-            set
-            {
-                if (!Set(ref _selectedListMyPurposes, value)) return;
-
-                _selectedListPurposesView.Source = value?.ListPurposes;
-                OnPropertyChanged(nameof(SelectedListPurposesView));
-                SelectedSorting = "Сначала старые записи";
-                UpdatePropertyChanged();
-            }
-        }
-
-        #endregion
-
-        private readonly CollectionViewSource _selectedListPurposesView = new();
-        public ICollectionView SelectedListPurposesView => _selectedListPurposesView.View;
-
-        #region SelectedMyPurpose : MyPurpose - Выбранная цель
-
-        ///<summary>Выбранная цель</summary>
-        private MyPurpose? _selectedMyPurpose;
-
-        ///<summary>Выбранная цель</summary>
-        public MyPurpose? SelectedMyPurpose { get => _selectedMyPurpose; set => Set(ref _selectedMyPurpose, value); }
-
-        #endregion
-
-        #region MyPurposesCount : int - Количество целей в списке
-
-        /// <summary>Количество целей в списке</summary>
-        public int MyPurposesCount => SelectedListMyPurposes is null
-            ? 0
-            : SelectedListMyPurposes.ListPurposes.Count;
-
-        #endregion
-
-        #region CompletingMyPurposesCount : int - Количество выполненных целей в списке
-
-        /// <summary>Количество выполненных целей в списке</summary>
-        public int CompletingMyPurposesCount => SelectedListMyPurposes is null
-            ? 0
-            : SelectedListMyPurposes.ListPurposes.Where(p => p.IsCompleted).Count();
-
-        #endregion
-
-        #region Percent : double - Процент выполненных целей
-
-        /// <summary>Процент выполненных целей</summary>
-        public double Percent => (double)CompletingMyPurposesCount / (MyPurposesCount == 0 ? 1 : MyPurposesCount);
-
-        #endregion
-
-        #region OffsetLimeGreenColor : double - Местоположение лаймового цвета в ProgressBar'e
-
-        /// <summary>Местоположение лаймового цвета в ProgressBar'e</summary>
-        public double OffsetLimeGreenColor => 2.0 - Percent;
-
-        #endregion 
+        private readonly CollectionViewSource _selectedTargetsViewSource = new();
+        public ICollectionView SelectedTargetsView => _selectedTargetsViewSource.View;
 
         #endregion
 
@@ -190,214 +79,82 @@ namespace MyHelper.ViewModels
         private void OnLoadCommandExecuted(object? p)
         {
             foreach (TargetsGroup targets in _targetsRepository.Items)
-                Targets.Add(new TargetsModel(targets));
-            SelectedTargets = Targets[^1];
+                GroupsTargets.Add(new TargetsModel(targets));
+            _selectedTargetsViewSource.Source = SelectedTargets?.Targets;
+            OnPropertyChanged(nameof(SelectedTargetsView));
         }
-
         #endregion
 
-        #region CreateNewYearCommand - Команда создания нового списка целей
+        #region CreateTargetsGroupCommand - Команда - создать новую группу списка целей
 
-        ///<summary>Команда создания нового списка целей</summary>
-        private ICommand? _createNewYearCommand;
+        ///<summary>Команда - создать новую группу списка целей</summary>
+        private ICommand? _createTargetsGroupCommand;
 
-        ///<summary>Команда создания нового списка целей</summary>
-        public ICommand CreateNewYearCommand => _createNewYearCommand
-            ??= new LambdaCommand(OnCreateNewYearCommandExecuted);
+        ///<summary>Команда - создать новую группу списка целей</summary>
+        public ICommand CreateTargetsGroupCommand => _createTargetsGroupCommand
+            ??= new LambdaCommand(OnCreateTargetsGroupCommandExecuted);
 
-        ///<summary>Логика выполнения - Команда создания нового списка целей</summary>
-        private void OnCreateNewYearCommandExecuted(object? p)
+        ///<summary>Логика выполнения - создать новую группу списка целей</summary>
+        private void OnCreateTargetsGroupCommandExecuted(object? p)
         {
-            MyPurposes listPurposes = new()
+            var newYear = GroupsTargets[^1].Year == 0 ? (uint)DateTime.Now.Year : GroupsTargets[^1].Year + 1;
+            TargetsGroup newTargetsGroup = new()
             {
-                Year = ListMyPurposes![^1].Year == 0 ?
-                DateTime.Now.Year
-                : ListMyPurposes![^1].Year + 1,
+                Year = newYear,
+                Name = $"GroupsTargets {newYear}",
             };
-            if (!_openWindows.OpenCreator_EditorYearWindow(listPurposes, "Создать год")) return;
-            ListMyPurposes?.Add(listPurposes);
-            ListMyPurposes![^1].ListPurposes.ListChanged += ListPurposes_ListChanged;
-            _userDialog.InformationMessage("Новый список целей успешно добавлен", "MyHepler");
-            ((Command)SaveListMyPurposesCommand).Executable = true;
+            GroupsTargets.Add(new TargetsModel(_targetsRepository.Add(newTargetsGroup)));
         }
 
         #endregion
 
-        #region DeleteYearCommand - Команда удаления списка целей
+        #region ChangeTargetsGroupCommand - Команда - изменить значения групп списка целей
 
-        ///<summary>Команда удаления списка целей</summary>
-        private ICommand? _deleteYearCommand;
+        ///<summary>Команда - изменить значения групп списка целей</summary>
+        private ICommand? _changeTargetsGroupCommand;
 
-        ///<summary>Команда удаления списка целей</summary>
-        public ICommand DeleteYearCommand => _deleteYearCommand
-            ??= new LambdaCommand(OnDeleteYearCommandExecuted, CanDeleteYearCommandExecute);
+        ///<summary>Команда - изменить значения групп списка целей</summary>
+        public ICommand ChangeTargetsGroupCommand => _changeTargetsGroupCommand
+            ??= new LambdaCommandAsync(OnChangeTargetsGroupCommandExecuted, CanChangeTargetsGroupCommandExecute);
 
-        ///<summary>Проверка возможности выполнения - Команда удаления списка целей</summary>
-        private bool CanDeleteYearCommandExecute(object? p) => SelectedListMyPurposes is not null
-            && !SelectedListMyPurposes.Name.Equals("пожизненные цели", StringComparison.CurrentCultureIgnoreCase);
+        ///<summary>Проверка возможности выполнения - изменить значения групп списка целей</summary>
+        private bool CanChangeTargetsGroupCommandExecute(object? p) => _selectedTargets is not null;
 
-        ///<summary>Логика выполнения - Команда удаления списка целей</summary>
-        private void OnDeleteYearCommandExecuted(object? p)
+        ///<summary>Логика выполнения - изменить значения групп списка целей</summary>
+        private async Task OnChangeTargetsGroupCommandExecuted(object? p)
         {
-            ListMyPurposes?.Remove(SelectedListMyPurposes!);
-            ((Command)SaveListMyPurposesCommand).Executable = true;
+            _selectedTargets.Year = 0;
+            _selectedTargets.Name = "Пожизненные";
+            var item = _targetsRepository.Get(_selectedTargets.Id);
+            await _targetsRepository.UpdateAsync(item);
+            CollectionViewSource.GetDefaultView(GroupsTargets).Refresh();
         }
 
         #endregion
 
-        #region EditYearCommand - Команда редактирования списка целей
+        #region RemoveTargetsGroupCommand - Команда - удалить группу списка целей
 
-        ///<summary>Команда редактирования списка целей</summary>
-        private ICommand? _editYearCommand;
+        ///<summary>Команда - удалить группу списка целей</summary>
+        private ICommand? _removeTargetsGroupCommand;
 
-        ///<summary>Команда редактирования списка целей</summary>
-        public ICommand EditYearCommand => _editYearCommand
-            ??= new LambdaCommand(OnEditYearCommandExecuted, CanEditYearCommandExecute);
+        ///<summary>Команда - удалить группу списка целей</summary>
+        public ICommand RemoveTargetsGroupCommand => _removeTargetsGroupCommand
+            ??= new LambdaCommandAsync(OnRemoveTargetsGroupCommandExecuted, CanRemoveTargetsGroupCommandExecute);
 
-        ///<summary>Проверка возможности выполнения - Команда редактирования списка целей</summary>
-        private bool CanEditYearCommandExecute(object? p) => SelectedListMyPurposes is not null
-            && !SelectedListMyPurposes.Name.Equals("пожизненные цели", StringComparison.CurrentCultureIgnoreCase);
+        ///<summary>Проверка возможности выполнения - удалить группу списка целей</summary>
+        private bool CanRemoveTargetsGroupCommandExecute(object? p) => _selectedTargets is not null;
 
-        ///<summary>Логика выполнения - Команда редактирования списка целей</summary>
-        private void OnEditYearCommandExecuted(object? p)
+        ///<summary>Логика выполнения - удалить группу списка целей</summary>
+        private async Task OnRemoveTargetsGroupCommandExecuted(object? p)
         {
-            if (!_openWindows.OpenCreator_EditorYearWindow(SelectedListMyPurposes!, "Редактировать год")) return;
-
-            CollectionViewSource.GetDefaultView(ListMyPurposes).Refresh();
-            _userDialog.InformationMessage("Список целей успешно отредактирован");
-            ((Command)SaveListMyPurposesCommand).Executable = true;
-        }
-
-        #endregion
-
-        #region CreateNewPurposeCommand - Команда создания цели
-
-        ///<summary>Команда создания цели</summary>
-        private ICommand? _сreateNewPurposeCommand;
-
-        ///<summary>Команда создания цели</summary>
-        public ICommand CreateNewPurposeCommand => _сreateNewPurposeCommand
-            ??= new LambdaCommand(OnCreateNewPurposeCommandExecuted, CanCreateNewPurposeCommandExecute);
-
-        ///<summary>Проверка возможности выполнения - Команда создания цели</summary>
-        private bool CanCreateNewPurposeCommandExecute(object? p) => SelectedListMyPurposes is not null;
-
-        ///<summary>Логика выполнения - Команда создания цели</summary>
-        private void OnCreateNewPurposeCommandExecuted(object? p)
-        {
-            var purpose = new MyPurpose();
-            if (!_openWindows.OpenCreator_EditorPurposeWindow(purpose, "Создать цель")) return;
-            purpose.Id = SelectedListMyPurposes.ListPurposes.Count;
-            SelectedListMyPurposes?.ListPurposes.Add(purpose);
-            _userDialog.InformationMessage("Цель успешно добавлена в список");
-        }
-
-        #endregion
-
-        #region DeletePurposeCommand - Команда удаления цели
-
-        ///<summary>Команда удаления цели</summary>
-        private ICommand? _deletePurposeCommand;
-
-        ///<summary>Команда удаления цели</summary>
-        public ICommand DeletePurposeCommand => _deletePurposeCommand
-            ??= new LambdaCommand<MyPurpose>(OnDeletePurposeCommandExecuted);
-
-
-        ///<summary>Логика выполнения - Команда удаления цели</summary>
-        private void OnDeletePurposeCommandExecuted(MyPurpose p)
-        {
-            int index = _selectedListMyPurposes!.ListPurposes.IndexOf(p);
-            for (int i = index + 1; i < _selectedListMyPurposes.ListPurposes.Count; i++)
-                _selectedListMyPurposes.ListPurposes[i].Id--;
-            SelectedListMyPurposes!.ListPurposes.RemoveAt(index);
-
-        }
-
-        #endregion
-
-        #region EditMyPurposeCommand - Редактирование цели
-
-        ///<summary>Редактирование цели</summary>
-        private ICommand? _editMyPurposeCommand;
-
-        ///<summary>Редактирование цели</summary>
-        public ICommand EditMyPurposeCommand => _editMyPurposeCommand
-            ??= new LambdaCommand(OnEditMyPurposeCommandExecuted, CanEditMyPurposeCommandExecute);
-
-        ///<summary>Проверка возможности выполнения - Редактирование цели</summary>
-        private bool CanEditMyPurposeCommandExecute(object? p) => SelectedMyPurpose is not null;
-
-        ///<summary>Логика выполнения - Редактирование цели</summary>
-        private void OnEditMyPurposeCommandExecuted(object? p)
-        {
-            if (!_openWindows.OpenCreator_EditorPurposeWindow(SelectedMyPurpose!, "Редактировать цель")) return;
-
-            _selectedListPurposesView.View.Refresh();
-            _userDialog.InformationMessage("Цель отредактирована");
-            ((Command)SaveListMyPurposesCommand).Executable = true;
-        }
-
-        #endregion
-
-        #region SaveListMyPurposesCommand - Команда сохранения списка целей
-
-        ///<summary>Команда сохранения списка целей</summary>
-        private ICommand? _saveListMyPurposesCommand;
-
-        ///<summary>Команда сохранения списка целей</summary>
-        public ICommand SaveListMyPurposesCommand => _saveListMyPurposesCommand
-            ??= new LambdaCommandAsync(OnSaveListMyPurposesCommandExecuted);
-
-        ///<summary>Логика выполнения - Команда сохранения списка целей</summary>
-        private async Task OnSaveListMyPurposesCommandExecuted(object? p)
-        {
-            SelectedSorting = "Сначала старые записи";
-            if (!await _workWithJSONFile.WriteFileAsync(@"Data/Purposes.json", p)) return;
-
-            _userDialog.InformationMessage("Список целей успешно сохранен");
-            ((Command)SaveListMyPurposesCommand).Executable = false;
+            await _targetsRepository.RemoveAsync(_selectedTargets!.Id);
+            GroupsTargets.Remove(_selectedTargets);
+            SelectedTargets = GroupsTargets.Count > 0 ? GroupsTargets.Last() : null;
         }
 
         #endregion
 
         #endregion
-
-        #region Events...
-
-        private void ListPurposes_ListChanged(object? sender, ListChangedEventArgs e)
-        {
-            switch (e.ListChangedType)
-            {
-                case ListChangedType.ItemAdded:
-                case ListChangedType.ItemDeleted:
-                case ListChangedType.ItemChanged:
-                    UpdatePropertyChanged(nameof(SelectedListMyPurposes));
-                    ((Command)SaveListMyPurposesCommand).Executable = true;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        #endregion
-
-        #region Methods...
-
-        private void UpdatePropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            var property = this.GetType().GetProperty(propertyName!);
-            if (property is null) return;
-
-            foreach (var attr in property.GetCustomAttributes(false))
-            {
-                if (attr is DependencyOnAttribute dA)
-                    OnPropertyChanged(dA.Name);
-            }
-        }
-
-        #endregion
-
         public TartetsUCViewModel() : this(null, null, null, null)
         {
 

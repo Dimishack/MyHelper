@@ -10,22 +10,55 @@
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
              
              d:DataContext="{d:DesignInstance vm:TartetsUCViewModel,IsDesignTimeCreatable=True}"
-             d:DesignHeight="450" d:DesignWidth="800"
+             d:DesignHeight="450" d:DesignWidth="700"
              MinHeight="300">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <ListBox ItemsSource="{Binding SelectedTargets.Targets}">
-        <ListBox.ItemTemplate>
-            <DataTemplate>
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Text="{Binding Name}"/>
-                    <TextBlock Text="{Binding IsComplete}"/>
-                    <TextBlock Text="{Binding Note}"/>
-                </StackPanel>
-            </DataTemplate>
-        </ListBox.ItemTemplate>
-    </ListBox>
+    <DockPanel>
+        <GroupBox DockPanel.Dock="Right" Header="Года" Width="70">
+            <DockPanel>
+                <UniformGrid DockPanel.Dock="Bottom" Columns="1">
+                    <UniformGrid.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Margin" Value="2"/>
+                            <Setter Property="Padding" Value="3"/>
+                        </Style>
+                    </UniformGrid.Resources>
+                    <Button Command="{Binding CreateTargetsGroupCommand}">
+                        <fa5:ImageAwesome Icon="Solid_Plus" Width="16"/>
+                    </Button>
+                    <Button Command="{Binding ChangeTargetsGroupCommand}">
+                        <fa5:ImageAwesome Icon="Regular_Edit" Width="16"/>
+                    </Button>
+                    <Button Command="{Binding RemoveTargetsGroupCommand}">
+                        <fa5:ImageAwesome Icon="Solid_Minus" Width="16"/>
+                    </Button>
+                </UniformGrid>
+                <ListBox ItemsSource="{Binding GroupsTargets}"
+                         SelectedItem="{Binding SelectedTargets}"
+                         SelectedIndex="0"
+                         DisplayMemberPath="Year"/>
+            </DockPanel>
+        </GroupBox>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Vertical">
+            <TextBlock Text="{Binding SelectedTargets.CompletedTargetsCount, StringFormat='Количество выполненных целей: {0}'}"/>
+            <TextBlock Text="{Binding SelectedTargets.Targets.Count, StringFormat='Количество целей: {0}'}"/>
+        </StackPanel>
+        <GroupBox Header="{Binding SelectedTargets.Name, FallbackValue='Выберите год'}">
+            <ListBox ItemsSource="{Binding SelectedTargetsView}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Name}"/>
+                            <CheckBox IsChecked="{Binding IsComplete}"/>
+                            <TextBlock Text="{Binding Note}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
+    </DockPanel>
 </UserControl>

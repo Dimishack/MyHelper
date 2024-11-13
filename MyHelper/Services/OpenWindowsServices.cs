@@ -65,7 +65,7 @@ namespace MyHelper.Services
             return window.StartDate;
         }
 
-        public bool OpenCreator_EditorPurposeWindow(MyPurpose purpose, string title)
+        public bool OpenCreator_EditorTargetWindow(MyPurpose purpose, string title)
         {
             var window = new Creator_EditorPurposeWindow
             {
@@ -82,7 +82,7 @@ namespace MyHelper.Services
             return true;
         }
 
-        public bool OpenCreator_EditorYearWindow(MyPurposes listPurposes, string title)
+        public bool OpenCreator_EditorTargetsGroupWindow(MyPurposes listPurposes, string title)
         {
             var window = new Creator_EditorYearWindow
             {

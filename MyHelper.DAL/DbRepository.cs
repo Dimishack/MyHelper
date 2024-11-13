@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyHelper.DAL.Context;
-using MyHelper.DAL.Entyties;
 using MyHelper.DAL.Entyties.Base;
 using MyHelper.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,20 +23,22 @@ namespace MyHelper.DAL
         }
         public virtual IQueryable<T> Items => _dbSet;
 
-        public void Add(T item)
+        public T Add(T item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             _db.Entry(item).State = EntityState.Added;
             if (AutoSaveChanges)
                 _db.SaveChanges();
+            return item;
         }
 
-        public async Task AddAsync(T item)
+        public async Task<T> AddAsync(T item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             _db.Entry(item).State = EntityState.Added;
             if (AutoSaveChanges)
                 await _db.SaveChangesAsync().ConfigureAwait(false);
+            return item;
         }
 
         public T Get(int id) => Items.SingleOrDefault(x => x.Id == id);
@@ -45,14 +47,16 @@ namespace MyHelper.DAL
 
         public void Remove(int id)
         {
-            _db.Remove(new T { Id = id });
+            var item = _dbSet.Local.FirstOrDefault(item => item.Id == id) ?? new T() { Id = id };
+            _dbSet.Remove(item);
             if (AutoSaveChanges)
                 _db.SaveChanges();
         }
 
         public async Task RemoveAsync(int id)
         {
-            _db.Remove(new T { Id = id });
+            var item = _dbSet.Local.FirstOrDefault(item => item.Id == id) ?? new T() { Id = id };
+            _db.Remove(item);
             if (AutoSaveChanges)
                 await _db.SaveChangesAsync().ConfigureAwait(false);
         }
@@ -82,12 +86,9 @@ namespace MyHelper.DAL
             }
             catch (Exception) { return false; }
         }
-    }
 
-    internal class TargetsRepository : DbRepository<TargetsGroup>
-    {
-        public override IQueryable<TargetsGroup> Items => base.Items.Include(item => item.Targets);
-        public TargetsRepository(MyHelperDB db) : base(db) { }
+        public void SaveChanged() => _db.SaveChanges();
+        public async Task SaveChangedAsync() => await _db.SaveChangesAsync();
     }
 
 }

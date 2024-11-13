@@ -25,7 +25,7 @@ namespace MyHelper.Data
         }
 
         private readonly int _year = DateTime.Now.Year;
-        private TargetsGroup _targetsGroup;
+        private TargetsGroup? _targetsGroup;
         private async Task InitializeTargets()
         {
             var timer = Stopwatch.StartNew();
@@ -34,12 +34,12 @@ namespace MyHelper.Data
             var rnd = new Random();
             _targetsGroup = new TargetsGroup()
             {
-                Name = "Targets",
-                Year = (uint)_year,
+                Name = "Пожизненные цели",
+                Year = 0,
                 Targets = new Collection<Target>(Enumerable.Range(1, 10).Select(i => new Target()
                 {
                     IsComplete = Random.Shared.Next(0, 2) == 1,
-                    Name = "Targets " + i,
+                    Name = "GroupsTargets " + i,
                     Note = "Note" + i
                 }).ToList())
             };
