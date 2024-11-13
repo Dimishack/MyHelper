@@ -1,7 +1,10 @@
-﻿using MyHelper.Infrastructure.Attributes;
+﻿using MyHelper.DAL.Entyties;
+using MyHelper.Infrastructure.Attributes;
 using MyHelper.Infrastructure.Commands;
 using MyHelper.Infrastructure.Commands.Base;
+using MyHelper.Interfaces;
 using MyHelper.Models.Purposes;
+using MyHelper.Models.Targets;
 using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
@@ -12,13 +15,47 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    class ListPurposesUCViewModel(IOpenWindows openWindows, IUserDialog userDialog, IWorkWithJSONFile workWithJSONFile) : ViewModel
+    class TartetsUCViewModel(IOpenWindows openWindows,
+                                  IUserDialog userDialog,
+                                  IWorkWithJSONFile workWithJSONFile,
+                                  IRepository<TargetsGroup> targets) : ViewModel
     {
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
         private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
+        private readonly IRepository<TargetsGroup> _targetsRepository = targets;
 
         #region Properties...
+
+        #region Targets : ObservableCollection<TargetsGroup> - Список групп с целями
+
+        ///<summary>Список групп с целями</summary>
+        public ObservableCollection<TargetsModel> Targets { get; } = [];
+
+        #endregion
+
+        #region SelectedTargets : TargetsModel - Выбранный список целей
+
+        ///<summary>Выбранный список целей</summary>
+        private TargetsModel _selectedTargets;
+
+        ///<summary>Выбранный список целей</summary>
+        public TargetsModel SelectedTargets { get => _selectedTargets; set => Set(ref _selectedTargets, value); }
+
+        #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public Dictionary<string, SortDescription> Sorting { get; } = new()
         {
@@ -147,33 +184,14 @@ namespace MyHelper.ViewModels
 
         ///<summary>Загрузка окна</summary>
         public ICommand LoadCommand => _loadCommand
-            ??= new LambdaCommandAsync(OnLoadCommandExecuted);
+            ??= new LambdaCommand(OnLoadCommandExecuted);
 
         ///<summary>Логика выполнения - Загрузка окна</summary>
-        private async Task OnLoadCommandExecuted(object? p)
+        private void OnLoadCommandExecuted(object? p)
         {
-            if (_listMyPurposes is not null) return;
-
-            ObservableCollection<MyPurposes>? purposes;
-            if ((purposes = await _workWithJSONFile.ReadFileAsync<ObservableCollection<MyPurposes>>(@"Data/Purposes.json")) is not null)
-            {
-                ListMyPurposes = purposes;
-                ((Command)SaveListMyPurposesCommand).Executable = false;
-            }
-            else
-            {
-                ListMyPurposes =
-                [
-                    new MyPurposes
-                    {
-                        Year = 0,
-                            Name = "Пожизненные цели",
-                            ListPurposes = []
-                    }
-                ];
-            }
-            for (int i = 0; i < ListMyPurposes.Count; i++)
-                ListMyPurposes[i].ListPurposes.ListChanged += ListPurposes_ListChanged;
+            foreach (TargetsGroup targets in _targetsRepository.Items)
+                Targets.Add(new TargetsModel(targets));
+            SelectedTargets = Targets[^1];
         }
 
         #endregion
@@ -379,5 +397,10 @@ namespace MyHelper.ViewModels
         }
 
         #endregion
+
+        public TartetsUCViewModel() : this(null, null, null, null)
+        {
+
+        }
     }
 }

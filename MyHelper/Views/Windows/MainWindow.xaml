@@ -21,7 +21,7 @@
     <DockPanel>
         <TabControl>
             <TabItem Header="Цели">
-                <uc:ListPurposesUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListPurposesVM}"/>
+                <uc:TargetsUserControl DataContext="{Binding Source={StaticResource Locator}, Path=TargetsVM}"/>
             </TabItem>
             <TabItem Header="Задачи">
                 <uc:ListTasksUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListTasksVM}"/>

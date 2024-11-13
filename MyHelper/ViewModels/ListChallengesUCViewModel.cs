@@ -23,8 +23,8 @@ namespace MyHelper.ViewModels
         {
             {"Месяц", DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month) },
             {"Квартал", DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month)
-                + DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month + 1)
-                + DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month + 2)},
+                + DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month )
+                + DateTime.DaysInMonth(DATENOW.Year, DATENOW.Month )},
             {"Полгода", (DateTime.IsLeapYear(DATENOW.Year)? 366: 365) / 2 },
             {"Год", DateTime.IsLeapYear(DATENOW.Year)? 366: 365}
         };

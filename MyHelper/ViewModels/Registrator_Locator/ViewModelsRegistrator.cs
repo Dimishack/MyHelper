@@ -11,7 +11,7 @@ namespace MyHelper.ViewModels.Registrator_Locator
                 .AddSingleton<MainWindowViewModel>()
                 .AddSingleton<ListChallengesUCViewModel>()
                 .AddTransient<ChecklistChallengeViewModel>()
-                .AddSingleton<ListPurposesUCViewModel>()
+                .AddSingleton<TartetsUCViewModel>()
                 .AddSingleton<ListTasksUCViewModel>()
                 .AddSingleton<ListBooksUCViewModel>()
                 ;

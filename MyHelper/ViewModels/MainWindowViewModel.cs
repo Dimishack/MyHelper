@@ -1,4 +1,6 @@
-﻿using MyHelper.Infrastructure.Commands;
+﻿using MyHelper.DAL.Entyties;
+using MyHelper.Infrastructure.Commands;
+using MyHelper.Interfaces;
 using MyHelper.Models.Books;
 using MyHelper.Models.Challenges;
 using MyHelper.Models.MyTasks;
@@ -15,6 +17,5 @@ namespace MyHelper.ViewModels
 {
     class MainWindowViewModel : ViewModel
     {
-
     }
 }
