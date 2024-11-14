@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyHelper.DAL.Entyties;
+using MyHelper.Infrastructure.Attributes;
 using MyHelper.Infrastructure.Commands;
 using MyHelper.Interfaces;
 using MyHelper.Models.Targets;
@@ -7,6 +8,8 @@ using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -52,8 +55,7 @@ namespace MyHelper.ViewModels
                     }
                 }
                 Set(ref _selectedTargets, value);
-                OnPropertyChanged(nameof(SelectedTargetsView));
-                OnPropertyChanged(nameof(EnableToggleButtonChangeGroup));
+                DepedenciesChanged();
 
             }
         }
@@ -61,6 +63,8 @@ namespace MyHelper.ViewModels
         #endregion
 
         private readonly CollectionViewSource _selectedTargetsViewSource = new();
+
+        [DependencyOn(nameof(SelectedTargets))]
         public ICollectionView SelectedTargetsView => _selectedTargetsViewSource.View;
 
         #region Sorts : Dictionary<string, SortDescription> - Список сортировки
@@ -119,6 +123,9 @@ namespace MyHelper.ViewModels
         ///<summary>Добавить группу</summary>
         private bool _addGroup;
 
+        [PropertyChangedWith(nameof(IsVisibleAdd_EditGroup))]
+        [PropertyChangedWith(nameof(EnableToggleButtons))]
+        [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
         ///<summary>Добавить группу</summary>
         public bool AddGroup
         {
@@ -132,9 +139,7 @@ namespace MyHelper.ViewModels
                     TargetsGroupForAdd_Edit.Name = string.Empty;
                     OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
                 }
-                OnPropertyChanged(nameof(IsVisibleAdd_EditGroup));
-                OnPropertyChanged(nameof(EnableToggleButtons));
-                OnPropertyChanged(nameof(EnableToggleButtonChangeGroup));
+                ChangedWithProperties();
             }
         }
 
@@ -145,6 +150,9 @@ namespace MyHelper.ViewModels
         ///<summary>Изменить группу</summary>
         private bool _changeGroup;
 
+        [PropertyChangedWith(nameof(IsVisibleAdd_EditGroup))]
+        [PropertyChangedWith(nameof(EnableToggleButtons))]
+        [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
         ///<summary>Изменить группу</summary>
         public bool ChangeGroup
         {
@@ -156,11 +164,9 @@ namespace MyHelper.ViewModels
                 {
                     TargetsGroupForAdd_Edit.Year = _selectedTargets.Year;
                     TargetsGroupForAdd_Edit.Name = _selectedTargets.Name;
+                    OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
                 }
-                OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
-                OnPropertyChanged(nameof(IsVisibleAdd_EditGroup));
-                OnPropertyChanged(nameof(EnableToggleButtons));
-                OnPropertyChanged(nameof(EnableToggleButtonChangeGroup));
+                ChangedWithProperties();
             }
         }
 
@@ -182,6 +188,7 @@ namespace MyHelper.ViewModels
 
         #region EnableToggleButtonChangeGroup : bool - Включить переключатель изменения групп
 
+        [DependencyOn(nameof(SelectedTargets))]
         ///<summary>Включить переключатели</summary>
         public bool EnableToggleButtonChangeGroup => !IsVisibleAdd_EditGroup && _selectedTargets?.Year != 0;
 
@@ -363,6 +370,28 @@ namespace MyHelper.ViewModels
         public TargetsUCViewModel() : this(null, null, null)
         {
 
+        }
+
+        private void DepedenciesChanged([CallerMemberName] string? propertyName = null)
+        {
+            foreach (PropertyInfo property in GetType().GetProperties())
+            {
+                var depedencyAttribute = property.GetCustomAttribute<DependencyOnAttribute>();
+                if (depedencyAttribute != null && depedencyAttribute.PropertyName == propertyName)
+                    OnPropertyChanged(property.Name);
+            }
+        }
+
+        private void ChangedWithProperties([CallerMemberName] string? propertyName = null)
+        {
+            var property = GetType().GetProperty(propertyName!);
+            if (property is not null)
+            {
+                var attributes = property.GetCustomAttributes<PropertyChangedWithAttribute>();
+                if(attributes is not null)
+                    foreach (var attribute in attributes)
+                        OnPropertyChanged(attribute.PropertyName);
+            }
         }
     }
 }
