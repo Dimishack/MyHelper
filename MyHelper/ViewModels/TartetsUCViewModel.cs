@@ -43,9 +43,9 @@ namespace MyHelper.ViewModels
             set
             {
                 if (_selectedTargets == value) return;
-                _selectedTargets?.Targets.Clear();
                 if (value is not null)
                 {
+                    value.Targets.Clear();
                     var targets = _targetsRepository.Items.Include(g => g.Targets).First(ts => ts.Id == value.Id).Targets;
                     if (targets == null) return;
                     foreach (var target in targets)
@@ -78,6 +78,7 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Загрузка окна</summary>
         private void OnLoadCommandExecuted(object? p)
         {
+            GroupsTargets.Clear();
             foreach (TargetsGroup targets in _targetsRepository.Items)
                 GroupsTargets.Add(new TargetsModel(targets));
             _selectedTargetsViewSource.Source = SelectedTargets?.Targets;
@@ -150,6 +151,52 @@ namespace MyHelper.ViewModels
             await _targetsRepository.RemoveAsync(_selectedTargets!.Id);
             GroupsTargets.Remove(_selectedTargets);
             SelectedTargets = GroupsTargets.Count > 0 ? GroupsTargets.Last() : null;
+        }
+
+        #endregion
+
+        #region FilterCommand - Команда - фильтровать список
+
+        ///<summary>Команда - фильтровать список</summary>
+        private ICommand? _filterCommand;
+
+        ///<summary>Команда - фильтровать список</summary>
+        public ICommand FilterCommand => _filterCommand
+            ??= new LambdaCommand<string>(OnFilterCommandExecuted, CanFilterCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - фильтровать список</summary>
+        private bool CanFilterCommandExecute(string p) => _selectedTargets is not null;
+
+        ///<summary>Логика выполнения - фильтровать список</summary>
+        private void OnFilterCommandExecuted(string p)
+        {
+            _selectedTargets!.Targets.Clear();
+            switch (p.ToLower())
+            {
+                case "все":
+                    foreach (var target in _targetsRepository.Items
+                        .Include(g => g.Targets)
+                        .First(ts => ts.Id == _selectedTargets.Id)
+                        .Targets)
+                        _selectedTargets.Targets.Add(new TargetModel(target));
+                    break;
+                case "выполненные":
+                    foreach (var target in _targetsRepository.Items
+                        .Include(g => g.Targets)
+                        .First(ts => ts.Id == _selectedTargets.Id)
+                        .Targets.Where(t => t.IsComplete))
+                        _selectedTargets.Targets.Add(new TargetModel(target));
+                    break;
+                case "невыполненные":
+                    foreach (var target in _targetsRepository.Items
+                        .Include(g => g.Targets)
+                        .First(ts => ts.Id == _selectedTargets.Id)
+                        .Targets.Where(t => !t.IsComplete))
+                        _selectedTargets.Targets.Add(new TargetModel(target));
+                    break;
+                default:
+                    break;
+            }
         }
 
         #endregion
