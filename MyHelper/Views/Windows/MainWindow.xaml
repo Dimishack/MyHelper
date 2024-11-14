@@ -17,21 +17,24 @@
         Height="450" Width="800"
         WindowStartupLocation="CenterScreen"
         DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowVM}"
+        d:DataContext="{d:DesignInstance {x:Type vm:MainWindowViewModel}, IsDesignTimeCreatable=True}"
         x:Name="ThisWindow">
-    <DockPanel>
-        <TabControl>
-            <TabItem Header="Цели">
-                <uc:TargetsUserControl DataContext="{Binding Source={StaticResource Locator}, Path=TargetsVM}"/>
-            </TabItem>
-            <TabItem Header="Задачи">
-                <uc:ListTasksUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListTasksVM}"/>
-            </TabItem>
-            <TabItem Header="Книги" Height="20" VerticalAlignment="Top">
-                <uc:ListBooksUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListBooksVM}"/>
-            </TabItem>
-            <TabItem Header="Челленджи">
-                <uc:ListChallengesUserControl DataContext="{Binding Source={StaticResource Locator}, Path=ListChallengesVM}"/>
-            </TabItem>
-        </TabControl>
-    </DockPanel>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Menu Grid.Column="0" HorizontalAlignment="Right">
+            <Menu.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </Menu.ItemsPanel>
+            <MenuItem Header="Цели" Command="{Binding ShowTargetsViewCommand}"/>
+            <MenuItem Header="Задачи" Command="{Binding ShowTasksViewCommand}"/>
+        </Menu>
+        <Grid Grid.Column="1">
+            <ContentPresenter Content="{Binding CurrentViewModel}"/>
+        </Grid>
+    </Grid>
 </Window>

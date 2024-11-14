@@ -236,5 +236,12 @@ namespace MyHelper.ViewModels
         {
 
         }
+
+        //~TartetsUCViewModel()
+        //{
+        //    GC.Collect();
+        //    GC.WaitForPendingFinalizers();
+        //    GC.Collect();
+        //}
     }
 }

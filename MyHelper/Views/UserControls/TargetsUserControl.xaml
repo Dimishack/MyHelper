@@ -61,6 +61,9 @@
                     <Button Command="{Binding RemoveTargetsGroupCommand}">
                         <fa5:ImageAwesome Style="{StaticResource RemoveImage}"/>
                     </Button>
+                    <Button>
+                        <fa5:ImageAwesome Style="{StaticResource SaveImage}"/>
+                    </Button>
                 </UniformGrid>
                 <ListBox ItemsSource="{Binding GroupsTargets}"
                          SelectedItem="{Binding SelectedTargets}"
@@ -121,7 +124,7 @@
                         <fa5:ImageAwesome Style="{StaticResource EditImage}"/>
                     </Button>
                 </UniformGrid>
-                <ListBox ItemsSource="{Binding SelectedTargetsView}">
+                <ListBox ItemsSource="{Binding SelectedTargetsView}" Focusable="True">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Vertical">

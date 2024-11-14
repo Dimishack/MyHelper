@@ -13,7 +13,11 @@
         <Setter Property="Width" Value="16"/>
     </Style>
     <Style TargetType="fa5:ImageAwesome" x:Key="EditImage" ice:Freeze="True">
-        <Setter Property="Icon" Value="Solid_Edit"/>
+        <Setter Property="Icon" Value="Regular_Edit"/>
+        <Setter Property="Width" Value="16"/>
+    </Style>
+    <Style TargetType="fa5:ImageAwesome" x:Key="SaveImage" ice:Freeze="True">
+        <Setter Property="Icon" Value="Regular_Save"/>
         <Setter Property="Width" Value="16"/>
     </Style>
 
