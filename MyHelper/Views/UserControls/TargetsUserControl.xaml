@@ -68,9 +68,18 @@
                          DisplayMemberPath="Year"/>
             </DockPanel>
         </GroupBox>
-        <DockPanel DockPanel.Dock="Left">
+        <DockPanel DockPanel.Dock="Left" Width="125">
             <GroupBox DockPanel.Dock="Top" Header="Сортировка">
-                <ComboBox/>
+                <ComboBox ItemsSource="{Binding Sorts}"
+                          SelectedItem="{Binding SelectedSort}"
+                          SelectedIndex="0">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Key}"
+                                       TextWrapping="Wrap"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
             </GroupBox>
             <GroupBox Header="Фильтр">
                 <StackPanel Orientation="Vertical">

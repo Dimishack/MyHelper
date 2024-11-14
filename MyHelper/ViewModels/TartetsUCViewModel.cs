@@ -24,6 +24,36 @@ namespace MyHelper.ViewModels
 
         #region Properties...
 
+        public Dictionary<string, SortDescription> Sorts { get; } = new()
+        {
+            {"По порядку возрастания", new SortDescription("Id", ListSortDirection.Ascending)},
+            {"По порядку убывания", new SortDescription("Id", ListSortDirection.Descending)},
+            {"По целям (Z->Я)", new SortDescription("Name", ListSortDirection.Ascending)},
+            {"По целям (Я->Z)", new SortDescription("Name", ListSortDirection.Descending)},
+        };
+
+        #region SelectedSort : object - Выбранная сортировки
+
+        ///<summary>Выбранная сортировки</summary>
+        private KeyValuePair<string, SortDescription> _selectedSort;
+
+        ///<summary>Выбранная сортировки</summary>
+        public KeyValuePair<string, SortDescription> SelectedSort
+        {
+            get => _selectedSort;
+            set
+            {
+                if (!Set(ref _selectedSort, value)) return;
+
+                if (_selectedTargetsViewSource.SortDescriptions.Count > 0)
+                    _selectedTargetsViewSource.SortDescriptions.RemoveAt(0);
+                _selectedTargetsViewSource.SortDescriptions.Add(Sorts[value.Key]);
+                _selectedTargetsViewSource.View.Refresh();
+            }
+        }
+
+        #endregion
+
         #region GroupsTargets : ObservableCollection<TargetsGroup> - Список групп с целями
 
         ///<summary>Список групп с целями</summary>

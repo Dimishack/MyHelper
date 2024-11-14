@@ -18,7 +18,7 @@ namespace MyHelper.Models.Targets
             }
         }
 
-
+        public int Id => _target.Id;
         public string Name { get => _target.Name; set => _target.Name = value; }
         public string Note { get => _target.Note; set => _target.Note = value; }
 
