@@ -7,7 +7,6 @@
         xmlns:local="clr-namespace:MyHelper"
         
         xmlns:tasks="clr-namespace:MyHelper.Models.MyTasks"
-        xmlns:purposes="clr-namespace:MyHelper.Models.Purposes"
         xmlns:challenges="clr-namespace:MyHelper.Models.Challenges"
         xmlns:uc="clr-namespace:MyHelper.Views.UserControls"
         xmlns:vm="clr-namespace:MyHelper.ViewModels"

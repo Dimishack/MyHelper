@@ -187,8 +187,6 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-
-
         #region TargetsGroupForAdd_Edit : TargetsGroup - Для редактирования и добавления группы
 
         ///<summary>Для редактирования и добавления группы</summary>

@@ -1,15 +1,11 @@
-﻿using MyHelper.Models.Purposes;
-
+﻿using MyHelper.Models.Books;
 using MyHelper.Models.Challenges;
 using MyHelper.Models.MyTasks;
-using MyHelper.Models.Books;
 
 namespace MyHelper.Services.Interfaces
 {
     interface IOpenWindows
     {
-        bool OpenCreator_EditorTargetWindow(MyPurpose purpose, string title);
-        bool OpenCreator_EditorTargetsGroupWindow(MyPurposes listPurposes, string title);
         bool OpenCreator_EditorChallengeWindow(MyChallenge challenge, string duration, string title);
         DateTime OpenSelectStartDateWindow(MyChallenge challenge);
         void OpenChecklistChallengeWindow(MyChallenge challenge);

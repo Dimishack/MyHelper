@@ -1,19 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using MyHelper.Models.Purposes;
+﻿using MyHelper.Models.Books;
 using MyHelper.Models.Challenges;
+using MyHelper.Models.MyTasks;
 using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels;
 using MyHelper.Views.Windows;
-using System.Windows;
-using MyHelper.Models.MyTasks;
-using MyHelper.Models.Books;
 using MyHelper.Views.Windows.Books;
+using System.Windows;
 
 namespace MyHelper.Services
 {
-    class OpenWindowsServices(IServiceProvider services) : IOpenWindows
+    class OpenWindowsServices : IOpenWindows
     {
-        private readonly IServiceProvider _services = services;
         private ChecklistChallengeWindow? _checklistChallengeWindow;
 
         public void OpenChecklistChallengeWindow(MyChallenge challenge)
@@ -63,40 +60,6 @@ namespace MyHelper.Services
             };
             window.ShowDialog();
             return window.StartDate;
-        }
-
-        public bool OpenCreator_EditorTargetWindow(MyPurpose purpose, string title)
-        {
-            var window = new Creator_EditorPurposeWindow
-            {
-                Title = title,
-                Purpose = purpose.Purpose ?? String.Empty,
-                Note = purpose.Note ?? String.Empty,
-                Owner = App.ActivedWindow,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            if (window.ShowDialog() != true) return false;
-            purpose.Purpose = window.Purpose;
-            purpose.Note = window.Note;
-
-            return true;
-        }
-
-        public bool OpenCreator_EditorTargetsGroupWindow(MyPurposes listPurposes, string title)
-        {
-            var window = new Creator_EditorYearWindow
-            {
-                Title = title,
-                Year = listPurposes.Year,
-                NameYear = listPurposes.Name ?? "",
-                Owner = App.ActivedWindow,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            if (window.ShowDialog() != true) return false;
-            listPurposes.Year = window.Year;
-            listPurposes.Name = window.NameYear;
-
-            return true;
         }
 
         public bool OpenCreator_EditorTaskWindow(MyTask task, IList<string> groups, string title)
