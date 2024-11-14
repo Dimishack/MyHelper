@@ -44,7 +44,7 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand(OnShowTargetsViewCommandExecuted);
         ///<summary>Логика выполнения - Отобразить представление целей</summary>
         private void OnShowTargetsViewCommandExecuted(object? p) 
-            => CurrentViewModel = new TartetsUCViewModel(_openWindows, _userDialog, _workWithJSONFile, _targets);
+            => CurrentViewModel = new TargetsUCViewModel(_openWindows, _userDialog, _targets);
 
         #endregion
 
@@ -74,7 +74,7 @@ namespace MyHelper.ViewModels
             _userDialog = userDialog;
             _workWithJSONFile = workWithJSONFile;
             _targets = targets;
-            _currentViewModel = new TartetsUCViewModel(_openWindows, _userDialog, _workWithJSONFile, _targets);
+            _currentViewModel = new TargetsUCViewModel(_openWindows, _userDialog, _targets);
         }
     }
 }
