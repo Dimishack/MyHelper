@@ -15,15 +15,58 @@ namespace MyHelper.ViewModels
     class TartetsUCViewModel(IOpenWindows openWindows,
                                   IUserDialog userDialog,
                                   IWorkWithJSONFile workWithJSONFile,
-                                  IRepository<TargetsGroup> targets) : ViewModel
+                                  IRepository<TargetsGroup> targetsRepository) : ViewModel
     {
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
         private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
-        private readonly IRepository<TargetsGroup> _targetsRepository = targets;
+        private readonly IRepository<TargetsGroup> _targetsRepository = targetsRepository;
 
         #region Properties...
 
+        #region GroupsTargets : ObservableCollection<TargetsGroup> - Список групп с целями
+
+        ///<summary>Список групп с целями</summary>
+        public ObservableCollection<TargetsModel> GroupsTargets { get; } = [];
+
+        #endregion
+
+        #region SelectedTargets : TargetsModel - Выбранный список целей
+
+        ///<summary>Выбранный список целей</summary>
+        private TargetsModel? _selectedTargets;
+
+        ///<summary>Выбранный список целей</summary>
+        public TargetsModel? SelectedTargets
+        {
+            get => _selectedTargets;
+            set
+            {
+                if (_selectedTargets == value) return;
+                _selectedTargets?.Targets.Clear();
+                if (value is not null && _targetsRepository.Get(value.Id).Targets.Count == 0)
+                {
+                    var targets = _targetsRepository.Items.Include(g => g.Targets).FirstOrDefault(ts => ts.Id == value.Id)?.Targets;
+                    if (targets is not null)
+                    {
+                        foreach (var target in targets)
+                            value.Targets.Add(new TargetModel(target));
+                    }
+                }
+                Set(ref _selectedTargets, value);
+                OnPropertyChanged(nameof(SelectedTargetsView));
+
+            }
+        }
+
+        #endregion
+
+        private readonly CollectionViewSource _selectedTargetsViewSource = new();
+        public ICollectionView SelectedTargetsView => _selectedTargetsViewSource.View;
+
+        #region Sorts : Dictionary<string, SortDescription> - Список сортировки
+
+        /// <summary> Список сортировки </summary>
         public Dictionary<string, SortDescription> Sorts { get; } = new()
         {
             {"По порядку возрастания", new SortDescription("Id", ListSortDirection.Ascending)},
@@ -31,6 +74,8 @@ namespace MyHelper.ViewModels
             {"По целям (Z->Я)", new SortDescription("Name", ListSortDirection.Ascending)},
             {"По целям (Я->Z)", new SortDescription("Name", ListSortDirection.Descending)},
         };
+
+        #endregion
 
         #region SelectedSort : object - Выбранная сортировки
 
@@ -54,43 +99,21 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region GroupsTargets : ObservableCollection<TargetsGroup> - Список групп с целями
+        #region AutoSave : bool - Автосохранение
 
-        ///<summary>Список групп с целями</summary>
-        public ObservableCollection<TargetsModel> GroupsTargets { get; } = [];
-
-        #endregion
-
-        #region SelectedTargets : TargetsModel - Выбранный список целей
-
-        ///<summary>Выбранный список целей</summary>
-        private TargetsModel? _selectedTargets;
-
-        ///<summary>Выбранный список целей</summary>
-        public TargetsModel? SelectedTargets
+        ///<summary>Автосохранение</summary>
+        public bool AutoSave
         {
-            get => _selectedTargets;
+            get => _targetsRepository.AutoSaveChanges;
             set
             {
-                if (_selectedTargets == value) return;
-                if (value is not null)
-                {
-                    value.Targets.Clear();
-                    var targets = _targetsRepository.Items.Include(g => g.Targets).First(ts => ts.Id == value.Id).Targets;
-                    if (targets == null) return;
-                    foreach (var target in targets)
-                        value.Targets.Add(new TargetModel(target));
-                }
-                Set(ref _selectedTargets, value);
-                OnPropertyChanged(nameof(SelectedTargetsView));
-
+                if (_targetsRepository.AutoSaveChanges == value) return;
+                _targetsRepository.AutoSaveChanges = value;
+                OnPropertyChanged();
             }
         }
 
         #endregion
-
-        private readonly CollectionViewSource _selectedTargetsViewSource = new();
-        public ICollectionView SelectedTargetsView => _selectedTargetsViewSource.View;
 
         #endregion
 
@@ -236,12 +259,5 @@ namespace MyHelper.ViewModels
         {
 
         }
-
-        //~TartetsUCViewModel()
-        //{
-        //    GC.Collect();
-        //    GC.WaitForPendingFinalizers();
-        //    GC.Collect();
-        //}
     }
 }

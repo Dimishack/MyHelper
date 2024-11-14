@@ -3,22 +3,26 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:fa5="http://schemas.fontawesome.com/icons/"
                     xmlns:ice="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+                    xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
                     mc:Ignorable="ice">
-    <Style TargetType="fa5:ImageAwesome" x:Key="AddImage" ice:Freeze="True">
-        <Setter Property="Icon" Value="Solid_Plus"/>
+    <Style TargetType="fa:IconImage" x:Key="AddFAStyle" ice:Freeze="True">
+        <Setter Property="Icon" Value="Plus"/>
+        <Setter Property="Width" Value="16"/>
+        <Setter Property="IconFont" Value="Solid"/>
+    </Style>
+    <Style TargetType="fa:IconImage" x:Key="RemoveFAStyle" ice:Freeze="True">
+        <Setter Property="Icon" Value="Xmark"/>
         <Setter Property="Width" Value="16"/>
     </Style>
-    <Style TargetType="fa5:ImageAwesome" x:Key="RemoveImage" ice:Freeze="True">
-        <Setter Property="Icon" Value="Solid_Minus"/>
+    <Style TargetType="fa:IconImage" x:Key="EditFAStyle" ice:Freeze="True">
+        <Setter Property="Icon" Value="Edit"/>
         <Setter Property="Width" Value="16"/>
+        <Setter Property="IconFont" Value="Solid"/>
     </Style>
-    <Style TargetType="fa5:ImageAwesome" x:Key="EditImage" ice:Freeze="True">
-        <Setter Property="Icon" Value="Regular_Edit"/>
+    <Style TargetType="fa:IconImage" x:Key="SaveFAStyle" ice:Freeze="True">
+        <Setter Property="Icon" Value="Save"/>
         <Setter Property="Width" Value="16"/>
-    </Style>
-    <Style TargetType="fa5:ImageAwesome" x:Key="SaveImage" ice:Freeze="True">
-        <Setter Property="Icon" Value="Regular_Save"/>
-        <Setter Property="Width" Value="16"/>
+        <Setter Property="IconFont" Value="Regular"/>
     </Style>
 
 </ResourceDictionary>
