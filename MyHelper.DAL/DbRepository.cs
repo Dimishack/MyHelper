@@ -3,7 +3,6 @@ using MyHelper.DAL.Context;
 using MyHelper.DAL.Entyties.Base;
 using MyHelper.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -90,5 +89,4 @@ namespace MyHelper.DAL
         public void SaveChanged() => _db.SaveChanges();
         public async Task SaveChangedAsync() => await _db.SaveChangesAsync();
     }
-
 }

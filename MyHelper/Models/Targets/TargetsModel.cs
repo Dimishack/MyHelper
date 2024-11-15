@@ -42,7 +42,7 @@ namespace MyHelper.Models.Targets
             }
         }
 
-        private void NewTarget_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void NewTarget_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (sender is TargetModel target && e.PropertyName == nameof(target.IsComplete))
                 CompletedTargetsCount += target.IsComplete ? 1 : -1;

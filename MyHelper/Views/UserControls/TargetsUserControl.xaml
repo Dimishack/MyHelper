@@ -100,8 +100,7 @@
                     </Button>
                 </UniformGrid>
                 <ListBox ItemsSource="{Binding GroupsTargets}"
-                         SelectedItem="{Binding SelectedTargets}"
-                         SelectedIndex="0"
+                         SelectedItem="{Binding SelectedTargetsGroup}"
                          DisplayMemberPath="Year"/>
             </Grid>
         </GroupBox>
@@ -138,7 +137,7 @@
                 </StackPanel>
             </GroupBox>
         </DockPanel>
-        <GroupBox Header="{Binding SelectedTargets.Name, FallbackValue='Выберите год'}"
+        <GroupBox Header="{Binding SelectedTargetsGroup.Name, FallbackValue='Выберите год'}"
                   Grid.Column="1" Background="White">
             <Grid>
                 <Grid.RowDefinitions>
@@ -148,8 +147,8 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Vertical"
                             Background="White" Grid.Row="2" Panel.ZIndex="2">
-                    <TextBlock Text="{Binding SelectedTargets.CompletedTargetsCount, StringFormat='Количество выполненных целей: {0}'}"/>
-                    <TextBlock Text="{Binding SelectedTargets.Targets.Count, StringFormat='Количество целей: {0}'}"/>
+                    <TextBlock Text="{Binding SelectedTargetsGroup.CompletedTargetsCount, StringFormat='Количество выполненных целей: {0}'}"/>
+                    <TextBlock Text="{Binding SelectedTargetsGroup.Targets.Count, StringFormat='Количество целей: {0}'}"/>
                     <StackPanel Orientation="Horizontal" Panel.ZIndex="2">
                         <TextBlock Text="Автосохранение: "/>
                         <CheckBox IsChecked="{Binding AutoSave}"/>
@@ -157,25 +156,25 @@
                 </StackPanel>
                 <UniformGrid DockPanel.Dock="Bottom" Rows="1" Background="White"
                              Grid.Row="1" Panel.ZIndex="2">
-                    <UniformGrid.Resources>
-                        <Style TargetType="Button">
-                            <Setter Property="Margin" Value="2"/>
-                            <Setter Property="Padding" Value="3"/>
-                        </Style>
-                    </UniformGrid.Resources>
-                    <Button>
+                    <ToggleButton IsChecked="{Binding AddTarget}"
+                                  IsEnabled="{Binding EnableToggleButtons}">
                         <fa:IconImage Style="{StaticResource AddFAStyle}"/>
-                    </Button>
-                    <Button>
+                    </ToggleButton>
+                    <ToggleButton IsChecked="{Binding ChangeTarget}"
+                                  IsEnabled="{Binding EnableToggleButtonChangeTarget}">
                         <fa:IconImage Style="{StaticResource EditFAStyle}"/>
+                    </ToggleButton>
+                    <Button Command="{Binding RemoveTargetCommand}">
+                        <fa:IconImage Style="{StaticResource RemoveFAStyle}"/>
                     </Button>
                 </UniformGrid>
-                <ListBox ItemsSource="{Binding SelectedTargetsView}">
+                <ListBox ItemsSource="{Binding SelectedTargetsView}"
+                         SelectedItem="{Binding SelectedTarget}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Vertical">
                                 <TextBlock Text="{Binding Name}"/>
-                                <CheckBox IsChecked="{Binding IsComplete}"/>
+                                <CheckBox IsChecked="{Binding IsComplete}" HorizontalAlignment="Left"/>
                                 <TextBlock Text="{Binding Note}"/>
                             </StackPanel>
                         </DataTemplate>
@@ -186,6 +185,10 @@
                                                VerticalAlignment="Bottom"
                                                   Panel.ZIndex="1">
                 </local:Add_EditGroupTargetsUserControl>
+                <local:Add_EditTargetUserControl Grid.Row="0"
+                                                 HorizontalAlignment="Stretch"
+                                                 VerticalAlignment="Bottom"
+                                                 Panel.ZIndex="1"/>
             </Grid>
         </GroupBox>
     </Grid>

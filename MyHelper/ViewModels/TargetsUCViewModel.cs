@@ -17,11 +17,13 @@ namespace MyHelper.ViewModels
 {
     class TargetsUCViewModel(IOpenWindows openWindows,
                                   IUserDialog userDialog,
-                                  IRepository<TargetsGroup> targetsRepository) : ViewModel
+                                  IRepository<Target> targetRepository,
+                                  IRepository<TargetsGroup> targetsGroupRepository) : ViewModel
     {
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
-        private readonly IRepository<TargetsGroup> _targetsRepository = targetsRepository;
+        private readonly IRepository<Target> _targetRepository = targetRepository;
+        private readonly IRepository<TargetsGroup> _targetsRepository = targetsGroupRepository;
 
         #region Properties...
 
@@ -32,29 +34,34 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region SelectedTargets : TargetsModel - Выбранный список целей
+        #region SelectedTargetsGroup : TargetsModel - Выбранная группа
 
-        ///<summary>Выбранный список целей</summary>
-        private TargetsModel? _selectedTargets;
+        ///<summary>Выбранная группа</summary>
+        private TargetsModel? _selectedTargetsGroup;
 
-        ///<summary>Выбранный список целей</summary>
-        public TargetsModel? SelectedTargets
+        ///<summary>Выбранная группа</summary>
+        public TargetsModel? SelectedTargetsGroup
         {
-            get => _selectedTargets;
+            get => _selectedTargetsGroup;
             set
             {
-                if (_selectedTargets == value) return;
-                _selectedTargets?.Targets.Clear();
-                if (value is not null && value.Targets.Count == 0)
+                if (_selectedTargetsGroup == value) return;
+                SelectedTargets.Clear();
+                if (value is not null)
                 {
-                    var targets = _targetsRepository.Items.Include(g => g.Targets).FirstOrDefault(ts => ts.Id == value.Id)?.Targets;
-                    if (targets is not null)
+                    if (value.Targets.Count == 0)
                     {
-                        foreach (var target in targets)
-                            value.Targets.Add(new TargetModel(target));
+                        var targets = _targetsRepository.Items.Include(g => g.Targets).FirstOrDefault(ts => ts.Id == value.Id)?.Targets;
+                        if (targets is not null)
+                        {
+                            foreach (var target in targets)
+                                value.Targets.Add(new TargetModel(target));
+                        } 
                     }
+                    foreach (var target in value.Targets)
+                        SelectedTargets.Add(target);
                 }
-                Set(ref _selectedTargets, value);
+                Set(ref _selectedTargetsGroup, value);
                 DepedenciesChanged();
 
             }
@@ -62,9 +69,34 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region Targets : ObservableCollection<TargetModel> - Список целей
+
+        ///<summary>Список целей</summary>
+        public ObservableCollection<TargetModel> SelectedTargets { get; } = [];
+
+        #endregion
+
+        #region SelectedTarget : TargetModel - Выбранная цель
+
+        ///<summary>Выбранная цель</summary>
+        private TargetModel? _selectedTarget;
+
+        ///<summary>Выбранная цель</summary>
+        public TargetModel? SelectedTarget
+        {
+            get => _selectedTarget;
+            set
+            {
+                if (!Set(ref _selectedTarget, value)) return;
+                DepedenciesChanged();
+            }
+        }
+
+        #endregion
+
         private readonly CollectionViewSource _selectedTargetsViewSource = new();
 
-        [DependencyOn(nameof(SelectedTargets))]
+        [DependencyOn(nameof(SelectedTargetsGroup))]
         public ICollectionView SelectedTargetsView => _selectedTargetsViewSource.View;
 
         #region Sorts : Dictionary<string, SortDescription> - Список сортировки
@@ -126,6 +158,7 @@ namespace MyHelper.ViewModels
         [PropertyChangedWith(nameof(IsVisibleAdd_EditGroup))]
         [PropertyChangedWith(nameof(EnableToggleButtons))]
         [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
+        [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
         ///<summary>Добавить группу</summary>
         public bool AddGroup
         {
@@ -145,6 +178,35 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region AddTarget : bool - Добавить цель
+
+        ///<summary>Добавить цель</summary>
+        private bool _addTarget;
+
+        [PropertyChangedWith(nameof(IsVisibleAdd_EditTarget))]
+        [PropertyChangedWith(nameof(EnableToggleButtons))]
+        [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
+        [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
+        ///<summary>Добавить цель</summary>
+        public bool AddTarget
+        {
+            get => _addTarget;
+            set
+            {
+                if (!Set(ref _addTarget, value)) return;
+                if (value)
+                {
+                    TargetForAdd_Edit.Name = "";
+                    TargetForAdd_Edit.Note = "";
+                    TargetForAdd_Edit.IsComplete = false;
+                    OnPropertyChanged(nameof(TargetForAdd_Edit));
+                }
+                ChangedWithProperties();
+            }
+        }
+
+        #endregion
+
         #region ChangeGroup : bool - Изменить группу
 
         ///<summary>Изменить группу</summary>
@@ -153,6 +215,7 @@ namespace MyHelper.ViewModels
         [PropertyChangedWith(nameof(IsVisibleAdd_EditGroup))]
         [PropertyChangedWith(nameof(EnableToggleButtons))]
         [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
+        [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
         ///<summary>Изменить группу</summary>
         public bool ChangeGroup
         {
@@ -160,11 +223,40 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _changeGroup, value)) return;
-                if (value && _selectedTargets is not null)
+                if (value && _selectedTargetsGroup is not null)
                 {
-                    TargetsGroupForAdd_Edit.Year = _selectedTargets.Year;
-                    TargetsGroupForAdd_Edit.Name = _selectedTargets.Name;
+                    TargetsGroupForAdd_Edit.Year = _selectedTargetsGroup.Year;
+                    TargetsGroupForAdd_Edit.Name = _selectedTargetsGroup.Name;
                     OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
+                }
+                ChangedWithProperties();
+            }
+        }
+
+        #endregion
+
+        #region ChangeTarget : bool - Изменить цель
+
+        ///<summary>Изменить цель</summary>
+        private bool _changeTarget;
+
+        [PropertyChangedWith(nameof(IsVisibleAdd_EditTarget))]
+        [PropertyChangedWith(nameof(EnableToggleButtons))]
+        [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
+        [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
+        ///<summary>Изменить цель</summary>
+        public bool ChangeTarget
+        {
+            get => _changeTarget;
+            set
+            {
+                if (!Set(ref _changeTarget, value)) return;
+                if (value && _selectedTarget is not null)
+                {
+                    TargetForAdd_Edit.Name = _selectedTarget.Name;
+                    TargetForAdd_Edit.Note = _selectedTarget.Note;
+                    TargetForAdd_Edit.IsComplete = _selectedTarget.IsComplete;
+                    OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
                 ChangedWithProperties();
             }
@@ -179,18 +271,36 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region IsVisibleAdd_EditTarget : bool - Видимость окна создания или редактирования цели
+
+        ///<summary>Видимость окна создания или редактирования цели</summary>
+        private bool _isVisibleAdd_EditTarget;
+
+        ///<summary>Видимость окна создания или редактирования цели</summary>
+        public bool IsVisibleAdd_EditTarget => _addTarget || _changeTarget;
+
+        #endregion
+
         #region EnableToggleButtons : bool - Включить переключатели
 
         ///<summary>Включить переключатели</summary>
-        public bool EnableToggleButtons => !IsVisibleAdd_EditGroup;
+        public bool EnableToggleButtons => !IsVisibleAdd_EditGroup && !IsVisibleAdd_EditTarget;
 
         #endregion
 
         #region EnableToggleButtonChangeGroup : bool - Включить переключатель изменения групп
 
-        [DependencyOn(nameof(SelectedTargets))]
+        [DependencyOn(nameof(SelectedTargetsGroup))]
         ///<summary>Включить переключатели</summary>
-        public bool EnableToggleButtonChangeGroup => !IsVisibleAdd_EditGroup && _selectedTargets?.Year != 0;
+        public bool EnableToggleButtonChangeGroup => EnableToggleButtons && _selectedTargetsGroup?.Year != 0;
+
+        #endregion
+
+        #region EnableToggleButtonChangeTarget : bool - Включить переключатель изменения цели
+
+        [DependencyOn(nameof(SelectedTarget))]
+        ///<summary>Включить переключатель изменения цели</summary>
+        public bool EnableToggleButtonChangeTarget => EnableToggleButtons && _selectedTarget is not null;
 
         #endregion
 
@@ -205,6 +315,16 @@ namespace MyHelper.ViewModels
             get => _targetsGroupForAdd_Edit;
             set => Set(ref _targetsGroupForAdd_Edit, value);
         }
+
+        #endregion
+
+        #region TargetForAdd_Edit : Target - Для редактирования и добавления цели
+
+        ///<summary>Для редактирования и добавления цели</summary>
+        private Target _targetForAdd_Edit = new();
+
+        ///<summary>Для редактирования и добавления цели</summary>
+        public Target TargetForAdd_Edit { get => _targetForAdd_Edit; set => Set(ref _targetForAdd_Edit, value); }
 
         #endregion
 
@@ -227,8 +347,7 @@ namespace MyHelper.ViewModels
             GroupsTargets.Clear();
             foreach (TargetsGroup targets in _targetsRepository.Items)
                 GroupsTargets.Add(new TargetsModel(targets));
-            _selectedTargetsViewSource.Source = SelectedTargets?.Targets;
-            OnPropertyChanged(nameof(SelectedTargetsView));
+            _selectedTargetsViewSource.Source = SelectedTargets;
         }
         #endregion
 
@@ -241,7 +360,8 @@ namespace MyHelper.ViewModels
         public ICommand CreateGroupCommand => _createTargetsGroupCommand
             ??= new LambdaCommandAsync(OnCreateGroupCommandExecuted, CanCreateGroupCommandExecute);
 
-        private bool CanCreateGroupCommandExecute(object? p) => !string.IsNullOrWhiteSpace(_targetsGroupForAdd_Edit.Name);
+        private bool CanCreateGroupCommandExecute(object? p) => IsVisibleAdd_EditGroup
+            && !string.IsNullOrWhiteSpace(_targetsGroupForAdd_Edit.Name);
 
         ///<summary>Логика выполнения - создать новую группу</summary>
         private async Task OnCreateGroupCommandExecuted(object? p)
@@ -251,6 +371,7 @@ namespace MyHelper.ViewModels
                 Name = _targetsGroupForAdd_Edit.Name,
                 Year = _targetsGroupForAdd_Edit.Year,
             })));
+            SelectedTargetsGroup = GroupsTargets.Last();
             AddGroup = false;
         }
 
@@ -263,7 +384,9 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда - отмены создания новой группы</summary>
         public ICommand CancelCreateGroupCommand => _cancelCreateGroupCommand
-            ??= new LambdaCommand(OnCancelCreateGroupCommandExecuted);
+            ??= new LambdaCommand(OnCancelCreateGroupCommandExecuted, CanCancelCreateGroupCommandExecute);
+
+        private bool CanCancelCreateGroupCommandExecute(object? p) => IsVisibleAdd_EditGroup;
 
         ///<summary>Логика выполнения - отмены создания новой группы</summary>
         private void OnCancelCreateGroupCommandExecuted(object? p) => AddGroup = ChangeGroup = false;
@@ -280,14 +403,17 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommandAsync(OnChangeGroupCommandExecuted, CanChangeGroupCommandExecute);
 
         ///<summary>Проверка возможности выполнения - изменить значения группы</summary>
-        private bool CanChangeGroupCommandExecute(object? p) => _selectedTargets is not null;
+        private bool CanChangeGroupCommandExecute(object? p) => IsVisibleAdd_EditGroup
+            && _selectedTargetsGroup is not null
+            && !string.IsNullOrWhiteSpace(_targetsGroupForAdd_Edit.Name)
+            ;
 
         ///<summary>Логика выполнения - изменить значения группы</summary>
         private async Task OnChangeGroupCommandExecuted(object? p)
         {
-            _selectedTargets!.Year = _targetsGroupForAdd_Edit.Year;
-            _selectedTargets.Name = _targetsGroupForAdd_Edit.Name;
-            var item = _targetsRepository.Get(_selectedTargets.Id);
+            _selectedTargetsGroup!.Year = _targetsGroupForAdd_Edit.Year;
+            _selectedTargetsGroup.Name = _targetsGroupForAdd_Edit.Name;
+            var item = await _targetsRepository.GetAsync(_selectedTargetsGroup.Id);
             await _targetsRepository.UpdateAsync(item);
             CollectionViewSource.GetDefaultView(GroupsTargets).Refresh();
             ChangeGroup = false;
@@ -305,17 +431,120 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommandAsync(OnRemoveTargetsGroupCommandExecuted, CanRemoveTargetsGroupCommandExecute);
 
         ///<summary>Проверка возможности выполнения - удалить группу</summary>
-        private bool CanRemoveTargetsGroupCommandExecute(object? p) => _selectedTargets is not null
-            && _selectedTargets.Year != 0
+        private bool CanRemoveTargetsGroupCommandExecute(object? p) => _selectedTargetsGroup is not null
+            && _selectedTargetsGroup.Year != 0
             && !IsVisibleAdd_EditGroup
             ;
 
         ///<summary>Логика выполнения - удалить группу</summary>
         private async Task OnRemoveTargetsGroupCommandExecuted(object? p)
         {
-            await _targetsRepository.RemoveAsync(_selectedTargets!.Id);
-            GroupsTargets.Remove(_selectedTargets);
-            SelectedTargets = GroupsTargets.Count > 0 ? GroupsTargets.Last() : null;
+            await _targetsRepository.RemoveAsync(_selectedTargetsGroup!.Id);
+            GroupsTargets.Remove(_selectedTargetsGroup);
+            SelectedTargetsGroup = GroupsTargets.Count > 0 ? GroupsTargets.Last() : null;
+        }
+
+        #endregion
+
+        #region CreateTargetCommand - Команда - создать новую цель
+
+        ///<summary>Команда - создать новую цель</summary>
+        private ICommand? _createTargetCommand;
+
+        ///<summary>Команда - создать новую цель</summary>
+        public ICommand CreateTargetCommand => _createTargetCommand
+            ??= new LambdaCommandAsync(OnCreateTargetCommandExecuted, CanCreateTargetCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - создать новую цель</summary>
+        private bool CanCreateTargetCommandExecute(object? p) => IsVisibleAdd_EditTarget
+            && !string.IsNullOrWhiteSpace(_targetForAdd_Edit.Name)
+            ;
+
+        ///<summary>Логика выполнения - создать новую цель</summary>
+        private async Task OnCreateTargetCommandExecuted(object? p)
+        {
+            var newTarget = new Target()
+            {
+                Name = _targetForAdd_Edit.Name,
+                Note = _targetForAdd_Edit.Note,
+                IsComplete = _targetForAdd_Edit.IsComplete,
+                TargetsGroupId = _selectedTargetsGroup.Id,
+            };
+            SelectedTargetsGroup?.Targets.Add(new TargetModel(newTarget));
+            SelectedTargets.Add(new TargetModel(newTarget));
+            await _targetRepository.AddAsync(newTarget);
+            AddTarget = false;
+            SelectedTargetsView.Refresh();
+        }
+
+        #endregion
+
+        #region ChangeTargetCommand - Команда - изменить цель
+
+        ///<summary>Команда - изменить цель</summary>
+        private ICommand? _changeTargetCommand;
+
+        ///<summary>Команда - изменить цель</summary>
+        public ICommand ChangeTargetCommand => _changeTargetCommand
+            ??= new LambdaCommandAsync(OnChangeTargetCommandExecuted, CanChangeTargetCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - изменить цель</summary>
+        private bool CanChangeTargetCommandExecute(object? p) => IsVisibleAdd_EditTarget
+            && _selectedTarget is not null
+            && !string.IsNullOrWhiteSpace(_targetForAdd_Edit.Name)
+            ;
+
+        ///<summary>Логика выполнения - изменить цель</summary>
+        private async Task OnChangeTargetCommandExecuted(object? p)
+        {
+            _selectedTarget!.Name = _targetForAdd_Edit.Name;
+            _selectedTarget.Note = _targetForAdd_Edit.Note;
+            _selectedTarget.IsComplete = _targetForAdd_Edit.IsComplete;
+            await _targetRepository.UpdateAsync(await _targetRepository.GetAsync(_selectedTarget.Id));
+            ChangeTarget = false;
+            SelectedTargetsView.Refresh();
+        }
+
+        #endregion
+
+        #region CancelCreate_EditTargetCommand - Команда - отмены создания и редактирования цели
+
+        ///<summary>Команда - отмены создания и редактирования цели</summary>
+        private ICommand? _cancelCreate_EditCommandCommand;
+
+        ///<summary>Команда - отмены создания и редактирования цели</summary>
+        public ICommand CancelCreate_EditTargetCommand => _cancelCreate_EditCommandCommand
+            ??= new LambdaCommand(OnCancelCreate_EditTargetCommandExecuted, CanCancelCreate_EditTargetCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - отмены создания и редактирования цели</summary>
+        private bool CanCancelCreate_EditTargetCommandExecute(object? p) => IsVisibleAdd_EditTarget;
+
+        ///<summary>Логика выполнения - отмены создания и редактирования цели</summary>
+        private void OnCancelCreate_EditTargetCommandExecuted(object? p)
+            => AddTarget = ChangeTarget = false;
+
+        #endregion
+
+        #region RemoveTargetCommand - Команда - удалить цель
+
+        ///<summary>Команда - удалить цель</summary>
+        private ICommand? _removeTargetCommand;
+
+        ///<summary>Команда - удалить цель</summary>
+        public ICommand RemoveTargetCommand => _removeTargetCommand
+            ??= new LambdaCommandAsync(OnRemoveTargetCommandExecuted, CanRemoveTargetCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - удалить цель</summary>
+        private bool CanRemoveTargetCommandExecute(object? p) => !IsVisibleAdd_EditTarget
+            && _selectedTarget is not null
+            ;
+
+        ///<summary>Логика выполнения - удалить цель</summary>
+        private async Task OnRemoveTargetCommandExecuted(object? p)
+        {
+            await _targetRepository.RemoveAsync(_selectedTarget.Id);
+            SelectedTargetsGroup?.Targets.Remove(_selectedTarget);
+            SelectedTargets.Remove(_selectedTarget);
         }
 
         #endregion
@@ -330,34 +559,26 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand<string>(OnFilterCommandExecuted, CanFilterCommandExecute);
 
         ///<summary>Проверка возможности выполнения - фильтровать список</summary>
-        private bool CanFilterCommandExecute(string p) => _selectedTargets is not null;
+        private bool CanFilterCommandExecute(string p) => _selectedTargetsGroup is not null;
 
         ///<summary>Логика выполнения - фильтровать список</summary>
         private void OnFilterCommandExecuted(string p)
         {
-            _selectedTargets!.Targets.Clear();
+            var targets = _selectedTargetsGroup!.Targets;
+            SelectedTargets.Clear();
             switch (p.ToLower())
             {
                 case "все":
-                    foreach (var target in _targetsRepository.Items
-                        .Include(g => g.Targets)
-                        .First(ts => ts.Id == _selectedTargets.Id)
-                        .Targets)
-                        _selectedTargets.Targets.Add(new TargetModel(target));
+                    foreach (var target in targets)
+                        SelectedTargets.Add(target);
                     break;
                 case "выполненные":
-                    foreach (var target in _targetsRepository.Items
-                        .Include(g => g.Targets)
-                        .First(ts => ts.Id == _selectedTargets.Id)
-                        .Targets.Where(t => t.IsComplete))
-                        _selectedTargets.Targets.Add(new TargetModel(target));
+                    foreach (var target in targets.Where(t => t.IsComplete))
+                        SelectedTargets.Add(target);
                     break;
                 case "невыполненные":
-                    foreach (var target in _targetsRepository.Items
-                        .Include(g => g.Targets)
-                        .First(ts => ts.Id == _selectedTargets.Id)
-                        .Targets.Where(t => !t.IsComplete))
-                        _selectedTargets.Targets.Add(new TargetModel(target));
+                    foreach (var target in targets.Where(t => !t.IsComplete))
+                        SelectedTargets.Add(target);
                     break;
                 default:
                     break;
@@ -367,7 +588,7 @@ namespace MyHelper.ViewModels
         #endregion
 
         #endregion
-        public TargetsUCViewModel() : this(null, null, null)
+        public TargetsUCViewModel() : this(null, null, null, null)
         {
 
         }
@@ -388,7 +609,7 @@ namespace MyHelper.ViewModels
             if (property is not null)
             {
                 var attributes = property.GetCustomAttributes<PropertyChangedWithAttribute>();
-                if(attributes is not null)
+                if (attributes is not null)
                     foreach (var attribute in attributes)
                         OnPropertyChanged(attribute.PropertyName);
             }

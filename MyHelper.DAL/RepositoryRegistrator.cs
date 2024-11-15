@@ -7,6 +7,7 @@ namespace MyHelper.DAL
     public static class RepositoryRegistrator
     {
         public static IServiceCollection AddRepositoriesInDB(this IServiceCollection services) => services
+            .AddTransient<IRepository<Target>, DbRepository<Target>>()
             .AddTransient<IRepository<TargetsGroup>, DbRepository<TargetsGroup>>()
             ;
     }

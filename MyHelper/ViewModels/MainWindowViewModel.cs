@@ -12,6 +12,7 @@ namespace MyHelper.ViewModels
         private readonly IOpenWindows _openWindows;
         private readonly IUserDialog _userDialog;
         private readonly IWorkWithJSONFile _workWithJSONFile;
+        private readonly IRepository<Target> _targetRepository;
         private readonly IRepository<TargetsGroup> _targets;
 
         #region CurrentViewModel : ViewModel - Текущая модель-представления
@@ -36,7 +37,7 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand(OnShowTargetsViewCommandExecuted);
         ///<summary>Логика выполнения - Отобразить представление целей</summary>
         private void OnShowTargetsViewCommandExecuted(object? p) 
-            => CurrentViewModel = new TargetsUCViewModel(_openWindows, _userDialog, _targets);
+            => CurrentViewModel = new TargetsUCViewModel(_openWindows, _userDialog, _targetRepository, _targets);
 
         #endregion
 
@@ -60,13 +61,15 @@ namespace MyHelper.ViewModels
         public MainWindowViewModel(IOpenWindows openWindows,
                                       IUserDialog userDialog,
                                       IWorkWithJSONFile workWithJSONFile,
-                                      IRepository<TargetsGroup> targets)
+                                      IRepository<Target> targetRepository,
+                                      IRepository<TargetsGroup> targetsGroupRepository)
         {
             _openWindows = openWindows;
             _userDialog = userDialog;
             _workWithJSONFile = workWithJSONFile;
-            _targets = targets;
-            _currentViewModel = new TargetsUCViewModel(_openWindows, _userDialog, _targets);
+            _targetRepository = targetRepository;
+            _targets = targetsGroupRepository;
+            _currentViewModel = new TargetsUCViewModel(_openWindows, _userDialog, targetRepository, _targets);
         }
     }
 }

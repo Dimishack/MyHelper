@@ -24,19 +24,17 @@ namespace MyHelper.Data
             _logger.LogInformation("Инициализация БД выполнена за {0} с", timer.Elapsed.TotalSeconds);
         }
 
-        private readonly int _year = DateTime.Now.Year;
-        private TargetsGroup? _targetsGroup;
         private async Task InitializeTargets()
         {
             var timer = Stopwatch.StartNew();
             _logger.LogInformation("Инициализация целей...");
 
             var rnd = new Random();
-            _targetsGroup = new TargetsGroup()
+            var _targetsGroup = new TargetsGroup()
             {
                 Name = "Пожизненные цели",
                 Year = 0,
-                Targets = new Collection<Target>(Enumerable.Range(1, 10).Select(i => new Target()
+                Targets = new Collection<Target>(Enumerable.Range(0, 10).Select(i => new Target()
                 {
                     IsComplete = Random.Shared.Next(0, 2) == 1,
                     Name = "GroupsTargets " + i,
