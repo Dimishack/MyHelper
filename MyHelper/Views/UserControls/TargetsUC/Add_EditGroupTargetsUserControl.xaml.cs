@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace MyHelper.Views.UserControls
+namespace MyHelper.Views.UserControls.TargetsUC
 {
     public partial class Add_EditGroupTargetsUserControl : UserControl
     {

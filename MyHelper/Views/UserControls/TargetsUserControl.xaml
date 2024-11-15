@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:MyHelper.Views.UserControls"
+             xmlns:targetsUC="clr-namespace:MyHelper.Views.UserControls.TargetsUC"
              
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
@@ -180,12 +181,11 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <local:Add_EditGroupTargetsUserControl Grid.Row="0"
+                <targetsUC:Add_EditGroupTargetsUserControl Grid.Row="0"
                                                HorizontalAlignment="Stretch"
                                                VerticalAlignment="Bottom"
-                                                  Panel.ZIndex="1">
-                </local:Add_EditGroupTargetsUserControl>
-                <local:Add_EditTargetUserControl Grid.Row="0"
+                                                  Panel.ZIndex="1"/>
+                <targetsUC:Add_EditTargetUserControl Grid.Row="0"
                                                  HorizontalAlignment="Stretch"
                                                  VerticalAlignment="Bottom"
                                                  Panel.ZIndex="1"/>

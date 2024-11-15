@@ -29,6 +29,7 @@
                     <VirtualizingStackPanel Orientation="Vertical"/>
                 </ItemsPanelTemplate>
             </Menu.ItemsPanel>
+            <MenuItem Header="Начало" Command="{Binding ShowHomeViewCommand}"/>
             <MenuItem Header="Цели" Command="{Binding ShowTargetsViewCommand}"/>
             <MenuItem Header="Задачи" Command="{Binding ShowTasksViewCommand}"/>
         </Menu>

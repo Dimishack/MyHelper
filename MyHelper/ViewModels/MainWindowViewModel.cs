@@ -27,6 +27,20 @@ namespace MyHelper.ViewModels
 
         #region Commands...
 
+        #region ShowHomeViewCommand - Команда - отобразить начальное окно
+
+        ///<summary>Команда - отобразить начальное окно</summary>
+        private ICommand? _showHomeCommandCommand;
+
+        ///<summary>Команда - отобразить начальное окно</summary>
+        public ICommand ShowHomeViewCommand => _showHomeCommandCommand
+            ??= new LambdaCommand(OnShowHomeViewCommandExecuted);
+
+        ///<summary>Логика выполнения - отобразить начальное окно</summary>
+        private void OnShowHomeViewCommandExecuted(object? p) => CurrentViewModel = new HomeViewModel();
+
+        #endregion
+
         #region ShowTargetsViewCommand - Команда - Отобразить представление целей
 
         ///<summary>Команда - Отобразить представление целей</summary>
@@ -69,7 +83,7 @@ namespace MyHelper.ViewModels
             _workWithJSONFile = workWithJSONFile;
             _targetRepository = targetRepository;
             _targets = targetsGroupRepository;
-            _currentViewModel = new TargetsUCViewModel(_openWindows, _userDialog, targetRepository, _targets);
+            _currentViewModel = new HomeViewModel();
         }
     }
 }
