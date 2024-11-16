@@ -1,0 +1,6 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <FontFamily x:Key="Monoid">FontFamilies/#Monoid Italic</FontFamily>
+    <FontFamily x:Key="Ruthless Sketch">FontFamilies/#Ruthless Sketch Regular</FontFamily>
+    <FontFamily x:Key="Murs Gothic Key">FontFamilies/#Murs Gothic Wide Dark</FontFamily>
+</ResourceDictionary>

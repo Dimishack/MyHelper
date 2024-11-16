@@ -5,18 +5,56 @@
     <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <ImplicitUsings>enable</ImplicitUsings>
     <StartupObject>MyHelper.Program</StartupObject>
+    <ApplicationIcon>Resources\Images\icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Resources\icon.ico" />
+    <None Remove="Resources\Images\Books.png" />
+    <None Remove="Resources\Images\Challenges.png" />
+    <None Remove="Resources\Images\Cinema.png" />
+    <None Remove="Resources\Images\Home.png" />
+    <None Remove="Resources\Images\icon.ico" />
+    <None Remove="Resources\Images\icon.png" />
+    <None Remove="Resources\Images\Menu.png" />
+    <None Remove="Resources\Images\Menu_MouseOver.png" />
+    <None Remove="Resources\Images\Settings.png" />
+    <None Remove="Resources\Images\Targets.png" />
+    <None Remove="Resources\Images\Tasks.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\icon.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Resource Include="Resources\Images\Books.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Challenges.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Cinema.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Home.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\icon.ico" />
+    <Resource Include="Resources\Images\icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Menu.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Menu_MouseOver.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Settings.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Targets.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\Tasks.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 

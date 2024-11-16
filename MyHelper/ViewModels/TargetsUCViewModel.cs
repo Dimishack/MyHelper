@@ -157,6 +157,7 @@ namespace MyHelper.ViewModels
 
         [PropertyChangedWith(nameof(IsVisibleAdd_EditGroup))]
         [PropertyChangedWith(nameof(EnableToggleButtons))]
+        [PropertyChangedWith(nameof(EnableToggleButtonCreateTarget))]
         [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
         [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
         ///<summary>Добавить группу</summary>
@@ -185,6 +186,7 @@ namespace MyHelper.ViewModels
 
         [PropertyChangedWith(nameof(IsVisibleAdd_EditTarget))]
         [PropertyChangedWith(nameof(EnableToggleButtons))]
+        [PropertyChangedWith(nameof(EnableToggleButtonCreateTarget))]
         [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
         [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
         ///<summary>Добавить цель</summary>
@@ -214,6 +216,7 @@ namespace MyHelper.ViewModels
 
         [PropertyChangedWith(nameof(IsVisibleAdd_EditGroup))]
         [PropertyChangedWith(nameof(EnableToggleButtons))]
+        [PropertyChangedWith(nameof(EnableToggleButtonCreateTarget))]
         [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
         [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
         ///<summary>Изменить группу</summary>
@@ -242,6 +245,7 @@ namespace MyHelper.ViewModels
 
         [PropertyChangedWith(nameof(IsVisibleAdd_EditTarget))]
         [PropertyChangedWith(nameof(EnableToggleButtons))]
+        [PropertyChangedWith(nameof(EnableToggleButtonCreateTarget))]
         [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
         [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
         ///<summary>Изменить цель</summary>
@@ -274,9 +278,6 @@ namespace MyHelper.ViewModels
         #region IsVisibleAdd_EditTarget : bool - Видимость окна создания или редактирования цели
 
         ///<summary>Видимость окна создания или редактирования цели</summary>
-        private bool _isVisibleAdd_EditTarget;
-
-        ///<summary>Видимость окна создания или редактирования цели</summary>
         public bool IsVisibleAdd_EditTarget => _addTarget || _changeTarget;
 
         #endregion
@@ -292,7 +293,9 @@ namespace MyHelper.ViewModels
 
         [DependencyOn(nameof(SelectedTargetsGroup))]
         ///<summary>Включить переключатели</summary>
-        public bool EnableToggleButtonChangeGroup => EnableToggleButtons && _selectedTargetsGroup?.Year != 0;
+        public bool EnableToggleButtonChangeGroup => EnableToggleButtons && 
+            _selectedTargetsGroup is not null
+            && _selectedTargetsGroup.Year != 0;
 
         #endregion
 
@@ -301,6 +304,14 @@ namespace MyHelper.ViewModels
         [DependencyOn(nameof(SelectedTarget))]
         ///<summary>Включить переключатель изменения цели</summary>
         public bool EnableToggleButtonChangeTarget => EnableToggleButtons && _selectedTarget is not null;
+
+        #endregion
+
+        #region EnableToggleButtonCreateTarget : bool - Включить переключатель создания цели
+
+        [DependencyOn(nameof(SelectedTargetsGroup))]
+        ///<summary>Включить переключатель создания цели</summary>
+        public bool EnableToggleButtonCreateTarget => EnableToggleButtons && _selectedTargetsGroup is not null;
 
         #endregion
 
@@ -588,6 +599,7 @@ namespace MyHelper.ViewModels
         #endregion
 
         #endregion
+
         public TargetsUCViewModel() : this(null, null, null, null)
         {
 
