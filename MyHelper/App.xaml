@@ -14,7 +14,8 @@
                 <ResourceDictionary Source="Resources/Styles/TextBlocks.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ImagesAwesomeStyle.xaml"/>
                 <ResourceDictionary Source="REsources/Styles/ToggleButtonStyles.xaml"/>
-                <ResourceDictionary Source="Resources/ViewTemplates.xaml"/>
+                <ResourceDictionary Source="Resources/Templates/ViewTemplates.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/WindowStyles.xaml"/>
                 <ResourceDictionary Source="Resources/FontFamilies.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <vm:ViewModelsLocator x:Key="Locator"/>

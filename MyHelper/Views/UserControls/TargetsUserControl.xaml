@@ -12,7 +12,6 @@
              
              d:DataContext="{d:DesignInstance vm:TargetsUCViewModel,IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="700"
-             x:Name="userControl"
              MinHeight="300">
     <UserControl.RenderTransform>
         <TranslateTransform X="0"
