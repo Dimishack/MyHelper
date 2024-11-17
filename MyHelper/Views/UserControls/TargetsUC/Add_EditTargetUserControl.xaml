@@ -10,40 +10,29 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <Storyboard x:Key="ShowUserControl">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
-                                                     To="0"
-                                                     BeginTime="0:0:0"
-                                                     Duration="0:0:0.5"
-                                                     DecelerationRatio="0.8"
-                                                 />
-            <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                     To="1"
-                                                     From="0"
-                                                     BeginTime="0:0:0"
-                                                     Duration="0:0:0.5"
-                                                     DecelerationRatio="0.8"
-                                                 />
+            <DoubleAnimation Storyboard.TargetProperty="Height"
+                             To="150"
+                             BeginTime="0:0:0"
+                             Duration="0:0:0.7"
+                             AccelerationRatio="0.5">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
         </Storyboard>
         <Storyboard x:Key="HideUserControl">
-            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
-                                                 To="150"
-                                                 BeginTime="0:0:0"
-                                                 Duration="0:0:0.5"
-                                                 AccelerationRatio="0.8"
-                                                 />
-            <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                 To="0"
-                                                 BeginTime="0:0:0"
-                                                 Duration="0:0:0.5"
-                                                 AccelerationRatio="0.8"
-                                                 />
+            <DoubleAnimation Storyboard.TargetProperty="Height"
+                             To="0"
+                             BeginTime="0:0:0"
+                             Duration="0:0:0.7"
+                             AccelerationRatio="0.5">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
         </Storyboard>
     </UserControl.Resources>
-    <Grid Height="150" Opacity="0">
-        <Grid.RenderTransform>
-            <TranslateTransform X="0"
-                        Y="150"/>
-        </Grid.RenderTransform>
+    <Grid Height="0" VerticalAlignment="Bottom">
         <Grid.Style>
             <Style TargetType="Grid">
                 <Style.Triggers>
@@ -59,7 +48,7 @@
             </Style>
         </Grid.Style>
         <Border Background="White" BorderBrush="Black"
-                BorderThickness="2"
+                BorderThickness="2,2,2,0"
                 CornerRadius="4,4,0,0"/>
         <Grid Margin="0,5,0,0">
             <Grid.Resources>
