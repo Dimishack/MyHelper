@@ -4,49 +4,12 @@ using System.ComponentModel;
 
 namespace MyHelper.Models.Targets
 {
-    internal class TargetsModel : INotifyPropertyChanged
+    internal class TargetsModel : INotifyPropertyChanged, IDisposable
     {
-        private TargetsGroup _targetsGroup;
+        private readonly TargetsGroup _targetsGroup;
+        private bool _disposed = false;
 
         public ObservableCollection<TargetModel> Targets { get; } = [];
-
-        public TargetsModel(TargetsGroup targetsGroup)
-        {
-            _targetsGroup = targetsGroup;
-            Targets.CollectionChanged += Targets_CollectionChanged;
-
-            foreach (var target in targetsGroup.Targets)
-            {
-                var newTarget = new TargetModel(target);
-                newTarget.PropertyChanged += NewTarget_PropertyChanged;
-                Targets.Add(newTarget);
-            }
-        }
-
-        private void Targets_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-                    if (e.NewItems is not null && e.NewItems[0] is TargetModel target)
-                        if (target.IsComplete) CompletedTargetsCount++;
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-                    CompletedTargetsCount--;
-                    break;
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
-                    CompletedTargetsCount = 0;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void NewTarget_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (sender is TargetModel target && e.PropertyName == nameof(target.IsComplete))
-                CompletedTargetsCount += target.IsComplete ? 1 : -1;
-        }
 
         public int Id => _targetsGroup.Id;
         public string Name
@@ -70,11 +33,95 @@ namespace MyHelper.Models.Targets
                 if (value == _completedTargetsCount) return;
                 _completedTargetsCount = value;
                 OnPropertyChanged(nameof(CompletedTargetsCount));
+                OnPropertyChanged(nameof(Progress));
+                OnPropertyChanged(nameof(OffsetOfCompleted));
+                OnPropertyChanged(nameof(Procent));
+            }
+        }
+
+        public double Progress => (double)CompletedTargetsCount / (Targets.Count > 0 ? Targets.Count : 1);
+
+        public double OffsetOfCompleted => 2.0 - Progress;
+
+        public double Procent => Math.Round(Progress * 100.0, 2);
+
+        private void Targets_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            bool isChange = true;
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    if (e.NewItems is not null && e.NewItems[0] is TargetModel target)
+                    {
+                        target.PropertyChanged += NewTarget_PropertyChanged;
+                        if (target.IsComplete)
+                        {
+                            CompletedTargetsCount++;
+                            isChange = false;
+                        }
+                    }
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    if (e.OldItems != null && e.OldItems[0] is TargetModel oldTarget)
+                        oldTarget.PropertyChanged -= NewTarget_PropertyChanged;
+                    CompletedTargetsCount--;
+                    isChange = false;
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                    CompletedTargetsCount = 0;
+                    isChange = false;
+                    break;
+                default:
+                    break;
+            }
+            if (isChange)
+            {
+                OnPropertyChanged(nameof(Progress));
+                OnPropertyChanged(nameof(OffsetOfCompleted));
+                OnPropertyChanged(nameof(Procent));
+            }
+        }
+
+        private void NewTarget_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (sender is TargetModel target && e.PropertyName == nameof(target.IsComplete))
+                CompletedTargetsCount += target.IsComplete ? 1 : -1;
+        }
+
+        public TargetsModel(TargetsGroup targetsGroup)
+        {
+            _targetsGroup = targetsGroup;
+            Targets.CollectionChanged += Targets_CollectionChanged;
+
+            foreach (var target in targetsGroup.Targets)
+            {
+                var newTarget = new TargetModel(target);
+                Targets.Add(newTarget);
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    Targets.CollectionChanged -= Targets_CollectionChanged;
+                    foreach (var target in Targets)
+                        target.PropertyChanged -= NewTarget_PropertyChanged;
+                }
+                _disposed = true;
             }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
+        private void OnPropertyChanged(string propertyName)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

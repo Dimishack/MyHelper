@@ -236,9 +236,9 @@
                 </GradientStopCollection>
             </Grid.Resources>
             <Grid.Background>
-                <RadialGradientBrush RadiusX="0.9" RadiusY="1.1">
-                    <GradientStop Color="#FFD700" Offset="0.685"/>
-                    <GradientStop Color="#638b27" Offset="0.71"/>
+                <RadialGradientBrush RadiusX="0.8" RadiusY="1">
+                    <GradientStop Color="#FFD700" Offset="0.74"/>
+                    <GradientStop Color="#638b27" Offset="0.8"/>
                 </RadialGradientBrush>
             </Grid.Background>
             <Border Margin="0,10">

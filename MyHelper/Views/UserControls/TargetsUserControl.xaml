@@ -9,6 +9,7 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+             xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
              
              d:DataContext="{d:DesignInstance vm:TargetsUCViewModel,IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="700"
@@ -40,6 +41,9 @@
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Unloaded">
+            <i:InvokeCommandAction Command="{Binding ClosedCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>
@@ -105,7 +109,7 @@
             </Grid>
         </GroupBox>
         <DockPanel Grid.Column="0" Width="135">
-            <GroupBox DockPanel.Dock="Top" Header="Сортировка">
+            <GroupBox DockPanel.Dock="Top" Header="Сортировка" BorderThickness="0">
                 <ComboBox ItemsSource="{Binding Sorts}"
                           SelectedItem="{Binding SelectedSort}"
                           SelectedIndex="0">
@@ -117,7 +121,7 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
             </GroupBox>
-            <GroupBox Header="Фильтр">
+            <GroupBox Header="Фильтр" BorderThickness="0">
                 <StackPanel Orientation="Vertical">
                     <StackPanel.Resources>
                         <Style TargetType="RadioButton">
@@ -145,15 +149,37 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <StackPanel Orientation="Vertical"
-                            Background="White" Grid.Row="2" Panel.ZIndex="2">
-                    <TextBlock Text="{Binding SelectedTargetsGroup.CompletedTargetsCount, StringFormat='Количество выполненных целей: {0}'}"/>
-                    <TextBlock Text="{Binding SelectedTargetsGroup.Targets.Count, StringFormat='Количество целей: {0}'}"/>
-                    <StackPanel Orientation="Horizontal" Panel.ZIndex="2">
-                        <TextBlock Text="Автосохранение: "/>
-                        <CheckBox IsChecked="{Binding AutoSave}"/>
-                    </StackPanel>
-                </StackPanel>
+                <Grid Grid.Row="2" Panel.ZIndex="2" Margin="0,3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Width="161">
+                        <Run Text="Выполненных/Всего: "/>
+                        <Run Text="{Binding SelectedTargetsGroup.CompletedTargetsCount, Mode=OneWay}"/>
+                        <Run Text="/"/>
+                        <Run Text="{Binding SelectedTargetsGroup.Targets.Count, Mode=OneWay}"/>
+                    </TextBlock>
+                    <Border Grid.Column="1" Background="Black" Margin="5,0"/>
+                    <ProgressBar Grid.Column="2"
+                                 Maximum="1">
+                        <i:Interaction.Behaviors>
+                            <cusB:ProgressBehavior Progress="{Binding SelectedTargetsGroup.Progress}"/>
+                        </i:Interaction.Behaviors>
+                        <ProgressBar.Foreground>
+                            <LinearGradientBrush>
+                                <GradientStop Color="Yellow" Offset="0"/>
+                                <GradientStop x:Name="Grelka" Color="Red">
+                                    <i:Interaction.Behaviors>
+                                        <cusB:OffsetOfCompleteBehavior OffsetOfComplete="{Binding SelectedTargetsGroup.OffsetOfCompleted}"/>
+                                    </i:Interaction.Behaviors>
+                                </GradientStop>
+                            </LinearGradientBrush>
+                        </ProgressBar.Foreground>
+                    </ProgressBar>
+                    <TextBlock Grid.Column="2" Text="{Binding SelectedTargetsGroup.Procent, StringFormat='{}{0:00.00}', TargetNullValue=0}" HorizontalAlignment="Center"/>
+                </Grid>
                 <UniformGrid DockPanel.Dock="Bottom" Rows="1" Background="White"
                              Grid.Row="1" Panel.ZIndex="2">
                     <ToggleButton IsChecked="{Binding AddTarget}"

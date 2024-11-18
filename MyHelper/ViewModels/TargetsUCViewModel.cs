@@ -18,12 +18,13 @@ namespace MyHelper.ViewModels
     class TargetsUCViewModel(IOpenWindows openWindows,
                                   IUserDialog userDialog,
                                   IRepository<Target> targetRepository,
-                                  IRepository<TargetsGroup> targetsGroupRepository) : ViewModel
+                                  IRepository<TargetsGroup> targetsGroupRepository) : ViewModel, IDisposable
     {
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
         private readonly IRepository<Target> _targetRepository = targetRepository;
         private readonly IRepository<TargetsGroup> _targetsRepository = targetsGroupRepository;
+        private bool _disposed = false;
 
         #region Properties...
 
@@ -46,7 +47,6 @@ namespace MyHelper.ViewModels
             set
             {
                 if (_selectedTargetsGroup == value) return;
-                SelectedTargets.Clear();
                 if (value is not null)
                 {
                     if (value.Targets.Count == 0)
@@ -56,23 +56,15 @@ namespace MyHelper.ViewModels
                         {
                             foreach (var target in targets)
                                 value.Targets.Add(new TargetModel(target));
-                        } 
+                        }
                     }
-                    foreach (var target in value.Targets)
-                        SelectedTargets.Add(target);
                 }
                 Set(ref _selectedTargetsGroup, value);
+                _selectedTargetsViewSource.Source = _selectedTargetsGroup?.Targets;
                 DepedenciesChanged();
 
             }
         }
-
-        #endregion
-
-        #region Targets : ObservableCollection<TargetModel> - Список целей
-
-        ///<summary>Список целей</summary>
-        public ObservableCollection<TargetModel> SelectedTargets { get; } = [];
 
         #endregion
 
@@ -293,7 +285,7 @@ namespace MyHelper.ViewModels
 
         [DependencyOn(nameof(SelectedTargetsGroup))]
         ///<summary>Включить переключатели</summary>
-        public bool EnableToggleButtonChangeGroup => EnableToggleButtons && 
+        public bool EnableToggleButtonChangeGroup => EnableToggleButtons &&
             _selectedTargetsGroup is not null
             && _selectedTargetsGroup.Year != 0;
 
@@ -358,8 +350,28 @@ namespace MyHelper.ViewModels
             GroupsTargets.Clear();
             foreach (TargetsGroup targets in _targetsRepository.Items)
                 GroupsTargets.Add(new TargetsModel(targets));
-            _selectedTargetsViewSource.Source = SelectedTargets;
         }
+        #endregion
+
+        #region ClosedCommand - Команда - закрытие окна
+
+        ///<summary>Команда - закрытие окна</summary>
+        private ICommand? _closedCommand;
+
+        ///<summary>Команда - закрытие окна</summary>
+        public ICommand ClosedCommand => _closedCommand
+            ??= new LambdaCommand(OnClosedCommandExecuted, CanClosedCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - закрытие окна</summary>
+        private bool CanClosedCommandExecute(object? p) => true;
+
+        ///<summary>Логика выполнения - закрытие окна</summary>
+        private void OnClosedCommandExecuted(object? p)
+        {
+            Dispose();
+            GroupsTargets.Clear();
+        }
+
         #endregion
 
         #region CreateGroupCommand - Команда - создать новую группу
@@ -482,7 +494,6 @@ namespace MyHelper.ViewModels
                 TargetsGroupId = _selectedTargetsGroup.Id,
             };
             SelectedTargetsGroup?.Targets.Add(new TargetModel(newTarget));
-            SelectedTargets.Add(new TargetModel(newTarget));
             await _targetRepository.AddAsync(newTarget);
             AddTarget = false;
             SelectedTargetsView.Refresh();
@@ -555,7 +566,6 @@ namespace MyHelper.ViewModels
         {
             await _targetRepository.RemoveAsync(_selectedTarget.Id);
             SelectedTargetsGroup?.Targets.Remove(_selectedTarget);
-            SelectedTargets.Remove(_selectedTarget);
         }
 
         #endregion
@@ -575,21 +585,29 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - фильтровать список</summary>
         private void OnFilterCommandExecuted(string p)
         {
-            var targets = _selectedTargetsGroup!.Targets;
-            SelectedTargets.Clear();
+            SelectedTargetsGroup!.Targets.Clear();
             switch (p.ToLower())
             {
                 case "все":
-                    foreach (var target in targets)
-                        SelectedTargets.Add(target);
+                    foreach (var target in _targetsRepository.Items
+                        .Include(g => g.Targets)
+                        .First(ts => ts.Id == SelectedTargetsGroup.Id)
+                        .Targets)
+                        SelectedTargetsGroup.Targets.Add(new TargetModel(target));
                     break;
                 case "выполненные":
-                    foreach (var target in targets.Where(t => t.IsComplete))
-                        SelectedTargets.Add(target);
+                    foreach (var target in _targetsRepository.Items
+                        .Include(g => g.Targets)
+                        .First(ts => ts.Id == SelectedTargetsGroup.Id)
+                        .Targets.Where(t => t.IsComplete))
+                        SelectedTargetsGroup.Targets.Add(new TargetModel(target));
                     break;
                 case "невыполненные":
-                    foreach (var target in targets.Where(t => !t.IsComplete))
-                        SelectedTargets.Add(target);
+                    foreach (var target in _targetsRepository.Items
+                        .Include(g => g.Targets)
+                        .First(ts => ts.Id == SelectedTargetsGroup.Id)
+                        .Targets.Where(t => !t.IsComplete))
+                        SelectedTargetsGroup.Targets.Add(new TargetModel(target));
                     break;
                 default:
                     break;
@@ -624,6 +642,27 @@ namespace MyHelper.ViewModels
                 if (attributes is not null)
                     foreach (var attribute in attributes)
                         OnPropertyChanged(attribute.PropertyName);
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    foreach (var targetsGroup in GroupsTargets)
+                    {
+                        targetsGroup.Dispose();
+                    }
+                }
+                _disposed = true;
             }
         }
     }
