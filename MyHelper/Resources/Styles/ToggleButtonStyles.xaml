@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp">
     <Style TargetType="ToggleButton" x:Key="MainMenuStyle">
         <Setter Property="Width" Value="40"/>
         <Setter Property="Height" Value="40"/>
@@ -37,4 +38,59 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="ToggleButton" x:Key="ToggleButtonMainStyle">
+        <Setter Property="Margin" Value="2"/>
+        <Setter Property="Padding" Value="3"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="border" Background="#ff6800" Margin="{TemplateBinding Margin}"
+                            Padding="{TemplateBinding Padding}"
+                            IsEnabled="{TemplateBinding IsEnabled}">
+                        <fa:IconImage x:Name="icon" Foreground="#ffdb58"
+                                  Icon="{TemplateBinding fa:IconImage.Icon}" Width="16"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background"
+                                    TargetName="border"
+                                    Value="#ff8243"/>
+                            <Setter Property="Foreground"
+                                    TargetName="icon"
+                                    Value="#fff4bd"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background"
+                                    TargetName="border"
+                                    Value="#ffb961"/>
+                            <Setter Property="Foreground"
+                                    TargetName="icon"
+                                    Value="#ff6800"/>
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True"/>
+                                <Condition Property="IsEnabled" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background"
+                                    TargetName="border"
+                                    Value="#ff6800"/>
+                            <Setter Property="Foreground"
+                                    TargetName="icon"
+                                    Value="#fff4bd"/>
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonMainStyle}" x:Key="AddElementStyle">
+        <Setter Property="fa:IconImage.Icon" Value="Plus"/>
+    </Style>
+    <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonMainStyle}" x:Key="EditElementStyle">
+        <Setter Property="fa:IconImage.Icon" Value="Edit"/>
+    </Style>
+
 </ResourceDictionary>

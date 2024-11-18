@@ -30,7 +30,7 @@ namespace MyHelper.Models.Targets
             get => _completedTargetsCount;
             private set
             {
-                if (value == _completedTargetsCount) return;
+                if (value == _completedTargetsCount || value < 0) return;
                 _completedTargetsCount = value;
                 OnPropertyChanged(nameof(CompletedTargetsCount));
                 OnPropertyChanged(nameof(Progress));
@@ -85,8 +85,13 @@ namespace MyHelper.Models.Targets
         private void NewTarget_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (sender is TargetModel target && e.PropertyName == nameof(target.IsComplete))
+            {
+                ChangedTargetId = target.Id;
                 CompletedTargetsCount += target.IsComplete ? 1 : -1;
+            }
         }
+
+        public int? ChangedTargetId { get; private set; }
 
         public TargetsModel(TargetsGroup targetsGroup)
         {
@@ -115,6 +120,7 @@ namespace MyHelper.Models.Targets
                     Targets.CollectionChanged -= Targets_CollectionChanged;
                     foreach (var target in Targets)
                         target.PropertyChanged -= NewTarget_PropertyChanged;
+                    Targets.Clear();
                 }
                 _disposed = true;
             }

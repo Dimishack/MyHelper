@@ -11,10 +11,11 @@
     <UserControl.Resources>
         <Storyboard x:Key="ShowUserControl">
             <DoubleAnimation Storyboard.TargetProperty="Height"
-                             To="150"
+                             To="110"
                              BeginTime="0:0:0"
                              Duration="0:0:0.7"
-                             AccelerationRatio="0.5">
+                             AccelerationRatio="0.5"
+                             Completed="DoubleAnimation_Completed">
                 <DoubleAnimation.EasingFunction>
                     <CubicEase EasingMode="EaseOut"/>
                 </DoubleAnimation.EasingFunction>
@@ -69,22 +70,16 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0"
                    Text="Цель:"/>
             <TextBlock Grid.Row="1" Grid.Column="0"
                    Text="Примечание:"/>
-            <TextBlock Grid.Row="2" Grid.Column="0"
-                   Text="Выполнена:"/>
-            <TextBox Grid.Row="0" Grid.Column="1"
+            <TextBox x:Name="tb_Name" Grid.Row="0" Grid.Column="1"
                  Text="{Binding TargetForAdd_Edit.Name, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBox Grid.Row="1" Grid.Column="1"
                  Text="{Binding TargetForAdd_Edit.Note, UpdateSourceTrigger=PropertyChanged}"/>
-            <CheckBox Grid.Row="2" Grid.Column="1"
-                  IsChecked="{Binding TargetForAdd_Edit.IsComplete}"
-                      VerticalAlignment="Center" Margin="3"/>
-            <UniformGrid Rows="1" Grid.ColumnSpan="2" Grid.Row="3">
+            <UniformGrid Rows="1" Grid.ColumnSpan="2" Grid.Row="2">
                 <Button IsDefault="True">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource ForUGInCreator_Editors}">

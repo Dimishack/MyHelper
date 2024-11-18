@@ -15,12 +15,10 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    class TargetsUCViewModel(IOpenWindows openWindows,
-                                  IUserDialog userDialog,
+    class TargetsUCViewModel(IUserDialog userDialog,
                                   IRepository<Target> targetRepository,
                                   IRepository<TargetsGroup> targetsGroupRepository) : ViewModel, IDisposable
     {
-        private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
         private readonly IRepository<Target> _targetRepository = targetRepository;
         private readonly IRepository<TargetsGroup> _targetsRepository = targetsGroupRepository;
@@ -121,22 +119,6 @@ namespace MyHelper.ViewModels
                     _selectedTargetsViewSource.SortDescriptions.RemoveAt(0);
                 _selectedTargetsViewSource.SortDescriptions.Add(Sorts[value.Key]);
                 _selectedTargetsViewSource.View.Refresh();
-            }
-        }
-
-        #endregion
-
-        #region AutoSave : bool - Автосохранение
-
-        ///<summary>Автосохранение</summary>
-        public bool AutoSave
-        {
-            get => _targetsRepository.AutoSaveChanges;
-            set
-            {
-                if (_targetsRepository.AutoSaveChanges == value) return;
-                _targetsRepository.AutoSaveChanges = value;
-                OnPropertyChanged();
             }
         }
 
@@ -347,10 +329,11 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Загрузка окна</summary>
         private void OnLoadCommandExecuted(object? p)
         {
-            GroupsTargets.Clear();
+            GroupsTargets.CollectionChanged += GroupsTargets_CollectionChanged;
             foreach (TargetsGroup targets in _targetsRepository.Items)
                 GroupsTargets.Add(new TargetsModel(targets));
         }
+
         #endregion
 
         #region ClosedCommand - Команда - закрытие окна
@@ -360,17 +343,10 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда - закрытие окна</summary>
         public ICommand ClosedCommand => _closedCommand
-            ??= new LambdaCommand(OnClosedCommandExecuted, CanClosedCommandExecute);
-
-        ///<summary>Проверка возможности выполнения - закрытие окна</summary>
-        private bool CanClosedCommandExecute(object? p) => true;
+            ??= new LambdaCommand(OnClosedCommandExecuted);
 
         ///<summary>Логика выполнения - закрытие окна</summary>
-        private void OnClosedCommandExecuted(object? p)
-        {
-            Dispose();
-            GroupsTargets.Clear();
-        }
+        private void OnClosedCommandExecuted(object? p) => Dispose();
 
         #endregion
 
@@ -570,6 +546,25 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region SaveRepositoryCommand - Команда - Сохранить весь репозиторий
+
+        ///<summary>Команда - Сохранить весь репозиторий</summary>
+        private ICommand? _saveRepositoryCommand;
+
+        ///<summary>Команда - Сохранить весь репозиторий</summary>
+        public ICommand SaveRepositoryCommand => _saveRepositoryCommand
+            ??= new LambdaCommandAsync(OnSaveRepositoryCommandExecuted, CanSaveRepositoryCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - Сохранить весь репозиторий</summary>
+        private bool CanSaveRepositoryCommandExecute(object? p) => 
+            _targetsRepository is not null 
+            && !_targetsRepository.AutoSaveChanges;
+
+        ///<summary>Логика выполнения - Сохранить весь репозиторий</summary>
+        private async Task OnSaveRepositoryCommandExecuted(object? p) => await _targetsRepository.SaveChangedAsync();
+
+        #endregion
+
         #region FilterCommand - Команда - фильтровать список
 
         ///<summary>Команда - фильтровать список</summary>
@@ -618,10 +613,7 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        public TargetsUCViewModel() : this(null, null, null, null)
-        {
-
-        }
+        #region Methods...
 
         private void DepedenciesChanged([CallerMemberName] string? propertyName = null)
         {
@@ -657,13 +649,56 @@ namespace MyHelper.ViewModels
             {
                 if (disposing)
                 {
+                    GroupsTargets.CollectionChanged -= GroupsTargets_CollectionChanged;
                     foreach (var targetsGroup in GroupsTargets)
                     {
                         targetsGroup.Dispose();
+                        targetsGroup.PropertyChanged -= TargetsModel_PropertyChanged;
                     }
+                    GroupsTargets.Clear();
                 }
                 _disposed = true;
             }
+        }
+
+        #endregion
+
+        #region Events...
+
+        private void GroupsTargets_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    if (e.NewItems is not null && e.NewItems[0] is TargetsModel targetsModel)
+                        targetsModel.PropertyChanged += TargetsModel_PropertyChanged;
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    if (e.OldItems is not null && e.OldItems[0] is TargetsModel oldTargetsModel)
+                        oldTargetsModel.PropertyChanged -= TargetsModel_PropertyChanged;
+                    break;
+                default:
+                    throw new InvalidOperationException("Данное действие не реализовано!");
+            }
+        }
+
+        private void TargetsModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (sender is TargetsModel targetsModel && e.PropertyName == nameof(targetsModel.CompletedTargetsCount)
+                && targetsModel.ChangedTargetId is not null)
+            {
+                SelectedTarget = SelectedTargetsGroup.Targets.FirstOrDefault(t => t.Id == targetsModel.ChangedTargetId);
+                var target = _targetRepository.Get((int)targetsModel.ChangedTargetId);
+                if(target is not null)
+                _targetRepository.Update(target);
+            }
+        }
+
+        #endregion
+
+        public TargetsUCViewModel() : this( null, null, null)
+        {
+
         }
     }
 }

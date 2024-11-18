@@ -12,6 +12,7 @@
                              BeginTime="0:0:0"
                              Duration="0:0:0.7"
                              AccelerationRatio="0.5"
+                             Completed="DoubleAnimation_Completed"
                              >
                 <DoubleAnimation.EasingFunction>
                     <CubicEase EasingMode="EaseOut"/>
@@ -76,7 +77,7 @@
                        Text="{Binding TargetsGroupForAdd_Edit.Year}"
                        HorizontalAlignment="Left"
                        />
-            <TextBox Grid.Row="1" Grid.Column="1"
+            <TextBox x:Name="tb_Name" Grid.Row="1" Grid.Column="1"
                      Text="{Binding TargetsGroupForAdd_Edit.Name, UpdateSourceTrigger=PropertyChanged}"/>
             <UniformGrid Grid.Row="2" Grid.ColumnSpan="2" Rows="1">
                 <UniformGrid.Resources>

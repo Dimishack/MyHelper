@@ -86,7 +86,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _showTargetsView, value)) return;
-                ChangeCurrentView(value, () => CurrentViewModel = new TargetsUCViewModel(_openWindows, _userDialog, _targetRepository, _targets));
+                ChangeCurrentView(value, () => CurrentViewModel = new TargetsUCViewModel(_userDialog, _targetRepository, _targets));
             }
         }
 

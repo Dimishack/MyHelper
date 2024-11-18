@@ -5,5 +5,11 @@ namespace MyHelper.Views.UserControls.TargetsUC
     public partial class Add_EditGroupTargetsUserControl : UserControl
     {
         public Add_EditGroupTargetsUserControl() => InitializeComponent();
+
+        private void DoubleAnimation_Completed(object sender, EventArgs e)
+        {
+            tb_Name.SelectAll();
+            tb_Name.Focus();
+        }
     }
 }
