@@ -118,7 +118,10 @@ namespace MyHelper.ViewModels
                 if (_selectedTargetsViewSource.SortDescriptions.Count > 0)
                     _selectedTargetsViewSource.SortDescriptions.RemoveAt(0);
                 _selectedTargetsViewSource.SortDescriptions.Add(Sorts[value.Key]);
-                _selectedTargetsViewSource.View.Refresh();
+                if (_selectedTargetsViewSource.View is not null)
+                {
+                    _selectedTargetsViewSource.View.Refresh(); 
+                }
             }
         }
 
@@ -580,7 +583,8 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - фильтровать список</summary>
         private void OnFilterCommandExecuted(string p)
         {
-            SelectedTargetsGroup!.Targets.Clear();
+            SelectedTargetsGroup.UnSubsctibe();
+            SelectedTargetsGroup.Targets.Clear();
             switch (p.ToLower())
             {
                 case "все":

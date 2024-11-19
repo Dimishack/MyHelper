@@ -118,12 +118,17 @@ namespace MyHelper.Models.Targets
                 if (disposing)
                 {
                     Targets.CollectionChanged -= Targets_CollectionChanged;
-                    foreach (var target in Targets)
-                        target.PropertyChanged -= NewTarget_PropertyChanged;
+                    UnSubsctibe();
                     Targets.Clear();
                 }
                 _disposed = true;
             }
+        }
+
+        public void UnSubsctibe()
+        {
+            foreach (var target in Targets)
+                target.PropertyChanged -= NewTarget_PropertyChanged;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

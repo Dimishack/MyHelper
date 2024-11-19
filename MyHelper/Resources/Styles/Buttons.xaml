@@ -64,7 +64,7 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ffb961"/>
+                                    Value="#ffc961"/>
                             <Setter Property="Foreground"
                                     TargetName="icon"
                                     Value="#ff6800"/>

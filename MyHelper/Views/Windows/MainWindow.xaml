@@ -24,7 +24,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Border x:Name="border" Background="#638b27"
+                        <Border x:Name="border" Background="{StaticResource SolidColorBrush_MossyGreen}"
                                 Padding="0,4">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -93,7 +93,7 @@
     </Window.Resources>
     <Grid>
         <DockPanel Width="60" HorizontalAlignment="Left" Panel.ZIndex="2"
-                   Background="#638b27">
+                   Background="{StaticResource SolidColorBrush_MossyGreen}">
             <DockPanel.Style>
                 <Style TargetType="DockPanel">
                     <Style.Triggers>
@@ -231,14 +231,14 @@
         <Grid Margin="60,0,0,0">
             <Grid.Resources>
                 <GradientStopCollection x:Key="SideGradient">
-                    <GradientStop Color="#638b27" Offset="0"/>
-                    <GradientStop Color="#FFD700" Offset="0.025"/>
+                    <GradientStop Color="{StaticResource Color_MossyGreen}" Offset="0"/>
+                    <GradientStop Color="{StaticResource Color_Gold}" Offset="0.025"/>
                 </GradientStopCollection>
             </Grid.Resources>
             <Grid.Background>
                 <RadialGradientBrush RadiusX="0.8" RadiusY="1">
-                    <GradientStop Color="#FFD700" Offset="0.74"/>
-                    <GradientStop Color="#638b27" Offset="0.8"/>
+                    <GradientStop Color="{StaticResource Color_Gold}" Offset="0.74"/>
+                    <GradientStop Color="{StaticResource Color_MossyGreen}" Offset="0.8"/>
                 </RadialGradientBrush>
             </Grid.Background>
             <Border Margin="0,10">
@@ -266,7 +266,7 @@
                 </Border.Background>
             </Border>
 
-            <Border Background="#FFD700" Margin="10">
+            <Border Background="{StaticResource SolidColorBrush_Gold}" Margin="10">
                 <ContentPresenter Margin="5,3" Content="{Binding CurrentViewModel}"/>
             </Border>
         </Grid>

@@ -39,6 +39,47 @@
         </Setter>
     </Style>
 
+    <Style TargetType="ToggleButton" x:Key="ComboBoxToggleButton">
+        <Setter Property="Background" Value="#ff6800"/>
+        <Setter Property="ClickMode" Value="Press"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="border" Background="{TemplateBinding Background}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Path x:Name="arrow" Data="M0,1 L4.5,7 C5,7.5 5,7.5 5.5,7 L10,1 V0 L5,4 L0,0 V1 Z" 
+                          Fill="#ffdb58" 
+                          HorizontalAlignment="Right" VerticalAlignment="Center"
+                          Margin="0,0,7,0"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Fill"
+                                TargetName="arrow"
+                                Value="#fff4bd"/>
+                            <Setter Property="Effect"
+                                TargetName="arrow">
+                                <Setter.Value>
+                                    <DropShadowEffect Color="#ffdb58" ShadowDepth="0.9"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Fill"
+                                TargetName="arrow"
+                                Value="#fff4bd"/>
+                            <Setter Property="Effect"
+                                TargetName="arrow">
+                                <Setter.Value>
+                                    <DropShadowEffect Color="#ffdb58" ShadowDepth="0.9"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="ToggleButton" x:Key="ToggleButtonMainStyle">
         <Setter Property="Margin" Value="2"/>
         <Setter Property="Padding" Value="3"/>
@@ -63,7 +104,7 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ffb961"/>
+                                    Value="#ffc961"/>
                             <Setter Property="Foreground"
                                     TargetName="icon"
                                     Value="#ff6800"/>

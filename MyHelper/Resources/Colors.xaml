@@ -1,0 +1,10 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ice="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
+    <Color x:Key="Color_Gold" ice:Freeze="True">#FFD700</Color>
+    <SolidColorBrush x:Key="SolidColorBrush_Gold" ice:Freeze="True" Color="#FFD700"/>
+    
+    <Color x:Key="Color_MossyGreen" ice:Freeze="True">#638b27</Color>
+    <SolidColorBrush x:Key="SolidColorBrush_MossyGreen" ice:Freeze="True" Color="#638b27"/>
+
+</ResourceDictionary>

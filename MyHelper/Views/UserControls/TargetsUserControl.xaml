@@ -46,7 +46,7 @@
             <i:InvokeCommandAction Command="{Binding ClosedCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Grid Background="#FFD700">
+    <Grid>
         <Grid.Resources>
             <Style TargetType="Button">
                 <Setter Property="Margin" Value="2"/>
@@ -88,20 +88,12 @@
                          DisplayMemberPath="Year"/>
             </Grid>
         </GroupBox>
-        <DockPanel Grid.Column="0" Width="135">
-            <GroupBox DockPanel.Dock="Top" Header="Сортировка" BorderThickness="0">
-                <ComboBox ItemsSource="{Binding Sorts}"
-                          SelectedItem="{Binding SelectedSort}"
-                          SelectedIndex="0">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Key}"
-                                       TextWrapping="Wrap"/>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-            </GroupBox>
-            <GroupBox Header="Фильтр" BorderThickness="0">
+        <Grid Grid.Column="0" Width="135">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <GroupBox Grid.Row="0" Header="Фильтр" BorderThickness="0">
                 <StackPanel Orientation="Vertical">
                     <StackPanel.Resources>
                         <Style TargetType="RadioButton">
@@ -120,7 +112,21 @@
                                  CommandParameter="Невыполненные"/>
                 </StackPanel>
             </GroupBox>
-        </DockPanel>
+            <GroupBox Grid.Row="1" Header="Сортировка" BorderThickness="0">
+                <ComboBox ItemsSource="{Binding Sorts}"
+                          SelectedItem="{Binding SelectedSort}"
+                          Style="{StaticResource ComboBoxMainStyle}"
+                          SelectedIndex="0">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Key}"
+                                       Foreground="#313830"
+                                       FontWeight="Bold"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </GroupBox>
+        </Grid>
         <GroupBox Header="{Binding SelectedTargetsGroup.Name, FallbackValue='Выберите год'}"
                   Grid.Column="1" Background="Transparent" BorderThickness="0">
             <Grid>
