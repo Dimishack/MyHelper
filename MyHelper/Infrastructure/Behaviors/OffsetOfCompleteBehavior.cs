@@ -7,6 +7,13 @@ namespace MyHelper.Infrastructure.Behaviors
 {
     class OffsetOfCompleteBehavior : Behavior<GradientStop>
     {
+        private DoubleAnimation? _animation = null;
+
+        protected override void OnDetaching()
+        {
+            _animation = null;
+            base.OnDetaching();
+        }
         public double OffsetOfComplete
         {
             get { return (double)GetValue(OffsetOfCompleteProperty); }
@@ -20,7 +27,6 @@ namespace MyHelper.Infrastructure.Behaviors
         {
             if (d is OffsetOfCompleteBehavior behavior) behavior.OffsetAnimation();
         }
-        DoubleAnimation? _animation = null;
         private void OffsetAnimation()
         {
             if (_animation is null)

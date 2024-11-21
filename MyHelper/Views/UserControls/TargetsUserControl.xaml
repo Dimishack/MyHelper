@@ -14,30 +14,9 @@
              d:DataContext="{d:DesignInstance vm:TargetsUCViewModel,IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="700"
              MinHeight="300">
-    <UserControl.RenderTransform>
-        <TranslateTransform X="0"
-                            Y="0"/>
-    </UserControl.RenderTransform>
-    <UserControl.Triggers>
-        <EventTrigger RoutedEvent="Loaded">
-            <BeginStoryboard>
-                <Storyboard>
-                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
-                                     From="-10"
-                                     To="0"
-                                     AccelerationRatio="0.9"
-                                     BeginTime="0:0:0"
-                                     Duration="0:0:0.3"/>
-                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                     From="0"
-                                     To="1"
-                                     BeginTime="0:0:0"
-                                     Duration="0:0:0.3"/>
-
-                </Storyboard>
-            </BeginStoryboard>
-        </EventTrigger>
-    </UserControl.Triggers>
+    <i:Interaction.Behaviors>
+        <cusB:ShowMainUserControlBehavior/>
+    </i:Interaction.Behaviors>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
@@ -46,20 +25,8 @@
             <i:InvokeCommandAction Command="{Binding ClosedCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Grid>
-        <Grid.Resources>
-            <Style TargetType="Button">
-                <Setter Property="Margin" Value="2"/>
-                <Setter Property="Padding" Value="3"/>
-            </Style>
-        </Grid.Resources>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <GroupBox Grid.Column="2" Header="Года" Width="70" Panel.ZIndex="2"
-                  BorderThickness="0">
+    <DockPanel>
+        <GroupBox DockPanel.Dock="Right" Header="Года" Width="70">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -85,24 +52,19 @@
                 </UniformGrid>
                 <ListBox ItemsSource="{Binding GroupsTargets}"
                          SelectedItem="{Binding SelectedTargetsGroup}"
-                         DisplayMemberPath="Year"/>
+                         DisplayMemberPath="Year"
+                         ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
             </Grid>
         </GroupBox>
-        <Grid Grid.Column="0" Width="135">
+        <Grid DockPanel.Dock="Left" Width="135">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="Фильтр" BorderThickness="0">
+            <GroupBox Grid.Row="0" Header="Фильтры:">
                 <StackPanel Orientation="Vertical">
                     <StackPanel.Resources>
-                        <Style TargetType="RadioButton">
-                            <Style.Triggers>
-                                <Trigger Property="IsChecked" Value="True">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
+                        <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}"/>
                     </StackPanel.Resources>
                     <RadioButton Content="Все" Command="{Binding FilterCommand}"
                                  CommandParameter="Все" IsChecked="True"/>
@@ -112,7 +74,7 @@
                                  CommandParameter="Невыполненные"/>
                 </StackPanel>
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="Сортировка" BorderThickness="0">
+            <GroupBox Grid.Row="1" Header="Сортировка">
                 <ComboBox ItemsSource="{Binding Sorts}"
                           SelectedItem="{Binding SelectedSort}"
                           Style="{StaticResource ComboBoxMainStyle}"
@@ -127,15 +89,9 @@
                 </ComboBox>
             </GroupBox>
         </Grid>
-        <GroupBox Header="{Binding SelectedTargetsGroup.Name, FallbackValue='Выберите год'}"
-                  Grid.Column="1" Background="Transparent" BorderThickness="0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="2" Panel.ZIndex="2" Margin="0,3">
+        <GroupBox Header="{Binding SelectedTargetsGroup.Name, FallbackValue='Выберите год'}">
+            <DockPanel>
+                <Grid DockPanel.Dock="Bottom" Margin="0,3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="10"/>
@@ -151,14 +107,14 @@
                     </TextBlock>
                     <Border Grid.Column="1" Background="Black" Margin="4,0"/>
                     <ProgressBar Grid.Column="2"
-                                 Maximum="1" Background="#e1cc4f" BorderThickness="0">
+                                 Maximum="1" Background="{StaticResource SolidColorBrush_YellowIvory}" BorderThickness="0">
                         <i:Interaction.Behaviors>
                             <cusB:ProgressBehavior Progress="{Binding SelectedTargetsGroup.Progress}"/>
                         </i:Interaction.Behaviors>
                         <ProgressBar.Foreground>
                             <LinearGradientBrush>
                                 <GradientStop Color="Yellow" Offset="0"/>
-                                <GradientStop x:Name="Grelka" Color="Green">
+                                <GradientStop Color="Green">
                                     <i:Interaction.Behaviors>
                                         <cusB:OffsetOfCompleteBehavior OffsetOfComplete="{Binding SelectedTargetsGroup.OffsetOfCompleted}"/>
                                     </i:Interaction.Behaviors>
@@ -168,8 +124,7 @@
                     </ProgressBar>
                     <TextBlock Grid.Column="2" Text="{Binding SelectedTargetsGroup.Procent, StringFormat='{}{0:00.00}%', TargetNullValue=0}" HorizontalAlignment="Center"/>
                 </Grid>
-                <UniformGrid DockPanel.Dock="Bottom" Rows="1"
-                             Grid.Row="1" Panel.ZIndex="2">
+                <UniformGrid DockPanel.Dock="Bottom" Rows="1">
                     <ToggleButton IsChecked="{Binding AddTarget}"
                                   IsEnabled="{Binding EnableToggleButtonCreateTarget}"
                                   Style="{StaticResource AddElementStyle}"/>
@@ -179,37 +134,35 @@
                     <Button Command="{Binding RemoveTargetCommand}"
                             Style="{StaticResource DeleteElementStyle}"/>
                 </UniformGrid>
-                <ListBox ItemsSource="{Binding SelectedTargetsView}"
+                <Grid>
+                    <ListBox ItemsSource="{Binding SelectedTargetsView}"
                          SelectedItem="{Binding SelectedTarget}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Vertical" Background="#FAF0E6" Margin="2">
-                                <StackPanel.Resources>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Margin" Value="3,2"/>
-                                    </Style>
-                                </StackPanel.Resources>
-                                <TextBlock Text="{Binding Name, StringFormat='Цель: {0}'}"
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" Background="#FAF0E6" Margin="2">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Margin" Value="3,2"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="{Binding Name, StringFormat='Цель: {0}'}"
                                            FontWeight="Bold"/>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Выполнена: "/>
-                                    <CheckBox IsChecked="{Binding IsComplete}" HorizontalAlignment="Left"
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Выполнена: "/>
+                                        <CheckBox IsChecked="{Binding IsComplete}" HorizontalAlignment="Left"
                                               VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
                                 </StackPanel>
-                                <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                <targetsUC:Add_EditGroupTargetsUserControl Grid.Row="0"
-                                               HorizontalAlignment="Stretch"
-                                               VerticalAlignment="Bottom"
-                                                  Panel.ZIndex="1"/>
-                <targetsUC:Add_EditTargetUserControl Grid.Row="0"
-                                                 HorizontalAlignment="Stretch"
-                                                 VerticalAlignment="Bottom"
-                                                 Panel.ZIndex="1"/>
-            </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <targetsUC:Add_EditGroupTargetsUserControl HorizontalAlignment="Stretch"
+                                                               VerticalAlignment="Bottom"/>
+                    <targetsUC:Add_EditTargetUserControl HorizontalAlignment="Stretch"
+                                                         VerticalAlignment="Bottom"/>
+                </Grid>
+            </DockPanel>
         </GroupBox>
-    </Grid>
+    </DockPanel>
 </UserControl>

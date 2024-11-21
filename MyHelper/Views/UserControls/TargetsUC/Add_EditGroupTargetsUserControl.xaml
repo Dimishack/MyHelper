@@ -4,50 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MyHelper.Views.UserControls"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
              mc:Ignorable="d" d:DesignWidth="300" Height="110">
-    <UserControl.Resources>
-        <Storyboard x:Key="ShowUserControl">
-            <DoubleAnimation Storyboard.TargetProperty="Height"
-                             To="100"
-                             BeginTime="0:0:0"
-                             Duration="0:0:0.7"
-                             AccelerationRatio="0.5"
-                             Completed="DoubleAnimation_Completed"
-                             >
-                <DoubleAnimation.EasingFunction>
-                    <CubicEase EasingMode="EaseOut"/>
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-        </Storyboard>
-        <Storyboard x:Key="HideUserControl">
-            <DoubleAnimation Storyboard.TargetProperty="Height"
-                             To="0"
-                             BeginTime="0:0:0"
-                             Duration="0:0:0.7"
-                             AccelerationRatio="0.5"
-                             >
-                <DoubleAnimation.EasingFunction>
-                    <CubicEase EasingMode="EaseOut"/>
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
-        </Storyboard>
-    </UserControl.Resources>
     <Grid Height="0" VerticalAlignment="Bottom">
-        <Grid.Style>
-            <Style TargetType="Grid">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsVisibleAdd_EditGroup}" Value="True">
-                        <DataTrigger.EnterActions>
-                            <BeginStoryboard Storyboard="{StaticResource ShowUserControl}"/>
-                        </DataTrigger.EnterActions>
-                        <DataTrigger.ExitActions>
-                            <BeginStoryboard Storyboard="{StaticResource HideUserControl}"/>
-                        </DataTrigger.ExitActions>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Grid.Style>
-
+        <i:Interaction.Behaviors>
+            <cusB:Show_Add_Edit_UserControlBehavior MaxHeight="110" ManagementShow="{Binding IsVisibleAdd_EditGroup}"/>
+        </i:Interaction.Behaviors>
         <Border Background="White" BorderThickness="2,2,2,0" 
                 BorderBrush="Black"
                 CornerRadius="4,4,0,0"></Border>
