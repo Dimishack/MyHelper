@@ -45,7 +45,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
                     <Border x:Name="border" Background="{StaticResource SolidColorBrush_BrightOrange}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Path x:Name="arrow" Data="{StaticResource ArrowGeometry}" 
+                        <Path x:Name="arrow" Data="{StaticResource Arrow_ComboBox}" 
                           Fill="{StaticResource SolidColorBrush_Mustard}" 
                           HorizontalAlignment="Right" VerticalAlignment="Center"
                           Margin="0,0,7,0"/>

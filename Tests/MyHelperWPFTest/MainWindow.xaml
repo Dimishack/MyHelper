@@ -5,62 +5,168 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyHelperWPFTest"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="400"
-    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
+        Title="MainWindow" Height="350" Width="400">
     <Window.Resources>
-        <Style TargetType="RadioButton">
+        <ImageBrush x:Key="UpArrow" ImageSource="Up_Arrow_Default.png"/>
+        <ImageBrush x:Key="DownArrow" ImageSource="Down_Arrow_Default.png"/>
+        <ImageBrush x:Key="Thumbbb" ImageSource="Thumb_Icon_Default.png"/>
+
+
+        <Style x:Key="ScrollBar_Track" TargetType="{x:Type RepeatButton}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Focusable" Value="False"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border Margin="{TemplateBinding Margin}"
-                        Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
-                            <DockPanel>
-                                <Border Margin="2,2,4,2" BorderBrush="#ff6800" BorderThickness="2" CornerRadius="100" 
-                                DockPanel.Dock="Left" 
-                                Background="#fff4bd"
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
-                                    <Ellipse x:Name="mark" MinHeight="6" MinWidth="6" 
-                                     Fill="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=BorderBrush}" 
-                                     Margin="2" Opacity="0"/>
-                                </Border>
-                                <ContentPresenter Content="{TemplateBinding Content}"
-                                          Margin="{TemplateBinding Padding}"
-                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                            </DockPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsChecked" Value="False"/>
-                                    <Condition Property="IsMouseOver" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Opacity"
-                                TargetName="mark"
-                                Value="0.2"/>
-                            </MultiTrigger>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter Property="Opacity"
-                                TargetName="mark"
-                                Value="1"/>
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="{x:Null}">
-                                <Setter Property="Opacity"
-                                TargetName="mark"
-                                Value="0.6"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border Background="Transparent"/>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="ScrollBar_UpArrow" TargetType="RepeatButton">
+            
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border x:Name="border" CornerRadius="10" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="0"
+                                SnapsToDevicePixels="True">
+                            <Path Data="M12.5,4
+                          C10.5,4 -2,14 2,16
+                          L23,16
+                          C27,14 14.5,4 12.5,4 " Stroke="Black" StrokeThickness="1"
+                          Fill="Aquamarine"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ScrollBar">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Vertical">
+                    <Setter Property="Width" Value="25"/>
+                    <Setter Property="Height" Value="Auto"/>
+                    <Setter Property="Margin" Value="2"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ScrollBar">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="23"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="23"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Grid.Row="1" CornerRadius="5"
+                                            Background="#ffb961"
+                                            Width="21"/>
+                                    <RepeatButton x:Name="rb_Up" Grid.Row="0"
+                                                  Focusable="False"
+                                                  Command="ScrollBar.LineUpCommand"
+                                                  Style="{StaticResource ScrollBar_UpArrow}"/>
+                                    <RepeatButton x:Name="rb_Down" Grid.Row="2"
+                                                  Focusable="False"
+                                                  Command="ScrollBar.LineDownCommand"
+                                                  Style="{StaticResource ScrollBar_UpArrow}"/>
+                                    <Track x:Name="PART_Track"
+                                           Grid.Row="1"
+                                           IsDirectionReversed="True">
+                                        <Track.DecreaseRepeatButton>
+                                            <RepeatButton Margin="3,2,3,2"
+                                                          Command="ScrollBar.PageUpCommand"
+                                                          Style="{StaticResource ScrollBar_Track}"/>
+                                        </Track.DecreaseRepeatButton>
+                                        <Track.Thumb>
+                                            <Thumb>
+                                                <Thumb.Style>
+                                                    <Style TargetType="Thumb">
+                                                        <Setter Property="SnapsToDevicePixels" Value="True"/>
+                                                        <Setter Property="OverridesDefaultStyle" Value="True"/>
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="Thumb">
+                                                                    <Border Width="{TemplateBinding Width}" CornerRadius="5"
+                                                                            Background="Aqua" Margin="4,2"/>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </Thumb.Style>
+                                            </Thumb>
+                                        </Track.Thumb>
+                                        <Track.IncreaseRepeatButton>
+                                            <RepeatButton Margin="3,2,3,2"
+                                                          Command="ScrollBar.PageDownCommand"
+                                                          Style="{StaticResource ScrollBar_Track}"/>
+                                        </Track.IncreaseRepeatButton>
+                                    </Track>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
-    <Grid Background="#FFD700">
-        <StackPanel Orientation="Vertical">
-            <RadioButton Content="Контенот"
-                         IsChecked="{x:Null}"/>
-            <RadioButton Content="Контенот" Margin="0,1"/>
-        </StackPanel>
-    </Grid>
+    <DockPanel Background="#FFD700">
+        <ListBox HorizontalAlignment="Left" VerticalAlignment="Top">
+            <ListBoxItem Content="ListBoxItem1"/>
+            <ListBoxItem Content="ListBoxItem2"/>
+            <ListBoxItem Content="ListBoxItem3"/>
+            <ListBoxItem Content="ListBoxItem4"/>
+            <ListBoxItem Content="ListBoxItem5"/>
+            <ListBoxItem Content="ListBoxItem6"/>
+        </ListBox>
+        <ListBox HorizontalAlignment="Left" VerticalAlignment="Top"
+                 Height="128">
+            <ListBoxItem Content="ListBoxItem1"/>
+            <ListBoxItem Content="ListBoxItem2"/>
+            <ListBoxItem Content="ListBoxItem3"/>
+            <ListBoxItem Content="ListBoxItem4"/>
+            <ListBoxItem Content="ListBoxItem5"/>
+            <ListBoxItem Content="ListBoxItem6"/>
+            <ListBoxItem Content="gg"/>
+            <ListBoxItem Content="dds"/>
+            <ListBoxItem Content="agae"/>
+            <ListBoxItem Content="eggeregerg"/>
+            <ListBoxItem Content="regregerg"/>
+            <ListBoxItem Content="ListBoxIgregvtem6"/>
+            <ListBoxItem Content="ListBoxItem1"/>
+            <ListBoxItem Content="ListBoxItem2"/>
+            <ListBoxItem Content="ListBoxItem3"/>
+            <ListBoxItem Content="ListBoxItem4"/>
+            <ListBoxItem Content="ListBoxItem5"/>
+            <ListBoxItem Content="ListBoxItem6"/>
+            <ListBox.Style>
+                <Style TargetType="ListBox">
+                    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBox">
+                                <Border Background="#ffec8b" BorderThickness="0"
+                                        BorderBrush="Transparent">
+                                    <ScrollViewer Focusable="False" Padding="2">
+                                        <ItemsPresenter SnapsToDevicePixels="True"/>
+                                    </ScrollViewer>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsGrouping" Value="true"/>
+                                            <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+                                        </MultiTrigger.Conditions>
+                                        <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                                    </MultiTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.Style>
+        </ListBox>
+    </DockPanel>
 </Window>

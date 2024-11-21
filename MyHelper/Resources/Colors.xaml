@@ -18,6 +18,7 @@
     <SolidColorBrush x:Key="SolidColorBrush_Mandarin" Color="#ff8800" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_RichRedOrange" Color="#ffb961" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_YellowIvory" Color="#e1cc4f" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_DarkGreenishYellowGreen" Color="#313830" ice:Freeze="True"/>
 
 
 </ResourceDictionary>

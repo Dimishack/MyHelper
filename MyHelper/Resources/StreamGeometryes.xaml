@@ -1,7 +1,13 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ice="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
-    <StreamGeometry x:Key="ArrowGeometry" ice:Freeze="True">
+    <StreamGeometry x:Key="Arrow_ComboBox" ice:Freeze="True">
         M0,1 L4.5,7 C5,7.5 5,7.5 5.5,7 L10,1 V0 L5,4 L0,0 V1 Z
+    </StreamGeometry>
+    <StreamGeometry x:Key="ArrowDown_ScrollBar" ice:Freeze="True">
+        M11.5,16 C10.5,16 -2,4 2,2 L21,2 C25,4 12.5,16 11.5,16
+    </StreamGeometry>
+    <StreamGeometry x:Key="ArrowUp_ScrollBar" ice:Freeze="True">
+        M11.5,2 C10.5,2 -2,14 2,16 L21,16 C25,14 12.5,2 11.5,2
     </StreamGeometry>
 </ResourceDictionary>
