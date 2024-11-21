@@ -10,6 +10,9 @@ namespace MyHelper.Infrastructure.Behaviors
         private DoubleAnimation? _showAnimation = null;
         private DoubleAnimation? _hideAnimation = null;
         private TextBox? _textBox = null;
+        private readonly TimeSpan _duration = TimeSpan.FromMilliseconds(700);
+        private readonly double _accelerationRatio = 0.7;
+        private readonly IEasingFunction _easingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut };
 
         protected override void OnDetaching()
         {
@@ -58,9 +61,9 @@ namespace MyHelper.Infrastructure.Behaviors
                 _hideAnimation = new()
                 {
                     To = 0.0,
-                    Duration = TimeSpan.FromMilliseconds(700),
-                    AccelerationRatio = 0.5,
-                    EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
+                    Duration = _duration,
+                    AccelerationRatio = _accelerationRatio,
+                    EasingFunction =_easingFunction,
                 };
                 if (_hideAnimation.CanFreeze) _hideAnimation.Freeze();
             }
@@ -75,9 +78,9 @@ namespace MyHelper.Infrastructure.Behaviors
                 _showAnimation = new()
                 {
                     To = MaxHeight,
-                    Duration = TimeSpan.FromMilliseconds(700),
-                    AccelerationRatio = 0.5,
-                    EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
+                    Duration = _duration,
+                    AccelerationRatio = _accelerationRatio,
+                    EasingFunction = _easingFunction,
                 };
                 if(AssociatedObject.FindName("tb_Name") is TextBox textBox)
                 {

@@ -11,12 +11,12 @@
                 <ResourceDictionary Source="Resources/Colors.xaml"/>
                 <ResourceDictionary Source="Resources/StreamGeometryes.xaml"/>
 
+                <ResourceDictionary Source="Resources/Styles/TextBlocks.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/TextBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/RepeatButtonStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ScrollBarStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ToggleButtonStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Buttons.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/TextWrap.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/TextBlocks.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/GroupBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/DataGrid.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ListBoxStyles.xaml"/>

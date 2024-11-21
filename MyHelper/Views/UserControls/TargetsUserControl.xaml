@@ -10,10 +10,14 @@
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
+             xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters"
              
              d:DataContext="{d:DesignInstance vm:TargetsUCViewModel,IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="700"
              MinHeight="300">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}"/>
+    </UserControl.Resources>
     <i:Interaction.Behaviors>
         <cusB:ShowMainUserControlBehavior/>
     </i:Interaction.Behaviors>
@@ -82,8 +86,9 @@
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Key}"
-                                       Foreground="#313830"
-                                       FontWeight="Bold"/>
+                                       TextWrapping="Wrap"
+                                       FontWeight="Bold"
+                                       Style="{StaticResource TextBlockMainStyle}"/>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
@@ -113,8 +118,8 @@
                         </i:Interaction.Behaviors>
                         <ProgressBar.Foreground>
                             <LinearGradientBrush>
-                                <GradientStop Color="Yellow" Offset="0"/>
-                                <GradientStop Color="Green">
+                                <GradientStop Color="{StaticResource Color_LightGold}" Offset="0"/>
+                                <GradientStop Color="{StaticResource Color_MossyGreen}">
                                     <i:Interaction.Behaviors>
                                         <cusB:OffsetOfCompleteBehavior OffsetOfComplete="{Binding SelectedTargetsGroup.OffsetOfCompleted}"/>
                                     </i:Interaction.Behaviors>
@@ -137,11 +142,20 @@
                 <Grid>
                     <ListBox ItemsSource="{Binding SelectedTargetsView}"
                          SelectedItem="{Binding SelectedTarget}">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemMainStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsComplete}" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource SolidColorBrush_MossyGreen}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Background="#FAF0E6" Margin="2">
                                     <StackPanel.Resources>
-                                        <Style TargetType="TextBlock">
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}">
                                             <Setter Property="Margin" Value="3,2"/>
                                         </Style>
                                     </StackPanel.Resources>

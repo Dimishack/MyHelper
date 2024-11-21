@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style TargetType="RadioButton" x:Key="RadioButtonMainStyle">
+        <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_DarkGreenishYellowGreen}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">

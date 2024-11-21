@@ -43,41 +43,17 @@
     <Style TargetType="Button" x:Key="ButtonMainStyle">
         <Setter Property="Margin" Value="2"/>
         <Setter Property="Padding" Value="3"/>
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_BrightOrange}"/>
+        <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_Mustard}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="border" Background="{StaticResource SolidColorBrush_BrightOrange}"
+                    <Border x:Name="border" Background="{TemplateBinding Background}"
                             Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}"
                             IsEnabled="{TemplateBinding IsEnabled}">
                         <fa:IconImage x:Name="icon" Icon="{TemplateBinding fa:IconImage.Icon}"
-                                      Foreground="{StaticResource SolidColorBrush_Mustard}" Width="16"/>
+                                      Foreground="{TemplateBinding Foreground}" Width="16"/>
                     </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background"
-                                    TargetName="border"
-                                    Value="{StaticResource SolidColorBrush_MangoTango}"/>
-                            <Setter Property="Foreground"
-                                    TargetName="icon"
-                                    Value="{StaticResource SolidColorBrush_Vanilla}"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Background"
-                                    TargetName="border"
-                                    Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
-                            <Setter Property="Foreground"
-                                    TargetName="icon"
-                                    Value="{StaticResource SolidColorBrush_BrightOrange}"/>
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background"
-                                    TargetName="border"
-                                    Value="{StaticResource SolidColorBrush_BrightOrange}"/>
-                            <Setter Property="Foreground"
-                                    TargetName="icon"
-                                    Value="{StaticResource SolidColorBrush_Vanilla}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -86,6 +62,62 @@
     <Style TargetType="Button" x:Key="DeleteElementStyle"
            BasedOn="{StaticResource ButtonMainStyle}">
         <Setter Property="fa:IconImage.Icon" Value="Xmark"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background"
+                                    Value="{StaticResource SolidColorBrush_MangoTango}"/>
+                <Setter Property="Foreground"
+                                    Value="{StaticResource SolidColorBrush_Vanilla}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background"
+                                    Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
+                <Setter Property="Foreground"
+                                    Value="{StaticResource SolidColorBrush_BrightOrange}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background"
+                                    Value="{StaticResource SolidColorBrush_BrightOrange}"/>
+                <Setter Property="Foreground"
+                                    Value="{StaticResource SolidColorBrush_Vanilla}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+
+    <Style TargetType="Button" x:Key="CheckOrCancelElementStyle"
+           BasedOn="{StaticResource ButtonMainStyle}">
+        <Setter Property="Margin" Value="10,5"/>
+        <Setter Property="Padding" Value="35,10"/>
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_WalnutBrown}"/>
+        <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_Sandy}"/>
+        <Style.Triggers>
+            <Trigger Property="IsDefault" Value="True">
+                <Setter Property="fa:IconImage.Icon" Value="Check"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+            </Trigger>
+            <Trigger Property="IsCancel" Value="True">
+                <Setter Property="fa:IconImage.Icon" Value="Cancel"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background"
+                        Value="{StaticResource SolidColorBrush_LightBrownishGray}"/>
+                <Setter Property="Foreground"
+                        Value="{StaticResource SolidColorBrush_LightSandy}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background"
+                        Value="{StaticResource SolidColorBrush_LightSandy}"/>
+                <Setter Property="Foreground"
+                        Value="{StaticResource SolidColorBrush_LightBrownishGray}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background"
+                        Value="{StaticResource SolidColorBrush_PearlBeige}"/>
+                <Setter Property="Foreground"
+                        Value="{StaticResource SolidColorBrush_LightSandy}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="Button" x:Key="ButtonSaveStyle">
@@ -101,7 +133,8 @@
                             <fa:IconImage x:Name="icon" Icon="Save" IconFont="Regular" Width="16"/>
                             <TextBlock x:Name="text" Text="Автосохр." HorizontalAlignment="Center" VerticalAlignment="Center"
                                        Visibility="Collapsed"
-                                       FontSize="{TemplateBinding FontSize}"/>
+                                       FontSize="{TemplateBinding FontSize}"
+                                       Style="{StaticResource TextBlockMainStyle}"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>

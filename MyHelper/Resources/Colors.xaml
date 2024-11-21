@@ -5,6 +5,8 @@
     <Color x:Key="Color_Gold" ice:Freeze="True">#ffd700</Color>
     <Color x:Key="Color_MossyGreen" ice:Freeze="True">#638b27</Color>
     <Color x:Key="Color_Mustard" ice:Freeze="True">#ffdb58</Color>
+    <Color x:Key="Color_WalnutBrown" ice:Freeze="True">#5b3a29</Color>
+    <Color x:Key="Color_LightGold" ice:Freeze="True">#ffec8b</Color>
 
     <SolidColorBrush x:Key="SolidColorBrush_Transparent" Color="Transparent" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_Gold" Color="#ffd700" ice:Freeze="True"/>
@@ -19,6 +21,12 @@
     <SolidColorBrush x:Key="SolidColorBrush_RichRedOrange" Color="#ffb961" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_YellowIvory" Color="#e1cc4f" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_DarkGreenishYellowGreen" Color="#313830" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_LightSandy" Color="#fdeaa8" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_DarkSandy" Color="#a88f59" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_WalnutBrown" Color="#5b3a29" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_LightBrownishGray" Color="#8b6d5c" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_PearlBeige" Color="#6a5d4d" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_Sandy" Color="#fcdd76" ice:Freeze="True"/>
 
 
 </ResourceDictionary>

@@ -7,16 +7,4 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Down_Arrow_Default.png" />
-    <None Remove="Thumb_Icon_Default.png" />
-    <None Remove="Up_Arrow_Default.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Down_Arrow_Default.png" />
-    <Resource Include="Thumb_Icon_Default.png" />
-    <Resource Include="Up_Arrow_Default.png" />
-  </ItemGroup>
-
 </Project>
