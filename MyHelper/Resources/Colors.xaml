@@ -1,10 +1,23 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ice="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options">
-    <Color x:Key="Color_Gold" ice:Freeze="True">#FFD700</Color>
-    <SolidColorBrush x:Key="SolidColorBrush_Gold" ice:Freeze="True" Color="#FFD700"/>
     
+    <Color x:Key="Color_Gold" ice:Freeze="True">#ffd700</Color>
     <Color x:Key="Color_MossyGreen" ice:Freeze="True">#638b27</Color>
-    <SolidColorBrush x:Key="SolidColorBrush_MossyGreen" ice:Freeze="True" Color="#638b27"/>
+    <Color x:Key="Color_Mustard" ice:Freeze="True">#ffdb58</Color>
+
+    <SolidColorBrush x:Key="SolidColorBrush_Transparent" Color="Transparent" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_Gold" Color="#ffd700" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_MossyGreen" Color="#638b27" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_BrightOrange" Color="#ff6800" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_Mustard" Color="#ffdb58" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_Vanilla" Color="#fff4bd" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_MangoTango" Color="#ff8243" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_GoldenTainoi" Color="#ffc961" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_LightGold" Color="#ffec8b" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_Mandarin" Color="#ff8800" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_RichRedOrange" Color="#ffb961" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_YellowIvory" Color="#e1cc4f" ice:Freeze="True"/>
+
 
 </ResourceDictionary>

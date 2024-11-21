@@ -2,10 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style TargetType="ListBox">
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="SelectionMode" Value="Single"/>
-        <Setter Property="Background" Value="#ffec8b"/>
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_LightGold}"/>
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
         <Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="True"/>
         <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
@@ -18,19 +18,19 @@
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
                                 <Grid>
-                                    <Border x:Name="border" Background="#e1cc4f" CornerRadius="5"/>
+                                    <Border x:Name="border" Background="{StaticResource SolidColorBrush_YellowIvory}" CornerRadius="5"/>
                                     <ContentPresenter Margin="3,1,6,1"/>
                                 </Grid>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Background"
                                                 TargetName="border"
-                                                Value="#ff6800"/>
+                                                Value="{StaticResource SolidColorBrush_BrightOrange}"/>
                                     </Trigger>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter Property="Background"
                                                 TargetName="border"
-                                                Value="#ff8800"/>
+                                                Value="{StaticResource SolidColorBrush_Mandarin}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>

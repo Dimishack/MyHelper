@@ -40,14 +40,13 @@
     </Style>
 
     <Style TargetType="ToggleButton" x:Key="ComboBoxToggleButton">
-        <Setter Property="Background" Value="#ff6800"/>
         <Setter Property="ClickMode" Value="Press"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
-                    <Border x:Name="border" Background="{TemplateBinding Background}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <Path x:Name="arrow" Data="M0,1 L4.5,7 C5,7.5 5,7.5 5.5,7 L10,1 V0 L5,4 L0,0 V1 Z" 
-                          Fill="#ffdb58" 
+                    <Border x:Name="border" Background="{StaticResource SolidColorBrush_BrightOrange}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Path x:Name="arrow" Data="{StaticResource ArrowGeometry}" 
+                          Fill="{StaticResource SolidColorBrush_Mustard}" 
                           HorizontalAlignment="Right" VerticalAlignment="Center"
                           Margin="0,0,7,0"/>
                     </Border>
@@ -55,22 +54,22 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Fill"
                                 TargetName="arrow"
-                                Value="#fff4bd"/>
+                                Value="{StaticResource SolidColorBrush_Vanilla}"/>
                             <Setter Property="Effect"
                                 TargetName="arrow">
                                 <Setter.Value>
-                                    <DropShadowEffect Color="#ffdb58" ShadowDepth="0.9"/>
+                                    <DropShadowEffect Color="{StaticResource Color_Mustard}" ShadowDepth="0.9"/>
                                 </Setter.Value>
                             </Setter>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter Property="Fill"
                                 TargetName="arrow"
-                                Value="#fff4bd"/>
+                                Value="{StaticResource SolidColorBrush_Vanilla}"/>
                             <Setter Property="Effect"
                                 TargetName="arrow">
                                 <Setter.Value>
-                                    <DropShadowEffect Color="#ffdb58" ShadowDepth="0.9"/>
+                                    <DropShadowEffect Color="{StaticResource Color_Mustard}" ShadowDepth="0.9"/>
                                 </Setter.Value>
                             </Setter>
                         </Trigger>
@@ -86,28 +85,28 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
-                    <Border x:Name="border" Background="#ff6800" Margin="{TemplateBinding Margin}"
+                    <Border x:Name="border" Background="{StaticResource SolidColorBrush_BrightOrange}" Margin="{TemplateBinding Margin}"
                             Padding="{TemplateBinding Padding}"
                             IsEnabled="{TemplateBinding IsEnabled}">
-                        <fa:IconImage x:Name="icon" Foreground="#ffdb58"
+                        <fa:IconImage x:Name="icon" Foreground="{StaticResource SolidColorBrush_Mustard}"
                                   Icon="{TemplateBinding fa:IconImage.Icon}" Width="16"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ff8243"/>
+                                    Value="{StaticResource SolidColorBrush_MangoTango}"/>
                             <Setter Property="Foreground"
                                     TargetName="icon"
-                                    Value="#fff4bd"/>
+                                    Value="{StaticResource SolidColorBrush_Vanilla}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ffc961"/>
+                                    Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
                             <Setter Property="Foreground"
                                     TargetName="icon"
-                                    Value="#ff6800"/>
+                                    Value="{StaticResource SolidColorBrush_BrightOrange}"/>
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -116,10 +115,10 @@
                             </MultiTrigger.Conditions>
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ff6800"/>
+                                    Value="{StaticResource SolidColorBrush_BrightOrange}"/>
                             <Setter Property="Foreground"
                                     TargetName="icon"
-                                    Value="#fff4bd"/>
+                                    Value="{StaticResource SolidColorBrush_Vanilla}"/>
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

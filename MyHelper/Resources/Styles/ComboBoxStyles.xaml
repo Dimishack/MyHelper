@@ -17,7 +17,7 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ffc961"/>
+                                    Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Background"
@@ -58,7 +58,7 @@
                                             MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, 
                                             Path=ActualWidth}"
                                             MaxHeight="{TemplateBinding MaxDropDownHeight}"
-                                            Background="#ff8243" BorderBrush="#ff6800" BorderThickness="1">
+                                            Background="{StaticResource SolidColorBrush_MangoTango}" BorderBrush="{StaticResource SolidColorBrush_BrightOrange}" BorderThickness="1">
                                 <ScrollViewer x:Name="DropDownScrollViewer">
                                     <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
                                         <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Contained" Margin="1"/>

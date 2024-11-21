@@ -46,36 +46,36 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="border" Background="#ff6800"
+                    <Border x:Name="border" Background="{StaticResource SolidColorBrush_BrightOrange}"
                             Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}"
                             IsEnabled="{TemplateBinding IsEnabled}">
                         <fa:IconImage x:Name="icon" Icon="{TemplateBinding fa:IconImage.Icon}"
-                                      Foreground="#ffdb58" Width="16"/>
+                                      Foreground="{StaticResource SolidColorBrush_Mustard}" Width="16"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ff8243"/>
+                                    Value="{StaticResource SolidColorBrush_MangoTango}"/>
                             <Setter Property="Foreground"
                                     TargetName="icon"
-                                    Value="#fff4bd"/>
+                                    Value="{StaticResource SolidColorBrush_Vanilla}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ffc961"/>
+                                    Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
                             <Setter Property="Foreground"
                                     TargetName="icon"
-                                    Value="#ff6800"/>
+                                    Value="{StaticResource SolidColorBrush_BrightOrange}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ff6800"/>
+                                    Value="{StaticResource SolidColorBrush_BrightOrange}"/>
                             <Setter Property="Foreground"
                                     TargetName="icon"
-                                    Value="#fff4bd"/>
+                                    Value="{StaticResource SolidColorBrush_Vanilla}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -94,7 +94,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="border" Background="#ff6800" 
+                    <Border x:Name="border" Background="{StaticResource SolidColorBrush_BrightOrange}" 
                             Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}"
                             IsEnabled="{TemplateBinding IsEnabled}">
                         <Grid>
@@ -109,10 +109,10 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ff8243"/>
+                                    Value="{StaticResource SolidColorBrush_MangoTango}"/>
                             <Setter Property="Foreground"
                                     TargetName="icon"
-                                    Value="#fff4bd"/>
+                                    Value="{StaticResource SolidColorBrush_Vanilla}"/>
                         </Trigger>
                         
                         <Trigger Property="IsEnabled" Value="False">
@@ -124,18 +124,18 @@
                                     Value="Visible"/>
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ffb961"/>
+                                    Value="{StaticResource SolidColorBrush_RichRedOrange}"/>
                             <Setter Property="Foreground"
                                     TargetName="icon"
-                                    Value="#ff6800"/>
+                                    Value="{StaticResource SolidColorBrush_BrightOrange}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter Property="Background"
                                     TargetName="border"
-                                    Value="#ff6800"/>
+                                    Value="{StaticResource SolidColorBrush_BrightOrange}"/>
                             <Setter Property="Foreground"
                                     TargetName="icon"
-                                    Value="#fff4bd"/>
+                                    Value="{StaticResource SolidColorBrush_Vanilla}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
