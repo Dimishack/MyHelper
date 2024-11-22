@@ -116,7 +116,6 @@ namespace MyHelper.Infrastructure.Behaviors
                     _textBox = textBox;
                     _showAnimation.Completed += Animation_Completed;
                 }
-                if(_showAnimation.CanFreeze) _showAnimation.Freeze();
             }
             AssociatedObject.BeginAnimation(Grid.HeightProperty, _showAnimation);
         }

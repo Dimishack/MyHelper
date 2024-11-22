@@ -18,76 +18,7 @@
         d:DataContext="{d:DesignInstance {x:Type vm:MainWindowViewModel}, IsDesignTimeCreatable=True}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolVisibleConverter"/>
-        <Style TargetType="ListBoxItem" x:Key="lv_menu">
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="IsTabStop" Value="False"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <Border x:Name="border" Background="{StaticResource SolidColorBrush_MossyGreen}"
-                                Padding="0,4">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="8"/>
-                                    <ColumnDefinition Width="38"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border x:Name="Indicator" 
-                                    HorizontalAlignment="Left"
-                                    BorderBrush="#396e31" BorderThickness="1"
-                                        Background="#4b9548" Width="5"
-                                    CornerRadius="4" Margin="0,-2" Visibility="Collapsed"/>
-                                <Image Grid.Column="1" Source="{TemplateBinding Image.Source}"
-                                   Stretch="Fill" 
-                                   HorizontalAlignment="Left"
-                                   Margin="3,0"
-                                   SnapsToDevicePixels="True"/>
-                                <TextBlock Grid.Column="2"
-                                       Text="{TemplateBinding TextBlock.Text}"
-                                       HorizontalAlignment="Left"
-                                       VerticalAlignment="Center"
-                                       Margin="20,0,0,0"
-                                       FontFamily="{StaticResource Murs Gothic Key}"
-                                       FontSize="16"
-                                       FontWeight="Bold"
-                                       />
-                            </Grid>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background"
-                                        TargetName="border"
-                                        Value="#66b233"/>
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background"
-                                        TargetName="border"
-                                        Value="#66b233"/>
-                                <Setter Property="Visibility"
-                                        TargetName="Indicator"
-                                        Value="Visible"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style TargetType="{x:Type ToolTip}" x:Key="tt_style">
-            <Setter Property="Placement" Value="Right"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="Width" Value="100"/>
-            <Setter Property="Background" Value="#3eb444"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Foreground" Value="WhiteSmoke"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="FontFamily" Value="{StaticResource Ruthless Sketch}"/>
-            <Setter Property="PlacementRectangle" Value="45,0,0,0"/>
-            <Setter Property="HorizontalOffset" Value="25"/>
-            <Setter Property="VerticalOffset" Value="6"/>
-            <Setter Property="HasDropShadow" Value="True"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="FontWeight" Value="Bold"/>
+        <Style TargetType="ToolTip" BasedOn="{StaticResource ToolTipMainMenuStyle}">
             <Setter Property="Visibility" Value="{Binding VisibleTooltips, Converter={StaticResource BoolVisibleConverter}}"/>
         </Style>
     </Window.Resources>
@@ -130,95 +61,88 @@
                            Margin="20,0,0,0"/>
             </StackPanel>
             <Separator DockPanel.Dock="Top" Background="Black"/>
-            <ListView Margin="2,5" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            <ListBox Margin="2,5" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       ScrollViewer.VerticalScrollBarVisibility="Disabled"
                       SelectionMode="Single" Width="280" BorderThickness="0"
                       Background="Transparent">
-                <ListViewItem IsSelected="{Binding ShowHomeView}">
-                    <ListViewItem.Style>
-                        <Style TargetType="ListViewItem" BasedOn="{StaticResource lv_menu}">
+                <ListBoxItem IsSelected="{Binding ShowHomeView}">
+                    <ListBoxItem.Style>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource lbItem_menu}">
                             <Setter Property="Image.Source" Value="/Resources/Images/Home.png"/>
                             <Setter Property="TextBlock.Text" Value="H O M E"/>
                         </Style>
-                    </ListViewItem.Style>
-                    <ListViewItem.ToolTip>
-                        <ToolTip Content="Home"
-                                 Style="{StaticResource tt_style}"/>
-                    </ListViewItem.ToolTip>
-                </ListViewItem>
-                <ListViewItem IsSelected="{Binding ShowTargetsView}">
-                    <ListViewItem.Style>
-                        <Style TargetType="ListViewItem" BasedOn="{StaticResource lv_menu}">
+                    </ListBoxItem.Style>
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Content="Home"/>
+                    </ListBoxItem.ToolTip>
+                </ListBoxItem>
+                <ListBoxItem IsSelected="{Binding ShowTargetsView}">
+                    <ListBoxItem.Style>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource lbItem_menu}">
                             <Setter Property="Image.Source" Value="/Resources/Images/Targets.png"/>
                             <Setter Property="TextBlock.Text" Value="T A R G E T S"/>
                         </Style>
-                    </ListViewItem.Style>
-                    <ListViewItem.ToolTip>
-                        <ToolTip Content="Targets"
-                                 Style="{StaticResource tt_style}"/>
-                    </ListViewItem.ToolTip>
-                </ListViewItem>
-                <ListViewItem IsSelected="{Binding ShowTasksView}">
-                    <ListViewItem.Style>
-                        <Style TargetType="ListViewItem" BasedOn="{StaticResource lv_menu}">
+                    </ListBoxItem.Style>
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Content="Targets"/>
+                    </ListBoxItem.ToolTip>
+                </ListBoxItem>
+                <ListBoxItem IsSelected="{Binding ShowTasksView}">
+                    <ListBoxItem.Style>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource lbItem_menu}">
                             <Setter Property="Image.Source" Value="/Resources/Images/Tasks.png"/>
                             <Setter Property="TextBlock.Text" Value="T A S K S"/>
                         </Style>
-                    </ListViewItem.Style>
-                    <ListViewItem.ToolTip>
-                        <ToolTip Content="Tasks"
-                                 Style="{StaticResource tt_style}"/>
-                    </ListViewItem.ToolTip>
-                </ListViewItem>
-                <ListViewItem IsSelected="{Binding ShowChallengesView}">
-                    <ListViewItem.Style>
-                        <Style TargetType="ListViewItem" BasedOn="{StaticResource lv_menu}">
+                    </ListBoxItem.Style>
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Content="Tasks"/>
+                    </ListBoxItem.ToolTip>
+                </ListBoxItem>
+                <ListBoxItem IsSelected="{Binding ShowChallengesView}">
+                    <ListBoxItem.Style>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource lbItem_menu}">
                             <Setter Property="Image.Source" Value="/Resources/Images/Challenges.png"/>
                             <Setter Property="TextBlock.Text" Value="C H A L L E N G E S"/>
                         </Style>
-                    </ListViewItem.Style>
-                    <ListViewItem.ToolTip>
-                        <ToolTip Content="Challenges"
-                                 Style="{StaticResource tt_style}"/>
-                    </ListViewItem.ToolTip>
-                </ListViewItem>
-                <ListViewItem IsSelected="{Binding ShowBooksView}">
-                    <ListViewItem.Style>
-                        <Style TargetType="ListViewItem" BasedOn="{StaticResource lv_menu}">
+                    </ListBoxItem.Style>
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Content="Challenges"/>
+                    </ListBoxItem.ToolTip>
+                </ListBoxItem>
+                <ListBoxItem IsSelected="{Binding ShowBooksView}">
+                    <ListBoxItem.Style>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource lbItem_menu}">
                             <Setter Property="Image.Source" Value="/Resources/Images/Books.png"/>
                             <Setter Property="TextBlock.Text" Value="B O O K S"/>
                         </Style>
-                    </ListViewItem.Style>
-                    <ListViewItem.ToolTip>
-                        <ToolTip Content="Books"
-                                 Style="{StaticResource tt_style}"/>
-                    </ListViewItem.ToolTip>
-                </ListViewItem>
-                <ListViewItem IsSelected="{Binding ShowCinemaView}">
-                    <ListViewItem.Style>
-                        <Style TargetType="ListViewItem" BasedOn="{StaticResource lv_menu}">
+                    </ListBoxItem.Style>
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Content="Books"/>
+                    </ListBoxItem.ToolTip>
+                </ListBoxItem>
+                <ListBoxItem IsSelected="{Binding ShowCinemaView}">
+                    <ListBoxItem.Style>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource lbItem_menu}">
                             <Setter Property="Image.Source" Value="/Resources/Images/Cinema.png"/>
                             <Setter Property="TextBlock.Text" Value="C I N E M A"/>
                         </Style>
-                    </ListViewItem.Style>
-                    <ListViewItem.ToolTip>
-                        <ToolTip Content="Cinema"
-                                 Style="{StaticResource tt_style}"/>
-                    </ListViewItem.ToolTip>
-                </ListViewItem>
-                <ListViewItem IsSelected="{Binding ShowSettingsView}">
-                    <ListViewItem.Style>
-                        <Style TargetType="ListViewItem" BasedOn="{StaticResource lv_menu}">
+                    </ListBoxItem.Style>
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Content="Cinema"/>
+                    </ListBoxItem.ToolTip>
+                </ListBoxItem>
+                <ListBoxItem IsSelected="{Binding ShowSettingsView}">
+                    <ListBoxItem.Style>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource lbItem_menu}">
                             <Setter Property="Image.Source" Value="/Resources/Images/Settings.png"/>
                             <Setter Property="TextBlock.Text" Value="S E T T I N G S"/>
                         </Style>
-                    </ListViewItem.Style>
-                    <ListViewItem.ToolTip>
-                        <ToolTip Content="Settings"
-                                 Style="{StaticResource tt_style}"/>
-                    </ListViewItem.ToolTip>
-                </ListViewItem>
-            </ListView>
+                    </ListBoxItem.Style>
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Content="Settings"/>
+                    </ListBoxItem.ToolTip>
+                </ListBoxItem>
+            </ListBox>
         </DockPanel>
         <Grid Background="#002800" Opacity="0.6" Panel.ZIndex="1"
               Visibility="{Binding ShowFullMenu, Converter={StaticResource BoolVisibleConverter}}">

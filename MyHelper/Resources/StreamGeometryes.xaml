@@ -10,4 +10,19 @@
     <StreamGeometry x:Key="ArrowUp_ScrollBar" ice:Freeze="True">
         M11.5,2 C10.5,2 -2,14 2,16 L21,16 C25,14 12.5,2 11.5,2
     </StreamGeometry>
+    <StreamGeometry x:Key="Check_CheckBox" ice:Freeze="True">
+        M1,4 L4.5,8 L9,1
+    </StreamGeometry>
+    <PathGeometry x:Key="XMark_CheckBox" ice:Freeze="True">
+        <PathGeometry.Figures>
+            <PathFigureCollection>
+                <PathFigure StartPoint="1,1">
+                    <LineSegment Point="9,9"/>
+                </PathFigure>
+                <PathFigure StartPoint="1,9">
+                    <LineSegment Point="9,1"/>
+                </PathFigure>
+            </PathFigureCollection>
+        </PathGeometry.Figures>
+    </PathGeometry>
 </ResourceDictionary>

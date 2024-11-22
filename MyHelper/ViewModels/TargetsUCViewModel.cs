@@ -63,11 +63,9 @@ namespace MyHelper.ViewModels
                 }
                 Set(ref _selectedTargetsGroup, value);
                 if (value is not null)
-                {
                     foreach (var target in value.Targets)
                         Targets.Add(target);
-                    CompletedTargetsCount = _completedTargetsCount_Calculated;
-                }
+                CompletedTargetsCount = _completedTargetsCount_Calculated;
                 DepedenciesChanged();
 
             }

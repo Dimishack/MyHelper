@@ -57,7 +57,7 @@ namespace MyHelper.Infrastructure.Behaviors
 
         private static void OnOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is OffsetOfCompleteBehavior behavior) behavior.OffsetAnimation();
+            if (d is OffsetOfCompleteBehavior behavior && !behavior._isCleanUp) behavior.OffsetAnimation();
         }
         private void OffsetAnimation()
         {

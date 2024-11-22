@@ -19,6 +19,7 @@
         <TranslateTransform/>
     </UserControl.RenderTransform>
     <UserControl.Resources>
+        <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}"/>
         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}"/>
     </UserControl.Resources>
     <UserControl.Triggers>
@@ -83,7 +84,7 @@
                                  CommandParameter="Невыполненные"/>
                 </StackPanel>
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="Сортировка">
+            <GroupBox Grid.Row="1" Header="Сортировка:">
                 <ComboBox ItemsSource="{Binding Sorts}"
                           SelectedItem="{Binding SelectedSort}"
                           Style="{StaticResource ComboBoxMainStyle}"
@@ -101,40 +102,44 @@
         </Grid>
         <GroupBox Header="{Binding SelectedTargetsGroup.Name, FallbackValue='Выберите год'}">
             <DockPanel>
-                <Grid DockPanel.Dock="Bottom" Margin="0,3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0">
+                <Border  DockPanel.Dock="Bottom"
+                      Background="{StaticResource SolidColorBrush_YellowBroom}"
+                         Padding="10,5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0">
                         <Run Text="Выполненных/Всего: "/>
                         <Run Text="{Binding CompletedTargetsCount
                                     ,StringFormat='{}{0:00}', Mode=OneWay}"/>
                         <Run Text="/"/>
                         <Run Text="{Binding SelectedTargetsGroup.Targets.Count
                                     ,StringFormat='{}{0:00}', Mode=OneWay}"/>
-                    </TextBlock>
-                    <Border Grid.Column="1" Background="Black" Margin="4,0"/>
-                    <ProgressBar Grid.Column="2"
-                                 Maximum="1" Background="{StaticResource SolidColorBrush_YellowIvory}" BorderThickness="0">
-                        <i:Interaction.Behaviors>
-                            <cusB:ProgressBehavior Progress="{Binding Progress}"/>
-                        </i:Interaction.Behaviors>
-                        <ProgressBar.Foreground>
-                            <LinearGradientBrush>
-                                <GradientStop Color="{StaticResource Color_LightGold}" Offset="0"/>
-                                <GradientStop Color="{StaticResource Color_MossyGreen}">
-                                    <i:Interaction.Behaviors>
-                                        <cusB:OffsetOfCompleteBehavior OffsetOfComplete="{Binding OffsetCompleted}"
+                        </TextBlock>
+                        <Border Grid.Column="1" Background="{StaticResource SolidColorBrush_DarkGreenishYellowGreen}" Margin="4,0"/>
+                        <ProgressBar Grid.Column="2"
+                                 Maximum="1" Background="{StaticResource SolidColorBrush_Transparent}" BorderThickness="0">
+                            <i:Interaction.Behaviors>
+                                <cusB:ProgressBehavior Progress="{Binding Progress}"/>
+                            </i:Interaction.Behaviors>
+                            <ProgressBar.Foreground>
+                                <LinearGradientBrush>
+                                    <GradientStop Color="{StaticResource Color_Vanilla}" Offset="0"/>
+                                    <GradientStop Color="{StaticResource Color_AlmostApple}">
+                                        <i:Interaction.Behaviors>
+                                            <cusB:OffsetOfCompleteBehavior OffsetOfComplete="{Binding OffsetCompleted}"
                                                                        IsCleanUp="{Binding CleanUpBehaviors}"/>
-                                    </i:Interaction.Behaviors>
-                                </GradientStop>
-                            </LinearGradientBrush>
-                        </ProgressBar.Foreground>
-                    </ProgressBar>
-                    <TextBlock Grid.Column="2" Text="{Binding Procent, StringFormat='{}{0:00.00}%', TargetNullValue=0}" HorizontalAlignment="Center"/>
-                </Grid>
+                                        </i:Interaction.Behaviors>
+                                    </GradientStop>
+                                </LinearGradientBrush>
+                            </ProgressBar.Foreground>
+                        </ProgressBar>
+                        <TextBlock Grid.Column="2" Text="{Binding Procent, StringFormat='{}{0:00.00}%', TargetNullValue=0}" HorizontalAlignment="Center"/>
+                    </Grid>
+                </Border>
                 <UniformGrid DockPanel.Dock="Bottom" Rows="1">
                     <ToggleButton IsChecked="{Binding AddTarget}"
                                   IsEnabled="{Binding EnableToggleButtonCreateTarget}"
@@ -159,7 +164,7 @@
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Vertical" Background="#FAF0E6" Margin="2">
+                                <StackPanel Orientation="Vertical" Background="{StaticResource SolidColorBrush_Linen}" Margin="2">
                                     <StackPanel.Resources>
                                         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}">
                                             <Setter Property="Margin" Value="3,2"/>

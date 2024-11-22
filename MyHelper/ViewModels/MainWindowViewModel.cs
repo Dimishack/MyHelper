@@ -19,7 +19,7 @@ namespace MyHelper.ViewModels
         private readonly IRepository<Target> _targetRepository = targetRepository;
         private readonly IRepository<TargetsGroup> _targets = targetsGroupRepository;
 
-        #region Propserties...
+        #region Properties...
 
         #region CurrentViewModel : ViewModel - Текущая модель-представления
 

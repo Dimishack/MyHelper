@@ -13,7 +13,7 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background"
                                     TargetName="border_thumb"
-                                    Value="{StaticResource SolidColorBrush_Mustard}"/>
+                                    Value="{StaticResource SolidColorBrush_YellowBroom}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
