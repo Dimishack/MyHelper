@@ -14,13 +14,38 @@ namespace MyHelper.Infrastructure.Behaviors
         private readonly double _accelerationRatio = 0.7;
         private readonly IEasingFunction _easingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut };
 
+        protected override void OnAttached()
+        {
+            AssociatedObject.Unloaded += AssociatedObject_Unloaded;
+            base.OnAttached();
+        }
+
+        private void AssociatedObject_Unloaded(object sender, RoutedEventArgs e) => CleanUp();
+
         protected override void OnDetaching()
         {
-            if(_showAnimation is not null) _showAnimation.Completed -= Animation_Completed;
-            _textBox = null;
-            _showAnimation = null;
-            _hideAnimation = null;
+            CleanUp();
             base.OnDetaching();
+        }
+
+        private void CleanUp()
+        {
+            if (AssociatedObject is not null)
+            {
+                if (_showAnimation is not null)
+                {
+                    _showAnimation.Completed -= Animation_Completed;
+                    AssociatedObject.BeginAnimation(Grid.HeightProperty, null);
+                    _showAnimation = null;
+                }
+                if (_hideAnimation is not null)
+                {
+                    AssociatedObject.BeginAnimation(Grid.HeightProperty, null);
+                    _hideAnimation = null;
+                }
+                _textBox = null;
+                AssociatedObject.Unloaded -= AssociatedObject_Unloaded;
+            }
         }
 
         public double MaxHeight
@@ -56,6 +81,8 @@ namespace MyHelper.Infrastructure.Behaviors
 
         private void HideUserControl()
         {
+            if (AssociatedObject is null) return;
+
             if (_hideAnimation is null)
             {
                 _hideAnimation = new()
@@ -73,7 +100,9 @@ namespace MyHelper.Infrastructure.Behaviors
 
         private void ShowUserControl()
         {
-            if(_showAnimation is null)
+            if (AssociatedObject is null) return;
+
+            if (_showAnimation is null)
             {
                 _showAnimation = new()
                 {

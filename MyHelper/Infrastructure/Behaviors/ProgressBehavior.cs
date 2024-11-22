@@ -7,12 +7,36 @@ namespace MyHelper.Infrastructure.Behaviors
 {
     class ProgressBehavior : Behavior<ProgressBar>
     {
-        private DoubleAnimation? _animation = null;
+        private Storyboard? _storyboard;
+
+        protected override void OnAttached()
+        {
+            AssociatedObject.Unloaded += AssociatedObject_Unloaded;
+            base.OnAttached();
+        }
+
+        private void AssociatedObject_Unloaded(object sender, RoutedEventArgs e) => CleanUp();
+
         protected override void OnDetaching()
         {
-            _animation = null;
+            CleanUp();
             base.OnDetaching();
         }
+
+        private void CleanUp()
+        {
+            if (AssociatedObject is not null)
+            {
+                if (_storyboard != null)
+                {
+                    _storyboard.Stop();
+                    _storyboard.Children.Clear();
+                    _storyboard = null;
+                }
+                AssociatedObject.Unloaded -= AssociatedObject_Unloaded; 
+            }
+        }
+
         public double Progress
         {
             get { return (double)GetValue(ProgressProperty); }
@@ -28,17 +52,23 @@ namespace MyHelper.Infrastructure.Behaviors
         }
         private void ProgressAnimation()
         {
-            if (_animation is null)
+            if (AssociatedObject is null)
+                return;
+            if(_storyboard is null)
             {
-                _animation = new()
-                {
-                    To = Progress,
-                    Duration = TimeSpan.FromMilliseconds(300),
-                    DecelerationRatio = 0.8
-                };
+                _storyboard = new Storyboard();
+                Storyboard.SetTargetProperty(_storyboard, new PropertyPath(ProgressBar.ValueProperty));
+                Storyboard.SetTarget(_storyboard, AssociatedObject);
             }
-            else _animation.To = Progress;
-            AssociatedObject.BeginAnimation(ProgressBar.ValueProperty, _animation);
+            var animation = new DoubleAnimation
+            {
+                To = Progress,
+                Duration = TimeSpan.FromMilliseconds(300),
+                DecelerationRatio = 0.8
+            };
+            _storyboard.Children.Clear();
+            _storyboard.Children.Add(animation);
+            _storyboard.Begin();
         }
     }
 }

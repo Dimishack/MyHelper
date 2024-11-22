@@ -15,12 +15,17 @@
              d:DataContext="{d:DesignInstance vm:TargetsUCViewModel,IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="700"
              MinHeight="300">
+    <UserControl.RenderTransform>
+        <TranslateTransform/>
+    </UserControl.RenderTransform>
     <UserControl.Resources>
         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}"/>
     </UserControl.Resources>
-    <i:Interaction.Behaviors>
-        <cusB:ShowMainUserControlBehavior/>
-    </i:Interaction.Behaviors>
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard Storyboard="{StaticResource ShowMainUserControlAnimation}"/>
+        </EventTrigger>
+    </UserControl.Triggers>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
@@ -104,7 +109,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0">
                         <Run Text="Выполненных/Всего: "/>
-                        <Run Text="{Binding SelectedTargetsGroup.CompletedTargetsCount
+                        <Run Text="{Binding CompletedTargetsCount
                                     ,StringFormat='{}{0:00}', Mode=OneWay}"/>
                         <Run Text="/"/>
                         <Run Text="{Binding SelectedTargetsGroup.Targets.Count
@@ -114,20 +119,21 @@
                     <ProgressBar Grid.Column="2"
                                  Maximum="1" Background="{StaticResource SolidColorBrush_YellowIvory}" BorderThickness="0">
                         <i:Interaction.Behaviors>
-                            <cusB:ProgressBehavior Progress="{Binding SelectedTargetsGroup.Progress}"/>
+                            <cusB:ProgressBehavior Progress="{Binding Progress}"/>
                         </i:Interaction.Behaviors>
                         <ProgressBar.Foreground>
                             <LinearGradientBrush>
                                 <GradientStop Color="{StaticResource Color_LightGold}" Offset="0"/>
                                 <GradientStop Color="{StaticResource Color_MossyGreen}">
                                     <i:Interaction.Behaviors>
-                                        <cusB:OffsetOfCompleteBehavior OffsetOfComplete="{Binding SelectedTargetsGroup.OffsetOfCompleted}"/>
+                                        <cusB:OffsetOfCompleteBehavior OffsetOfComplete="{Binding OffsetCompleted}"
+                                                                       IsCleanUp="{Binding CleanUpBehaviors}"/>
                                     </i:Interaction.Behaviors>
                                 </GradientStop>
                             </LinearGradientBrush>
                         </ProgressBar.Foreground>
                     </ProgressBar>
-                    <TextBlock Grid.Column="2" Text="{Binding SelectedTargetsGroup.Procent, StringFormat='{}{0:00.00}%', TargetNullValue=0}" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Column="2" Text="{Binding Procent, StringFormat='{}{0:00.00}%', TargetNullValue=0}" HorizontalAlignment="Center"/>
                 </Grid>
                 <UniformGrid DockPanel.Dock="Bottom" Rows="1">
                     <ToggleButton IsChecked="{Binding AddTarget}"

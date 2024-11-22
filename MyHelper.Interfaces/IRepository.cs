@@ -22,5 +22,7 @@ namespace MyHelper.Interfaces
 
         void SaveChanged();
         Task SaveChangedAsync();
+        bool Dispose();
+        Task<bool> DisposeAsync();
     }
 }

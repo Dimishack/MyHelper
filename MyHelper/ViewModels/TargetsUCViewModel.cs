@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -23,6 +24,8 @@ namespace MyHelper.ViewModels
         private readonly IRepository<Target> _targetRepository = targetRepository;
         private readonly IRepository<TargetsGroup> _targetsRepository = targetsGroupRepository;
         private bool _disposed = false;
+        private string _filter = "все";
+        private int _completedTargetsCount_Calculated = 0;
 
         #region Properties...
 
@@ -45,6 +48,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (_selectedTargetsGroup == value) return;
+                ClearTargets();
                 if (value is not null)
                 {
                     if (value.Targets.Count == 0)
@@ -58,11 +62,23 @@ namespace MyHelper.ViewModels
                     }
                 }
                 Set(ref _selectedTargetsGroup, value);
-                _selectedTargetsViewSource.Source = _selectedTargetsGroup?.Targets;
+                if (value is not null)
+                {
+                    foreach (var target in value.Targets)
+                        Targets.Add(target);
+                    CompletedTargetsCount = _completedTargetsCount_Calculated;
+                }
                 DepedenciesChanged();
 
             }
         }
+
+        #endregion
+
+        #region Targets : ObservableCollection<TargetModel> - Цели
+
+        ///<summary>Цели</summary>
+        public ObservableCollection<TargetModel> Targets { get; } = [];
 
         #endregion
 
@@ -120,7 +136,7 @@ namespace MyHelper.ViewModels
                 _selectedTargetsViewSource.SortDescriptions.Add(Sorts[value.Key]);
                 if (_selectedTargetsViewSource.View is not null)
                 {
-                    _selectedTargetsViewSource.View.Refresh(); 
+                    _selectedTargetsViewSource.View.Refresh();
                 }
             }
         }
@@ -236,7 +252,6 @@ namespace MyHelper.ViewModels
                 {
                     TargetForAdd_Edit.Name = _selectedTarget.Name;
                     TargetForAdd_Edit.Note = _selectedTarget.Note;
-                    TargetForAdd_Edit.IsComplete = _selectedTarget.IsComplete;
                     OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
                 ChangedWithProperties();
@@ -316,6 +331,59 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region CompletedTargetsCount : int - Количество выполненных задач
+
+        ///<summary>Количество выполненных задач</summary>
+        private int _completedTargetsCount;
+
+        [PropertyChangedWith(nameof(Progress))]
+        [PropertyChangedWith(nameof(OffsetCompleted))]
+        [PropertyChangedWith(nameof(Procent))]
+        ///<summary>Количество выполненных задач</summary>
+        public int CompletedTargetsCount
+        {
+            get => _completedTargetsCount;
+            set
+            {
+                if (!Set(ref _completedTargetsCount, value)) return;
+                ChangedWithProperties();
+            }
+        }
+
+        #endregion
+
+        #region Progress : double - Прогресс выполнения целей
+
+        ///<summary>Прогресс выполнения целей</summary>
+        public double Progress => (double)CompletedTargetsCount / (_selectedTargetsGroup is not null && _selectedTargetsGroup.Targets.Count > 0
+            ? _selectedTargetsGroup.Targets.Count
+            : 1);
+
+        #endregion
+
+        #region OffsetCompleted : double - Смещение выполненных целей
+
+        ///<summary>Смещение выполненных целей</summary>
+        public double OffsetCompleted => 2.0 - Progress;
+
+        #endregion
+
+        #region Procent : double - Процент выполненных целей
+        ///<summary>Процент выполненных целей</summary>
+        public double Procent => Math.Round(Progress * 100.0, 2);
+
+        #endregion
+
+        #region CleanUpBehaviors : bool - Очистить поведение
+
+        ///<summary>Очистить поведение</summary>
+        private bool _cleanUpBehaviors = false;
+
+        ///<summary>Очистить поведение</summary>
+        public bool CleanUpBehaviors { get => _cleanUpBehaviors; set => Set(ref _cleanUpBehaviors, value); }
+
+        #endregion
+
         #endregion
 
         #region Commands...
@@ -332,10 +400,13 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - Загрузка окна</summary>
         private void OnLoadCommandExecuted(object? p)
         {
-            GroupsTargets.CollectionChanged += GroupsTargets_CollectionChanged;
+            Targets.CollectionChanged += Targets_CollectionChanged;
             foreach (TargetsGroup targets in _targetsRepository.Items)
                 GroupsTargets.Add(new TargetsModel(targets));
+            _selectedTargetsViewSource.Source = Targets;
+
         }
+
 
         #endregion
 
@@ -441,6 +512,7 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - удалить группу</summary>
         private async Task OnRemoveTargetsGroupCommandExecuted(object? p)
         {
+            ClearTargets();
             await _targetsRepository.RemoveAsync(_selectedTargetsGroup!.Id);
             GroupsTargets.Remove(_selectedTargetsGroup);
             SelectedTargetsGroup = GroupsTargets.Count > 0 ? GroupsTargets.Last() : null;
@@ -472,7 +544,12 @@ namespace MyHelper.ViewModels
                 IsComplete = _targetForAdd_Edit.IsComplete,
                 TargetsGroupId = _selectedTargetsGroup.Id,
             };
-            SelectedTargetsGroup?.Targets.Add(new TargetModel(newTarget));
+            var newTargetModel = new TargetModel(newTarget);
+            SelectedTargetsGroup?.Targets.Add(newTargetModel);
+            if (_filter != "выполненные") Targets.Add(newTargetModel);
+            OnPropertyChanged(nameof(Progress));
+            OnPropertyChanged(nameof(OffsetCompleted));
+            OnPropertyChanged(nameof(Procent));
             await _targetRepository.AddAsync(newTarget);
             AddTarget = false;
             SelectedTargetsView.Refresh();
@@ -493,6 +570,8 @@ namespace MyHelper.ViewModels
         private bool CanChangeTargetCommandExecute(object? p) => IsVisibleAdd_EditTarget
             && _selectedTarget is not null
             && !string.IsNullOrWhiteSpace(_targetForAdd_Edit.Name)
+            && (_targetForAdd_Edit.Name != _selectedTarget.Name
+            || _targetForAdd_Edit.Note != _selectedTarget.Note)
             ;
 
         ///<summary>Логика выполнения - изменить цель</summary>
@@ -500,7 +579,6 @@ namespace MyHelper.ViewModels
         {
             _selectedTarget!.Name = _targetForAdd_Edit.Name;
             _selectedTarget.Note = _targetForAdd_Edit.Note;
-            _selectedTarget.IsComplete = _targetForAdd_Edit.IsComplete;
             await _targetRepository.UpdateAsync(await _targetRepository.GetAsync(_selectedTarget.Id));
             ChangeTarget = false;
             SelectedTargetsView.Refresh();
@@ -543,8 +621,19 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - удалить цель</summary>
         private async Task OnRemoveTargetCommandExecuted(object? p)
         {
+            int index = Targets.IndexOf(_selectedTarget);
+            bool isComplete = _selectedTarget.IsComplete;
+            
             await _targetRepository.RemoveAsync(_selectedTarget.Id);
-            SelectedTargetsGroup?.Targets.Remove(_selectedTarget);
+            SelectedTargetsGroup?.Targets.RemoveAt(index);
+            Targets.RemoveAt(index);
+            if (isComplete) CompletedTargetsCount--;
+            else
+            {
+                OnPropertyChanged(nameof(Progress));
+                OnPropertyChanged(nameof(OffsetCompleted));
+                OnPropertyChanged(nameof(Procent));
+            }
         }
 
         #endregion
@@ -559,8 +648,8 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommandAsync(OnSaveRepositoryCommandExecuted, CanSaveRepositoryCommandExecute);
 
         ///<summary>Проверка возможности выполнения - Сохранить весь репозиторий</summary>
-        private bool CanSaveRepositoryCommandExecute(object? p) => 
-            _targetsRepository is not null 
+        private bool CanSaveRepositoryCommandExecute(object? p) =>
+            _targetsRepository is not null
             && !_targetsRepository.AutoSaveChanges;
 
         ///<summary>Логика выполнения - Сохранить весь репозиторий</summary>
@@ -583,30 +672,21 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - фильтровать список</summary>
         private void OnFilterCommandExecuted(string p)
         {
-            SelectedTargetsGroup.UnSubsctibe();
-            SelectedTargetsGroup.Targets.Clear();
-            switch (p.ToLower())
+            _filter = p.ToLower();
+            ClearTargets();
+            switch (_filter)
             {
                 case "все":
-                    foreach (var target in _targetsRepository.Items
-                        .Include(g => g.Targets)
-                        .First(ts => ts.Id == SelectedTargetsGroup.Id)
-                        .Targets)
-                        SelectedTargetsGroup.Targets.Add(new TargetModel(target));
+                    foreach (var target in _selectedTargetsGroup.Targets)
+                        Targets.Add(target);
                     break;
                 case "выполненные":
-                    foreach (var target in _targetsRepository.Items
-                        .Include(g => g.Targets)
-                        .First(ts => ts.Id == SelectedTargetsGroup.Id)
-                        .Targets.Where(t => t.IsComplete))
-                        SelectedTargetsGroup.Targets.Add(new TargetModel(target));
+                    foreach (var target in _selectedTargetsGroup.Targets.Where(t => t.IsComplete))
+                        Targets.Add(target);
                     break;
                 case "невыполненные":
-                    foreach (var target in _targetsRepository.Items
-                        .Include(g => g.Targets)
-                        .First(ts => ts.Id == SelectedTargetsGroup.Id)
-                        .Targets.Where(t => !t.IsComplete))
-                        SelectedTargetsGroup.Targets.Add(new TargetModel(target));
+                    foreach (var target in _selectedTargetsGroup.Targets.Where(t => !t.IsComplete))
+                        Targets.Add(target);
                     break;
                 default:
                     break;
@@ -651,56 +731,74 @@ namespace MyHelper.ViewModels
         {
             if (!_disposed)
             {
+                CleanUpBehaviors = true;
+                Targets.CollectionChanged -= Targets_CollectionChanged;
+                ClearTargets();
+                GroupsTargets.Clear();
+
                 if (disposing)
                 {
-                    GroupsTargets.CollectionChanged -= GroupsTargets_CollectionChanged;
-                    foreach (var targetsGroup in GroupsTargets)
-                    {
-                        targetsGroup.Dispose();
-                        targetsGroup.PropertyChanged -= TargetsModel_PropertyChanged;
-                    }
-                    GroupsTargets.Clear();
                 }
                 _disposed = true;
             }
+        }
+
+        private void ClearTargets(int callCount = 0)
+        {
+            if (!Application.Current.Dispatcher.CheckAccess())
+            {
+                Application.Current.Dispatcher.Invoke(() => ClearTargets(callCount));
+                return;
+            }
+
+            for (int i = 0; i < Targets.Count; i++)
+                Targets[i].PropertyChanged -= Target_PropertyChanged;
+
+            Targets.Clear();
         }
 
         #endregion
 
         #region Events...
 
-        private void GroupsTargets_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Targets_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-                    if (e.NewItems is not null && e.NewItems[0] is TargetsModel targetsModel)
-                        targetsModel.PropertyChanged += TargetsModel_PropertyChanged;
+                    if (e.NewItems is not null && e.NewItems[0] is TargetModel newTarget)
+                    {
+                        if (newTarget.IsComplete) _completedTargetsCount_Calculated++;
+                        newTarget.PropertyChanged += Target_PropertyChanged;
+                    }
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-                    if (e.OldItems is not null && e.OldItems[0] is TargetsModel oldTargetsModel)
-                        oldTargetsModel.PropertyChanged -= TargetsModel_PropertyChanged;
+                    if (e.OldItems is not null && e.OldItems[0] is TargetModel oldTarget)
+                    {
+                        oldTarget.PropertyChanged -= Target_PropertyChanged;
+                        _completedTargetsCount_Calculated--;
+                    }
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                    _completedTargetsCount_Calculated = 0;
                     break;
                 default:
-                    throw new InvalidOperationException("Данное действие не реализовано!");
+                    throw new NotImplementedException("Данная функция не реализована!");
             }
         }
 
-        private void TargetsModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        private void Target_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (sender is TargetsModel targetsModel && e.PropertyName == nameof(targetsModel.CompletedTargetsCount)
-                && targetsModel.ChangedTargetId is not null)
+            if (sender is TargetModel target && e.PropertyName == nameof(target.IsComplete))
             {
-                SelectedTarget = SelectedTargetsGroup.Targets.FirstOrDefault(t => t.Id == targetsModel.ChangedTargetId);
-                var target = _targetRepository.Get((int)targetsModel.ChangedTargetId);
-                if(target is not null)
-                _targetRepository.Update(target);
+                CompletedTargetsCount += target.IsComplete ? 1 : -1;
+                _targetRepository.Update(_targetRepository.Get(target.Id));
             }
         }
 
         #endregion
 
-        public TargetsUCViewModel() : this( null, null, null)
+        public TargetsUCViewModel() : this(null, null, null)
         {
 
         }
