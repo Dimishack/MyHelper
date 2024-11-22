@@ -7,12 +7,9 @@
              xmlns:targetsUC="clr-namespace:MyHelper.Views.UserControls.TargetsUC"
              
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:vm="clr-namespace:MyHelper.ViewModels"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
-             xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters"
              
-             d:DataContext="{d:DesignInstance vm:TargetsUCViewModel,IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="700"
              MinHeight="300">
     <UserControl.RenderTransform>

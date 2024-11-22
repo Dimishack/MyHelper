@@ -2,6 +2,6 @@
 {
     public abstract class NotedEntity : NamedEntity
     {
-        public string Note { get; set; }
+        public string? Note { get; set; }
     }
 }

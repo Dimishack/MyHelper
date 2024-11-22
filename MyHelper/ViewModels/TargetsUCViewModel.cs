@@ -4,7 +4,6 @@ using MyHelper.Infrastructure.Attributes;
 using MyHelper.Infrastructure.Commands;
 using MyHelper.Interfaces;
 using MyHelper.Models.Targets;
-using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,11 +15,9 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    class TargetsUCViewModel(IUserDialog userDialog,
-                                  IRepository<Target> targetRepository,
-                                  IRepository<TargetsGroup> targetsGroupRepository) : ViewModel, IDisposable
+    class TargetsUCViewModel(IRepository<Target> targetRepository,
+                             IRepository<TargetsGroup> targetsGroupRepository) : ViewModel, IDisposable
     {
-        private readonly IUserDialog _userDialog = userDialog;
         private readonly IRepository<Target> _targetRepository = targetRepository;
         private readonly IRepository<TargetsGroup> _targetsRepository = targetsGroupRepository;
         private bool _disposed = false;
@@ -795,10 +792,5 @@ namespace MyHelper.ViewModels
         }
 
         #endregion
-
-        public TargetsUCViewModel() : this(null, null, null)
-        {
-
-        }
     }
 }

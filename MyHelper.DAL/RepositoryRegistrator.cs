@@ -9,6 +9,8 @@ namespace MyHelper.DAL
         public static IServiceCollection AddRepositoriesInDB(this IServiceCollection services) => services
             .AddTransient<IRepository<Target>, DbRepository<Target>>()
             .AddTransient<IRepository<TargetsGroup>, DbRepository<TargetsGroup>>()
+            .AddTransient<IRepository<Check>, DbRepository<Check>>()
+            .AddTransient<IRepository<Challenge>, DbRepository<Challenge>>()
             ;
     }
 }

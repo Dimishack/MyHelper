@@ -11,13 +11,17 @@ namespace MyHelper.ViewModels
                                   IUserDialog userDialog,
                                   IWorkWithJSONFile workWithJSONFile,
                                   IRepository<Target> targetRepository,
-                                  IRepository<TargetsGroup> targetsGroupRepository) : ViewModel
+                                  IRepository<TargetsGroup> targetsGroupRepository,
+                                  IRepository<Challenge> challengeRepository,
+                                  IRepository<Check> checkRepostiory) : ViewModel
     {
         private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
         private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
         private readonly IRepository<Target> _targetRepository = targetRepository;
-        private readonly IRepository<TargetsGroup> _targets = targetsGroupRepository;
+        private readonly IRepository<TargetsGroup> _targetsRepository = targetsGroupRepository;
+        private readonly IRepository<Challenge> _challengeRepository = challengeRepository;
+        private readonly IRepository<Check> _checkRepostiory = checkRepostiory;
 
         #region Properties...
 
@@ -86,7 +90,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _showTargetsView, value)) return;
-                ChangeCurrentView(value, () => CurrentViewModel = new TargetsUCViewModel(_userDialog, _targetRepository, _targets));
+                ChangeCurrentView(value, () => CurrentViewModel = new TargetsUCViewModel(_targetRepository, _targetsRepository));
             }
         }
 
@@ -122,7 +126,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _showChallengesView, value)) return;
-                ChangeCurrentView(value, () => CurrentViewModel = new ListChallengesUCViewModel(_openWindows, _userDialog, _workWithJSONFile));
+                ChangeCurrentView(value, () => CurrentViewModel = new ChallengesUCViewModel(_challengeRepository, _checkRepostiory));
             }
         }
 

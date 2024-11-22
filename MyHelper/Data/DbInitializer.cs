@@ -19,8 +19,8 @@ namespace MyHelper.Data
             _logger.LogInformation("Миграция БД...");
             await _db.Database.MigrateAsync().ConfigureAwait(false);
             _logger.LogInformation("Миграция БД выполнена за {0} мс", timer.ElapsedMilliseconds);
-            if (await _db.TargetsGroups.AnyAsync()) return;
-            await InitializeTargets();
+            if (!await _db.TargetsGroups.AnyAsync()) await InitializeTargets();
+            if (!await _db.Challenges.AnyAsync()) await InitializeChallenges();
             _logger.LogInformation("Инициализация БД выполнена за {0} с", timer.Elapsed.TotalSeconds);
         }
 
@@ -29,21 +29,31 @@ namespace MyHelper.Data
             var timer = Stopwatch.StartNew();
             _logger.LogInformation("Инициализация целей...");
 
-            var rnd = new Random();
-            var _targetsGroup = new TargetsGroup()
+            var targetsGroup = new TargetsGroup()
             {
                 Name = "Пожизненные цели",
                 Year = 0,
-                Targets = new Collection<Target>(Enumerable.Range(0, 10).Select(i => new Target()
-                {
-                    IsComplete = Random.Shared.Next(0, 2) == 1,
-                    Name = "GroupsTargets " + i,
-                    Note = "Note" + i
-                }).ToList())
             };
-            await _db.TargetsGroups.AddAsync(_targetsGroup);
+            await _db.TargetsGroups.AddAsync(targetsGroup);
             await _db.SaveChangesAsync();
             _logger.LogInformation("Инициализация целей выполнена за {0} мс", timer.ElapsedMilliseconds);
+        }
+
+        private async Task InitializeChallenges()
+        {
+            var timer = Stopwatch.StartNew();
+            _logger.LogInformation("Инициализация челленджей...");
+
+            var rnd = new Random();
+            var challenges = new Collection<Challenge>(Enumerable.Range(1, 10).Select(c => new Challenge()
+            {
+                Name = $"Challenge {c}",
+                Note = $"Note {c}",
+            }).ToList());
+            foreach (var challenge in challenges)
+            await _db.Challenges.AddAsync(challenge);
+            await _db.SaveChangesAsync();
+            _logger.LogInformation("Инициализация челленджей выполнена за {0} мс", timer.ElapsedMilliseconds);
         }
     }
 }
