@@ -16,7 +16,11 @@ namespace MyHelper.DAL.Entyties
         [Column(TypeName = "date")]
         public DateTime? End { get; set; }
 
+        [Column(TypeName = "varchar(20)")]
+        public string? Duration { get; set; }
+
         public int? Regularity_CountDay { get; set; }
+
         public string? Regularity_UnitCalendar{ get; set; }
 
         public virtual ICollection<Check> CheckList { get; set; } = new Collection<Check>();

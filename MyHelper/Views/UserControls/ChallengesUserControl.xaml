@@ -9,8 +9,9 @@
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+             xmlns:ucChallenges="clr-namespace:MyHelper.Views.UserControls.ChallengesUC"
              
-             d:DesignHeight="450" d:DesignWidth="840"
+             d:DesignHeight="450" d:DesignWidth="850"
              d:DataContext="{d:DesignInstance vm:ChallengesUCViewModel, IsDesignTimeCreatable=True}">
     <UserControl.RenderTransform>
         <TranslateTransform/>
@@ -31,7 +32,7 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <DockPanel>
-        <Grid DockPanel.Dock="Left" Width="135">
+        <Grid DockPanel.Dock="Left" Width="144">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -40,7 +41,7 @@
             <GroupBox Header="Фильтры" Grid.Row="0">
                 <StackPanel Orientation="Vertical">
                     <RadioButton Content="Все" IsChecked="True"/>
-                    <RadioButton Content="В ожидании"/>
+                    <RadioButton Content="Не выполняются"/>
                     <RadioButton Content="Подготовка"/>
                     <RadioButton Content="Выполнение"/>
                     <RadioButton Content="Завершение"/>
@@ -48,7 +49,8 @@
             </GroupBox>
             <GroupBox Header="Сортировка" Grid.Row="1">
                 <ComboBox ItemsSource="{Binding Sorts}"
-                          SelectedIndex="0">
+                          SelectedIndex="0"
+                          SelectedItem="{Binding SelectedSort}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Key}"
@@ -58,10 +60,10 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
             </GroupBox>
-            <GroupBox Header="Группы" Grid.Row="2" Margin="0,0,0,5">
+            <GroupBox Header="Продолжительность" Grid.Row="2" Margin="0,0,0,5">
                 <Grid>
-                    <ComboBox ItemsSource="{Binding Groups}"
-                              SelectedIndex="0">
+                    <ComboBox ItemsSource="{Binding Durations}"
+                              SelectedItem="{Binding SelectedDuration}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding}"
@@ -97,7 +99,7 @@
                             </Button.Style>
                         </Button>
                     </UniformGrid>
-                    <ListBox>
+                    <ListBox SelectedItem="{Binding SelectedProgressingChallenge}">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemMainStyle}">
                                 <Style.Triggers>
@@ -125,32 +127,38 @@
             <GroupBox Header="Челленджи">
                 <DockPanel>
                     <UniformGrid Rows="1" DockPanel.Dock="Bottom">
-                        <ToggleButton>
+                        <ToggleButton IsEnabled="{Binding EnableToggleButtonsProgressAndEdit}">
                             <ToggleButton.Style>
                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonMainStyle}">
                                     <Setter Property="fa:IconImage.Icon" Value="CircleArrowLeft"/>
                                 </Style>
                             </ToggleButton.Style>
                         </ToggleButton>
-                        <ToggleButton Style="{StaticResource AddElementStyle}"/>
-                        <ToggleButton Style="{StaticResource EditElementStyle}"/>
+                        <ToggleButton Style="{StaticResource AddElementStyle}"
+                                      IsEnabled="{Binding EnableToggleButtons}"
+                                      IsChecked="{Binding AddChallenge}"/>
+                        <ToggleButton Style="{StaticResource EditElementStyle}"
+                                      IsEnabled="{Binding EnableToggleButtonsProgressAndEdit}"/>
                         <Button Style="{StaticResource DeleteElementStyle}"/>
                         <Button Style="{StaticResource ButtonSaveStyle}"/>
                     </UniformGrid>
-                    <ListBox>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Style="{StaticResource StackPanelInListBoxStyle}">
-                                    <StackPanel.Resources>
-                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
-                                    </StackPanel.Resources>
-                                    <TextBlock Text="{Binding Name, StringFormat='Челлендж: {0}'}"
+                    <Grid>
+                        <ListBox SelectedItem="{Binding SelectedChallenge}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Style="{StaticResource StackPanelInListBoxStyle}">
+                                        <StackPanel.Resources>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
+                                        </StackPanel.Resources>
+                                        <TextBlock Text="{Binding Name, StringFormat='Челлендж: {0}'}"
                                        FontWeight="Bold"/>
-                                    <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                                        <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <ucChallenges:Add_EditChallengeUserControl/>
+                    </Grid>
                 </DockPanel>
             </GroupBox>
         </UniformGrid>

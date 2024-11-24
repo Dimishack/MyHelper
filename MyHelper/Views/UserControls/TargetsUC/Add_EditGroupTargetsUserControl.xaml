@@ -11,15 +11,11 @@
         <i:Interaction.Behaviors>
             <cusB:Show_Add_Edit_UserControlBehavior MaxHeight="115" ManagementShow="{Binding IsVisibleAdd_EditGroup}"/>
         </i:Interaction.Behaviors>
-        <Border Background="{StaticResource SolidColorBrush_Sandy}" BorderThickness="1,4,1,0" 
-                BorderBrush="{StaticResource SolidColorBrush_DarkSandy}"
-                CornerRadius="10,10,0,0"></Border>
-        <Grid Margin="3">
+        <Border Style="{StaticResource BorderForAdd_EditStyle}"/>
+        <Grid Margin="5">
             <Grid.Resources>
-                <Style TargetType="TextBlock" BasedOn="{StaticResource ForAdd_EditUC}"/>
-                <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxMainStyle}">
-                    <Setter Property="Margin" Value="3"/>
-                </Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockForAdd_EditUC}"/>
+                <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxForAdd_EditStyle}"/>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>

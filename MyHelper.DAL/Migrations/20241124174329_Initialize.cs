@@ -18,6 +18,7 @@ namespace MyHelper.DAL.Migrations
                     InProgress = table.Column<bool>(nullable: false),
                     Start = table.Column<DateTime>(type: "date", nullable: true),
                     End = table.Column<DateTime>(type: "date", nullable: true),
+                    Duration = table.Column<string>(type: "varchar(20)", nullable: true),
                     Regularity_CountDay = table.Column<int>(nullable: true),
                     Regularity_UnitCalendar = table.Column<string>(nullable: true)
                 },

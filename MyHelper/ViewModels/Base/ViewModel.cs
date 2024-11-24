@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using MyHelper.Infrastructure.Attributes;
+using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace MyHelper.ViewModels.Base
@@ -16,6 +18,30 @@ namespace MyHelper.ViewModels.Base
             field = value;
             OnPropertyChanged(PropertyName); 
             return true;
+        }
+
+
+
+        protected virtual void ChangedWithProperties(ViewModel viewModel, [CallerMemberName] string? propertyName = null)
+        {
+            var property = viewModel.GetType().GetProperty(propertyName!);
+            if (property is not null)
+            {
+                var attributes = property.GetCustomAttributes<PropertyChangedWithAttribute>();
+                if (attributes is not null)
+                    foreach (var attribute in attributes)
+                        OnPropertyChanged(attribute.PropertyName);
+            }
+        }
+
+        protected virtual void DepedenciesChanged(ViewModel viewModel,[CallerMemberName] string? propertyName = null)
+        {
+            foreach (PropertyInfo property in viewModel.GetType().GetProperties())
+            {
+                var depedencyAttribute = property.GetCustomAttribute<DependencyOnAttribute>();
+                if (depedencyAttribute != null && depedencyAttribute.PropertyName == propertyName)
+                    OnPropertyChanged(property.Name);
+            }
         }
     }
 }

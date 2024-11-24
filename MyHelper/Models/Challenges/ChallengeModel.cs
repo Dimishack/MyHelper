@@ -19,7 +19,9 @@ namespace MyHelper.Models.Challenges
 
         public int Id => _challenge.Id;
         public string Name { get => _challenge.Name; set => _challenge.Name = value; }
-        public string Note { get => _challenge.Note; set => _challenge.Note = value; }
+        public string? Note { get => _challenge.Note; set => _challenge.Note = value; }
+        public string? Duration { get => _challenge.Duration; set => _challenge.Duration = value; }
+
         public DateOnly? DateStart
         {
             get => _challenge.Start.HasValue ? DateOnly.FromDateTime((DateTime)_challenge.Start) : null;

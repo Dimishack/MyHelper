@@ -12,6 +12,7 @@
                 <ResourceDictionary Source="Resources/StreamGeometryes.xaml"/>
                 <ResourceDictionary Source="Resources/Animations.xaml"/>
 
+                <ResourceDictionary Source="Resources/Styles/BorderStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ToolTipStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/StackPanelStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/CheckBoxStyles.xaml"/>

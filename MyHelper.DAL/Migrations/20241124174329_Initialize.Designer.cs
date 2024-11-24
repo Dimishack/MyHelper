@@ -9,7 +9,7 @@ using MyHelper.DAL.Context;
 namespace MyHelper.DAL.Migrations
 {
     [DbContext(typeof(MyHelperDB))]
-    [Migration("20241123214128_Initialize")]
+    [Migration("20241124174329_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,9 @@ namespace MyHelper.DAL.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Duration")
+                        .HasColumnType("varchar(20)");
 
                     b.Property<DateTime?>("End")
                         .HasColumnType("date");

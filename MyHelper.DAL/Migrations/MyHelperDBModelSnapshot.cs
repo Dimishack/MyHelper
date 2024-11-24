@@ -22,6 +22,9 @@ namespace MyHelper.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Duration")
+                        .HasColumnType("varchar(20)");
+
                     b.Property<DateTime?>("End")
                         .HasColumnType("date");
 

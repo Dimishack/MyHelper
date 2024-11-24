@@ -63,7 +63,7 @@ namespace MyHelper.ViewModels
                     foreach (var target in value.Targets)
                         Targets.Add(target);
                 CompletedTargetsCount = _completedTargetsCount_Calculated;
-                DepedenciesChanged();
+                DepedenciesChanged(this);
 
             }
         }
@@ -89,7 +89,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _selectedTarget, value)) return;
-                DepedenciesChanged();
+                DepedenciesChanged(this);
             }
         }
 
@@ -127,12 +127,8 @@ namespace MyHelper.ViewModels
                 if (!Set(ref _selectedSort, value)) return;
 
                 if (_selectedTargetsViewSource.SortDescriptions.Count > 0)
-                    _selectedTargetsViewSource.SortDescriptions.RemoveAt(0);
-                _selectedTargetsViewSource.SortDescriptions.Add(Sorts[value.Key]);
-                if (_selectedTargetsViewSource.View is not null)
-                {
-                    _selectedTargetsViewSource.View.Refresh();
-                }
+                _selectedTargetsViewSource.SortDescriptions.Insert(0, Sorts[value.Key]);
+                _selectedTargetsViewSource.View?.Refresh();
             }
         }
 
@@ -161,7 +157,7 @@ namespace MyHelper.ViewModels
                     TargetsGroupForAdd_Edit.Name = string.Empty;
                     OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
                 }
-                ChangedWithProperties();
+                ChangedWithProperties(this);
             }
         }
 
@@ -191,7 +187,7 @@ namespace MyHelper.ViewModels
                     TargetForAdd_Edit.IsComplete = false;
                     OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
-                ChangedWithProperties();
+                ChangedWithProperties(this);
             }
         }
 
@@ -220,7 +216,7 @@ namespace MyHelper.ViewModels
                     TargetsGroupForAdd_Edit.Name = _selectedTargetsGroup.Name;
                     OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
                 }
-                ChangedWithProperties();
+                ChangedWithProperties(this);
             }
         }
 
@@ -249,7 +245,7 @@ namespace MyHelper.ViewModels
                     TargetForAdd_Edit.Note = _selectedTarget.Note;
                     OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
-                ChangedWithProperties();
+                ChangedWithProperties(this);
             }
         }
 
@@ -341,7 +337,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _completedTargetsCount, value)) return;
-                ChangedWithProperties();
+                ChangedWithProperties(this);
             }
         }
 
@@ -691,28 +687,6 @@ namespace MyHelper.ViewModels
         #endregion
 
         #region Methods...
-
-        private void DepedenciesChanged([CallerMemberName] string? propertyName = null)
-        {
-            foreach (PropertyInfo property in GetType().GetProperties())
-            {
-                var depedencyAttribute = property.GetCustomAttribute<DependencyOnAttribute>();
-                if (depedencyAttribute != null && depedencyAttribute.PropertyName == propertyName)
-                    OnPropertyChanged(property.Name);
-            }
-        }
-
-        private void ChangedWithProperties([CallerMemberName] string? propertyName = null)
-        {
-            var property = GetType().GetProperty(propertyName!);
-            if (property is not null)
-            {
-                var attributes = property.GetCustomAttributes<PropertyChangedWithAttribute>();
-                if (attributes is not null)
-                    foreach (var attribute in attributes)
-                        OnPropertyChanged(attribute.PropertyName);
-            }
-        }
 
         public void Dispose()
         {
