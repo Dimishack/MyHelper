@@ -3,6 +3,7 @@
 
     <Style TargetType="TextBlock" x:Key="TextBlockMainStyle">
         <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_DarkGreenishYellowGreen}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
     </Style>
     
     <Style TargetType="TextBlock" x:Key="ForAdd_EditUC" BasedOn="{StaticResource TextBlockMainStyle}">
@@ -15,4 +16,9 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style TargetType="TextBlock" x:Key="TextBlockInListBoxStyle" BasedOn="{StaticResource TextBlockMainStyle}">
+        <Setter Property="Margin" Value="3,2"/>
+    </Style>
+    
 </ResourceDictionary>

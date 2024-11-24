@@ -35,6 +35,12 @@ namespace MyHelper.DAL.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("Regularity_CountDay")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Regularity_UnitCalendar")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime?>("Start")
                         .HasColumnType("date");
 

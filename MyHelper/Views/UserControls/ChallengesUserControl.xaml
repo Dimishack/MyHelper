@@ -8,8 +8,151 @@
              
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              
-             d:DesignHeight="450" d:DesignWidth="800"
+             d:DesignHeight="450" d:DesignWidth="840"
              d:DataContext="{d:DesignInstance vm:ChallengesUCViewModel, IsDesignTimeCreatable=True}">
+    <UserControl.RenderTransform>
+        <TranslateTransform/>
+    </UserControl.RenderTransform>
+    <UserControl.Resources>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}"/>
+        <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxMainStyle}"/>
+        <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}"/>
+    </UserControl.Resources>
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard Storyboard="{StaticResource ShowMainUserControlAnimation}"/>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <DockPanel>
+        <Grid DockPanel.Dock="Left" Width="135">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <GroupBox Header="Фильтры" Grid.Row="0">
+                <StackPanel Orientation="Vertical">
+                    <RadioButton Content="Все" IsChecked="True"/>
+                    <RadioButton Content="В ожидании"/>
+                    <RadioButton Content="Подготовка"/>
+                    <RadioButton Content="Выполнение"/>
+                    <RadioButton Content="Завершение"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Сортировка" Grid.Row="1">
+                <ComboBox ItemsSource="{Binding Sorts}"
+                          SelectedIndex="0">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Key}"
+                                       FontWeight="Bold"
+                                       Style="{StaticResource TextBlockMainStyle}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </GroupBox>
+            <GroupBox Header="Группы" Grid.Row="2" Margin="0,0,0,5">
+                <Grid>
+                    <ComboBox ItemsSource="{Binding Groups}"
+                              SelectedIndex="0">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                           FontWeight="Bold"
+                                           Style="{StaticResource TextBlockMainStyle}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        <UniformGrid Rows="1">
+            <UniformGrid.Resources>
+                <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}">
+                    <Setter Property="ItemsSource" Value="{Binding ChallengesView}"/>
+                </Style>
+            </UniformGrid.Resources>
+            <GroupBox Header="На выполнении">
+                <DockPanel>
+                    <UniformGrid DockPanel.Dock="Bottom" Rows="1">
+                        <ToggleButton>
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonMainStyle}">
+                                    <Setter Property="fa:IconImage.Icon" Value="Table"/>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                        <Button>
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource ButtonMainStyle}">
+                                    <Setter Property="fa:IconImage.Icon" Value="CircleArrowRight"/>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </UniformGrid>
+                    <ListBox>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemMainStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding InProgress}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Style="{StaticResource StackPanelInListBoxStyle}">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="{Binding Name, StringFormat='Челлендж: {0}'}"
+                           FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </GroupBox>
+            <GroupBox Header="Челленджи">
+                <DockPanel>
+                    <UniformGrid Rows="1" DockPanel.Dock="Bottom">
+                        <ToggleButton>
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonMainStyle}">
+                                    <Setter Property="fa:IconImage.Icon" Value="CircleArrowLeft"/>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                        <ToggleButton Style="{StaticResource AddElementStyle}"/>
+                        <ToggleButton Style="{StaticResource EditElementStyle}"/>
+                        <Button Style="{StaticResource DeleteElementStyle}"/>
+                        <Button Style="{StaticResource ButtonSaveStyle}"/>
+                    </UniformGrid>
+                    <ListBox>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Style="{StaticResource StackPanelInListBoxStyle}">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="{Binding Name, StringFormat='Челлендж: {0}'}"
+                                       FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </GroupBox>
+        </UniformGrid>
+    </DockPanel>
 </UserControl>

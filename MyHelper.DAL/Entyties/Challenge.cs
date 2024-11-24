@@ -1,6 +1,7 @@
 ﻿using MyHelper.DAL.Entyties.Base;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyHelper.DAL.Entyties
@@ -15,6 +16,9 @@ namespace MyHelper.DAL.Entyties
         [Column(TypeName = "date")]
         public DateTime? End { get; set; }
 
-        public virtual ICollection<Check>? CheckList { get; set; }
+        public int? Regularity_CountDay { get; set; }
+        public string? Regularity_UnitCalendar{ get; set; }
+
+        public virtual ICollection<Check> CheckList { get; set; } = new Collection<Check>();
     }
 }

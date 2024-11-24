@@ -1,9 +1,9 @@
 ﻿using MyHelper.DAL.Entyties;
-using System.ComponentModel;
+using MyHelper.Models.Base;
 
 namespace MyHelper.Models.Targets
 {
-    class TargetModel(Target target) : INotifyPropertyChanged
+    class TargetModel(Target target) : BaseModel
     {
         private readonly Target _target = target;
 
@@ -20,12 +20,6 @@ namespace MyHelper.Models.Targets
 
         public int Id => _target.Id;
         public string Name { get => _target.Name; set => _target.Name = value; }
-        public string Note { get => _target.Note; set => _target.Note = value; }
-
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        private void OnPropertyChanged(string propertyName)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public string? Note { get => _target.Note; set => _target.Note = value; }
     }
 }

@@ -383,38 +383,36 @@ namespace MyHelper.ViewModels
 
         #region Commands...
 
-        #region LoadCommand - Загрузка окна
+        #region LoadCommand - Загрузка пользовательского окна
 
-        ///<summary>Загрузка окна</summary>
+        ///<summary>Загрузка пользовательского окна</summary>
         private ICommand? _loadCommand;
 
-        ///<summary>Загрузка окна</summary>
+        ///<summary>Загрузка пользовательского окна</summary>
         public ICommand LoadCommand => _loadCommand
             ??= new LambdaCommand(OnLoadCommandExecuted);
 
-        ///<summary>Логика выполнения - Загрузка окна</summary>
+        ///<summary>Логика выполнения - Загрузка пользовательского окна</summary>
         private void OnLoadCommandExecuted(object? p)
         {
             Targets.CollectionChanged += Targets_CollectionChanged;
             foreach (TargetsGroup targets in _targetsRepository.Items)
                 GroupsTargets.Add(new TargetsModel(targets));
             _selectedTargetsViewSource.Source = Targets;
-
         }
-
 
         #endregion
 
-        #region ClosedCommand - Команда - закрытие окна
+        #region ClosedCommand - Команда - закрытие пользовательского окна
 
-        ///<summary>Команда - закрытие окна</summary>
+        ///<summary>Команда - закрытие пользовательского окна</summary>
         private ICommand? _closedCommand;
 
-        ///<summary>Команда - закрытие окна</summary>
+        ///<summary>Команда - закрытие пользовательского окна</summary>
         public ICommand ClosedCommand => _closedCommand
             ??= new LambdaCommand(OnClosedCommandExecuted);
 
-        ///<summary>Логика выполнения - закрытие окна</summary>
+        ///<summary>Логика выполнения - закрытие пользовательского окна</summary>
         private void OnClosedCommandExecuted(object? p) => Dispose();
 
         #endregion

@@ -108,6 +108,14 @@
                                     TargetName="icon"
                                     Value="{StaticResource SolidColorBrush_BrightOrange}"/>
                         </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background"
+                                    TargetName="border"
+                                    Value="{StaticResource SolidColorBrush_BrightOrange}"/>
+                            <Setter Property="Foreground"
+                                    TargetName="icon"
+                                    Value="{StaticResource SolidColorBrush_Vanilla}"/>
+                        </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="True"/>

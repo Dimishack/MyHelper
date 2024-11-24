@@ -13,13 +13,14 @@
                 <ResourceDictionary Source="Resources/Animations.xaml"/>
 
                 <ResourceDictionary Source="Resources/Styles/ToolTipStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/StackPanelStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/CheckBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBlocks.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/RepeatButtonStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ScrollBarStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ToggleButtonStyles.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/Buttons.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/ButtonStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/GroupBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/DataGrid.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ListBoxStyles.xaml"/>

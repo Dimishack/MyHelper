@@ -11,7 +11,9 @@
         
         mc:Ignorable="d"
         Title="MyHelper"
-        Height="550" Width="900"
+        Height="600" Width="1100"
+        MinHeight="450"
+        MinWidth="950"
         WindowStartupLocation="CenterScreen"
         Style="{StaticResource MainWindowStyle}"
         DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowVM}"

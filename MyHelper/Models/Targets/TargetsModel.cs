@@ -1,10 +1,10 @@
 ﻿using MyHelper.DAL.Entyties;
+using MyHelper.Models.Base;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 
 namespace MyHelper.Models.Targets
 {
-    internal class TargetsModel : INotifyPropertyChanged
+    internal class TargetsModel : BaseModel
     {
         private readonly TargetsGroup _targetsGroup;
         private bool _disposed = false;
@@ -34,9 +34,5 @@ namespace MyHelper.Models.Targets
                 Targets.Add(newTarget);
             }
         }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-        private void OnPropertyChanged(string propertyName)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

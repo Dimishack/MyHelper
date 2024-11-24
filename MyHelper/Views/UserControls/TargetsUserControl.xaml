@@ -40,8 +40,6 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <UniformGrid Grid.Row="1" Columns="1" Margin="0,5,0,0">
-                    <UniformGrid.Resources>
-                    </UniformGrid.Resources>
                     <ToggleButton IsChecked="{Binding AddGroup}"
                                   IsEnabled="{Binding EnableToggleButtons}"
                                   Style="{StaticResource AddElementStyle}"
@@ -55,6 +53,7 @@
                             Margin="1"/>
                     <Button Style="{StaticResource ButtonSaveStyle}"
                             FontSize="10"
+                            Margin="1"
                             Command="{Binding SaveRepositoryCommand}"/>
                 </UniformGrid>
                 <ListBox ItemsSource="{Binding GroupsTargets}"
@@ -68,7 +67,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="Фильтры:">
+            <GroupBox Grid.Row="0" Header="Фильтры">
                 <StackPanel Orientation="Vertical">
                     <StackPanel.Resources>
                         <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}"/>
@@ -81,7 +80,7 @@
                                  CommandParameter="Невыполненные"/>
                 </StackPanel>
             </GroupBox>
-            <GroupBox Grid.Row="1" Header="Сортировка:">
+            <GroupBox Grid.Row="1" Header="Сортировка">
                 <ComboBox ItemsSource="{Binding Sorts}"
                           SelectedItem="{Binding SelectedSort}"
                           Style="{StaticResource ComboBoxMainStyle}"
@@ -89,7 +88,6 @@
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Key}"
-                                       TextWrapping="Wrap"
                                        FontWeight="Bold"
                                        Style="{StaticResource TextBlockMainStyle}"/>
                         </DataTemplate>
@@ -161,11 +159,9 @@
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Vertical" Background="{StaticResource SolidColorBrush_Linen}" Margin="2">
+                                <StackPanel Style="{StaticResource StackPanelInListBoxStyle}">
                                     <StackPanel.Resources>
-                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}">
-                                            <Setter Property="Margin" Value="3,2"/>
-                                        </Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
                                     </StackPanel.Resources>
                                     <TextBlock Text="{Binding Name, StringFormat='Цель: {0}'}"
                                            FontWeight="Bold"/>

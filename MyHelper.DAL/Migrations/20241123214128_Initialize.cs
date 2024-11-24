@@ -17,7 +17,9 @@ namespace MyHelper.DAL.Migrations
                     Note = table.Column<string>(nullable: true),
                     InProgress = table.Column<bool>(nullable: false),
                     Start = table.Column<DateTime>(type: "date", nullable: true),
-                    End = table.Column<DateTime>(type: "date", nullable: true)
+                    End = table.Column<DateTime>(type: "date", nullable: true),
+                    Regularity_CountDay = table.Column<int>(nullable: true),
+                    Regularity_UnitCalendar = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
