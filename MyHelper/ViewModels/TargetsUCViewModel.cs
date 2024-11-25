@@ -7,8 +7,6 @@ using MyHelper.Models.Targets;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -19,7 +17,7 @@ namespace MyHelper.ViewModels
                              IRepository<TargetsGroup> targetsGroupRepository) : ViewModel, IDisposable
     {
         private readonly IRepository<Target> _targetRepository = targetRepository;
-        private readonly IRepository<TargetsGroup> _targetsRepository = targetsGroupRepository;
+        private readonly IRepository<TargetsGroup> _targetsGroupRepository = targetsGroupRepository;
         private bool _disposed = false;
         private string _filter = "все";
         private int _completedTargetsCount_Calculated = 0;
@@ -50,7 +48,7 @@ namespace MyHelper.ViewModels
                 {
                     if (value.Targets.Count == 0)
                     {
-                        var targets = _targetsRepository.Items.Include(g => g.Targets).FirstOrDefault(ts => ts.Id == value.Id)?.Targets;
+                        var targets = _targetsGroupRepository.Items.Include(g => g.Targets).FirstOrDefault(ts => ts.Id == value.Id)?.Targets;
                         if (targets is not null)
                         {
                             foreach (var target in targets)
@@ -63,7 +61,7 @@ namespace MyHelper.ViewModels
                     foreach (var target in value.Targets)
                         Targets.Add(target);
                 CompletedTargetsCount = _completedTargetsCount_Calculated;
-                DepedenciesChanged(this);
+                PropertiesChanged(this);
 
             }
         }
@@ -89,7 +87,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _selectedTarget, value)) return;
-                DepedenciesChanged(this);
+                PropertiesChanged(this);
             }
         }
 
@@ -127,7 +125,7 @@ namespace MyHelper.ViewModels
                 if (!Set(ref _selectedSort, value)) return;
 
                 if (_selectedTargetsViewSource.SortDescriptions.Count > 0)
-                _selectedTargetsViewSource.SortDescriptions.Insert(0, Sorts[value.Key]);
+                    _selectedTargetsViewSource.SortDescriptions.Insert(0, Sorts[value.Key]);
                 _selectedTargetsViewSource.View?.Refresh();
             }
         }
@@ -138,12 +136,6 @@ namespace MyHelper.ViewModels
 
         ///<summary>Добавить группу</summary>
         private bool _addGroup;
-
-        [PropertyChangedWith(nameof(IsVisibleAdd_EditGroup))]
-        [PropertyChangedWith(nameof(EnableToggleButtons))]
-        [PropertyChangedWith(nameof(EnableToggleButtonCreateTarget))]
-        [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
-        [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
         ///<summary>Добавить группу</summary>
         public bool AddGroup
         {
@@ -157,7 +149,7 @@ namespace MyHelper.ViewModels
                     TargetsGroupForAdd_Edit.Name = string.Empty;
                     OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
                 }
-                ChangedWithProperties(this);
+                PropertiesChanged(this);
             }
         }
 
@@ -167,12 +159,6 @@ namespace MyHelper.ViewModels
 
         ///<summary>Добавить цель</summary>
         private bool _addTarget;
-
-        [PropertyChangedWith(nameof(IsVisibleAdd_EditTarget))]
-        [PropertyChangedWith(nameof(EnableToggleButtons))]
-        [PropertyChangedWith(nameof(EnableToggleButtonCreateTarget))]
-        [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
-        [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
         ///<summary>Добавить цель</summary>
         public bool AddTarget
         {
@@ -187,7 +173,7 @@ namespace MyHelper.ViewModels
                     TargetForAdd_Edit.IsComplete = false;
                     OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
-                ChangedWithProperties(this);
+                PropertiesChanged(this);
             }
         }
 
@@ -197,12 +183,6 @@ namespace MyHelper.ViewModels
 
         ///<summary>Изменить группу</summary>
         private bool _changeGroup;
-
-        [PropertyChangedWith(nameof(IsVisibleAdd_EditGroup))]
-        [PropertyChangedWith(nameof(EnableToggleButtons))]
-        [PropertyChangedWith(nameof(EnableToggleButtonCreateTarget))]
-        [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
-        [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
         ///<summary>Изменить группу</summary>
         public bool ChangeGroup
         {
@@ -216,7 +196,7 @@ namespace MyHelper.ViewModels
                     TargetsGroupForAdd_Edit.Name = _selectedTargetsGroup.Name;
                     OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
                 }
-                ChangedWithProperties(this);
+                PropertiesChanged(this);
             }
         }
 
@@ -226,12 +206,6 @@ namespace MyHelper.ViewModels
 
         ///<summary>Изменить цель</summary>
         private bool _changeTarget;
-
-        [PropertyChangedWith(nameof(IsVisibleAdd_EditTarget))]
-        [PropertyChangedWith(nameof(EnableToggleButtons))]
-        [PropertyChangedWith(nameof(EnableToggleButtonCreateTarget))]
-        [PropertyChangedWith(nameof(EnableToggleButtonChangeGroup))]
-        [PropertyChangedWith(nameof(EnableToggleButtonChangeTarget))]
         ///<summary>Изменить цель</summary>
         public bool ChangeTarget
         {
@@ -245,7 +219,7 @@ namespace MyHelper.ViewModels
                     TargetForAdd_Edit.Note = _selectedTarget.Note;
                     OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
-                ChangedWithProperties(this);
+                PropertiesChanged(this);
             }
         }
 
@@ -253,13 +227,16 @@ namespace MyHelper.ViewModels
 
         #region IsVisibleAdd_EditGroup : bool - Видимость окна создания или редактирования группы
 
-        ///<summary>Видимость окна создания или редактирования группы</summary>
+        [DependencyOn([nameof(AddGroup), nameof(ChangeGroup)])]
+        [ChangesWithProperties(nameof(EnableToggleButtons), true)]
         public bool IsVisibleAdd_EditGroup => _addGroup || _changeGroup;
 
         #endregion
 
         #region IsVisibleAdd_EditTarget : bool - Видимость окна создания или редактирования цели
 
+        [DependencyOn([nameof(AddTarget), nameof(ChangeTarget)])]
+        [ChangesWithProperties(nameof(EnableToggleButtons), true)]
         ///<summary>Видимость окна создания или редактирования цели</summary>
         public bool IsVisibleAdd_EditTarget => _addTarget || _changeTarget;
 
@@ -267,6 +244,8 @@ namespace MyHelper.ViewModels
 
         #region EnableToggleButtons : bool - Включить переключатели
 
+        [ChangesWithProperties([nameof(EnableToggleButtonCreateTarget),
+            nameof(EnableToggleButtonChangeTarget), nameof(EnableToggleButtonChangeGroup)])]
         ///<summary>Включить переключатели</summary>
         public bool EnableToggleButtons => !IsVisibleAdd_EditGroup && !IsVisibleAdd_EditTarget;
 
@@ -326,10 +305,6 @@ namespace MyHelper.ViewModels
 
         ///<summary>Количество выполненных задач</summary>
         private int _completedTargetsCount;
-
-        [PropertyChangedWith(nameof(Progress))]
-        [PropertyChangedWith(nameof(OffsetCompleted))]
-        [PropertyChangedWith(nameof(Procent))]
         ///<summary>Количество выполненных задач</summary>
         public int CompletedTargetsCount
         {
@@ -337,7 +312,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _completedTargetsCount, value)) return;
-                ChangedWithProperties(this);
+                PropertiesChanged(this);
             }
         }
 
@@ -345,6 +320,8 @@ namespace MyHelper.ViewModels
 
         #region Progress : double - Прогресс выполнения целей
 
+        [DependencyOn(nameof(CompletedTargetsCount))]
+        [ChangesWithProperties([nameof(OffsetCompleted), nameof(Procent)])]
         ///<summary>Прогресс выполнения целей</summary>
         public double Progress => (double)CompletedTargetsCount / (_selectedTargetsGroup is not null && _selectedTargetsGroup.Targets.Count > 0
             ? _selectedTargetsGroup.Targets.Count
@@ -392,7 +369,7 @@ namespace MyHelper.ViewModels
         private void OnLoadCommandExecuted(object? p)
         {
             Targets.CollectionChanged += Targets_CollectionChanged;
-            foreach (TargetsGroup targets in _targetsRepository.Items)
+            foreach (TargetsGroup targets in _targetsGroupRepository.Items)
                 GroupsTargets.Add(new TargetsModel(targets));
             _selectedTargetsViewSource.Source = Targets;
         }
@@ -428,7 +405,7 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - создать новую группу</summary>
         private async Task OnCreateGroupCommandExecuted(object? p)
         {
-            GroupsTargets.Add(new TargetsModel(await _targetsRepository.AddAsync(new TargetsGroup()
+            GroupsTargets.Add(new TargetsModel(await _targetsGroupRepository.AddAsync(new TargetsGroup()
             {
                 Name = _targetsGroupForAdd_Edit.Name,
                 Year = _targetsGroupForAdd_Edit.Year,
@@ -475,8 +452,8 @@ namespace MyHelper.ViewModels
         {
             _selectedTargetsGroup!.Year = _targetsGroupForAdd_Edit.Year;
             _selectedTargetsGroup.Name = _targetsGroupForAdd_Edit.Name;
-            var item = await _targetsRepository.GetAsync(_selectedTargetsGroup.Id);
-            await _targetsRepository.UpdateAsync(item);
+            var item = await _targetsGroupRepository.GetAsync(_selectedTargetsGroup.Id);
+            await _targetsGroupRepository.UpdateAsync(item);
             CollectionViewSource.GetDefaultView(GroupsTargets).Refresh();
             ChangeGroup = false;
         }
@@ -496,13 +473,14 @@ namespace MyHelper.ViewModels
         private bool CanRemoveTargetsGroupCommandExecute(object? p) => _selectedTargetsGroup is not null
             && _selectedTargetsGroup.Year != 0
             && !IsVisibleAdd_EditGroup
+            && !IsVisibleAdd_EditTarget
             ;
 
         ///<summary>Логика выполнения - удалить группу</summary>
         private async Task OnRemoveTargetsGroupCommandExecuted(object? p)
         {
             ClearTargets();
-            await _targetsRepository.RemoveAsync(_selectedTargetsGroup!.Id);
+            await _targetsGroupRepository.RemoveAsync(_selectedTargetsGroup!.Id);
             GroupsTargets.Remove(_selectedTargetsGroup);
             SelectedTargetsGroup = GroupsTargets.Count > 0 ? GroupsTargets.Last() : null;
         }
@@ -638,11 +616,11 @@ namespace MyHelper.ViewModels
 
         ///<summary>Проверка возможности выполнения - Сохранить весь репозиторий</summary>
         private bool CanSaveRepositoryCommandExecute(object? p) =>
-            _targetsRepository is not null
-            && !_targetsRepository.AutoSaveChanges;
+            _targetsGroupRepository is not null
+            && !_targetsGroupRepository.AutoSaveChanges;
 
         ///<summary>Логика выполнения - Сохранить весь репозиторий</summary>
-        private async Task OnSaveRepositoryCommandExecuted(object? p) => await _targetsRepository.SaveChangedAsync();
+        private async Task OnSaveRepositoryCommandExecuted(object? p) => await _targetsGroupRepository.SaveChangedAsync();
 
         #endregion
 

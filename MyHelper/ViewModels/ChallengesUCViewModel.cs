@@ -38,7 +38,7 @@ namespace MyHelper.ViewModels
             {
                 if(!Set(ref _selectedChallenge, value)) return;
 
-                DepedenciesChanged(this);
+                PropertiesChanged(this);
             }
         }
 
@@ -135,10 +135,6 @@ namespace MyHelper.ViewModels
 
         ///<summary>Добваить челлендж</summary>
         private bool _addChallenge;
-
-        [PropertyChangedWith(nameof(ShowAdd_EditUserControl))]
-        [PropertyChangedWith(nameof(EnableToggleButtons))]
-        [PropertyChangedWith(nameof(EnableToggleButtonsProgressAndEdit))]
         ///<summary>Добваить челлендж</summary>
         public bool AddChallenge
         {
@@ -152,7 +148,7 @@ namespace MyHelper.ViewModels
                     ChallengeForAdd_Edit.Note = null;
                     OnPropertyChanged(nameof(ChallengeForAdd_Edit));
                 }
-                ChangedWithProperties(this);
+                PropertiesChanged(this);
             }
         }
 
@@ -170,6 +166,8 @@ namespace MyHelper.ViewModels
 
         #region ShowAdd_EditUserControl : bool - Отобразить окно создания и редактирования челленджей
 
+        [DependencyOn(nameof(AddChallenge))]
+        [ChangesWithProperties(nameof(EnableToggleButtons), true)]
         ///<summary>Отобразить окно создания и редактирования челленджей</summary>
         public bool ShowAdd_EditUserControl => AddChallenge;
 
@@ -177,8 +175,9 @@ namespace MyHelper.ViewModels
 
         #region EnableToggleButtons : bool - Включить переключатели
 
+        [ChangesWithProperties(nameof(EnableToggleButtonsProgressAndEdit))]
         ///<summary>Включить переключатели</summary>
-        public bool EnableToggleButtons => !AddChallenge;
+        public bool EnableToggleButtons => !ShowAdd_EditUserControl;
 
         #endregion
 

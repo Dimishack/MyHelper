@@ -1,8 +1,10 @@
 ﻿namespace MyHelper.Infrastructure.Attributes
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = false)]
-    internal class DependencyOnAttribute(string propertyName) : Attribute
+    internal sealed class DependencyOnAttribute(string[] propertiesName) : Attribute
     {
-        public string PropertyName { get; } = propertyName;
+        public string[] PropertiesName { get; } = propertiesName;
+
+        public DependencyOnAttribute(string propertyName) : this([propertyName]) { }
     }
 }

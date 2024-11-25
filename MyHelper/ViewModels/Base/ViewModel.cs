@@ -20,27 +20,42 @@ namespace MyHelper.ViewModels.Base
             return true;
         }
 
-
-
-        protected virtual void ChangedWithProperties(ViewModel viewModel, [CallerMemberName] string? propertyName = null)
+        protected virtual void PropertiesChanged(ViewModel viewModel,[CallerMemberName] string? propertyName = null)
         {
-            var property = viewModel.GetType().GetProperty(propertyName!);
-            if (property is not null)
+            var viewModelType = viewModel.GetType();
+            foreach (PropertyInfo property in viewModelType.GetProperties())
             {
-                var attributes = property.GetCustomAttributes<PropertyChangedWithAttribute>();
-                if (attributes is not null)
-                    foreach (var attribute in attributes)
-                        OnPropertyChanged(attribute.PropertyName);
+                var depedencyAttribute = property.GetCustomAttribute<DependencyOnAttribute>();
+                if (depedencyAttribute is not null)
+                {
+                    foreach (string prop in depedencyAttribute.PropertiesName)
+                    {
+                        if(!string.IsNullOrWhiteSpace(prop) && prop == propertyName)
+                        {
+                            OnPropertyChanged(property.Name);
+                            LinkPropertiesChanged(viewModelType, property.Name);
+                        }
+                    } 
+                }
             }
         }
 
-        protected virtual void DepedenciesChanged(ViewModel viewModel,[CallerMemberName] string? propertyName = null)
+        private void LinkPropertiesChanged(Type viewModelType, string propertyName)
         {
-            foreach (PropertyInfo property in viewModel.GetType().GetProperties())
+            var propertyWithChanged = viewModelType.GetProperty(propertyName);
+            if (propertyWithChanged is not null)
             {
-                var depedencyAttribute = property.GetCustomAttribute<DependencyOnAttribute>();
-                if (depedencyAttribute != null && depedencyAttribute.PropertyName == propertyName)
-                    OnPropertyChanged(property.Name);
+                var changedPropertiesWithAttribute = propertyWithChanged.GetCustomAttribute<ChangesWithPropertiesAttribute>();
+                if (changedPropertiesWithAttribute != null)
+                {
+                    foreach (var changedProp in changedPropertiesWithAttribute.PropertiesName)
+                    {
+                        if (!string.IsNullOrWhiteSpace(changedProp.Key))
+                            OnPropertyChanged(changedProp.Key);
+                        if(changedProp.Value)
+                            LinkPropertiesChanged(viewModelType, changedProp.Key);
+                    }
+                }
             }
         }
     }
