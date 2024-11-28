@@ -38,7 +38,17 @@
         <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Padding" Value="3"/>
+        <Setter Property="SelectedIndex" Value="0"/>
         <Setter Property="ItemContainerStyle" Value="{StaticResource ComboBoxItemMainStyle}"/>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Key}"
+                               FontWeight="{StaticResource FontWeightBold}"
+                               Style="{StaticResource TextBlockMainStyle}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBox">
@@ -58,6 +68,7 @@
                                             MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, 
                                             Path=ActualWidth}"
                                             MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                    CornerRadius="{StaticResource CornerRadius5}"
                                             Background="{StaticResource SolidColorBrush_MangoTango}" BorderBrush="{StaticResource SolidColorBrush_BrightOrange}" BorderThickness="1">
                                 <ScrollViewer x:Name="DropDownScrollViewer">
                                     <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">

@@ -7,27 +7,36 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/FontFamilies.xaml"/>
                 <ResourceDictionary Source="Resources/Colors.xaml"/>
                 <ResourceDictionary Source="Resources/StreamGeometryes.xaml"/>
                 <ResourceDictionary Source="Resources/Animations.xaml"/>
+                <ResourceDictionary Source="Resources/Effects.xaml"/>
+                
+                <ResourceDictionary Source="Resources/CornerRadiuses.xaml"/>
+                <ResourceDictionary Source="Resources/FontFamilies.xaml"/>
+                <ResourceDictionary Source="Resources/FontWeights.xaml"/>
 
                 <ResourceDictionary Source="Resources/Styles/BorderStyles.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/ToolTipStyles.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/StackPanelStyles.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/CheckBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBlocks.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/TextBoxStyles.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/RepeatButtonStyles.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/ScrollBarStyles.xaml"/>
+
+                <ResourceDictionary Source="Resources/Styles/RadioButtonStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ToggleButtonStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ButtonStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/RepeatButtonStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/ToolTipStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/CheckBoxStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/CalendarStyles.xaml"/>
+
+                <ResourceDictionary Source="Resources/Styles/DatePickerStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/StackPanelStyles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/ScrollBarStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/GroupBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/DataGrid.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ListBoxStyles.xaml"/>
-                <ResourceDictionary Source="Resources/Templates/ViewTemplates.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ComboBoxStyles.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/RadioButtonStyles.xaml"/>
+                
+                <ResourceDictionary Source="Resources/Templates/ViewTemplates.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/WindowStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <vm:ViewModelsLocator x:Key="Locator"/>

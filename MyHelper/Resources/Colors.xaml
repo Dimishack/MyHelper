@@ -24,7 +24,7 @@
     <SolidColorBrush x:Key="SolidColorBrush_Mandarin" Color="#ff8800" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_RichRedOrange" Color="#ffb961" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_YellowIvory" Color="#e1cc4f" ice:Freeze="True"/>
-    <SolidColorBrush x:Key="SolidColorBrush_Linen" Color="#FAF0E6" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_Linen" Color="#faf0e6" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_Cream" Color="#fdf4e3" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_YellowBroom" Color="#d6ae01" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_YellowCurry" Color="#9d9101" ice:Freeze="True"/>
@@ -35,8 +35,10 @@
     <SolidColorBrush x:Key="SolidColorBrush_LightBrownishGray" Color="#8b6d5c" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_PearlBeige" Color="#6a5d4d" ice:Freeze="True"/>
     <SolidColorBrush x:Key="SolidColorBrush_Sandy" Color="#fcdd76" ice:Freeze="True"/>
-
+    
     <SolidColorBrush x:Key="SolidColorBrush_DarkGreenishYellowGreen" Color="#313830" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_ProtectiveKhaki" Color="#78866b" ice:Freeze="True"/>
+    <SolidColorBrush x:Key="SolidColorBrush_DarkBrown" Color="#212121" ice:Freeze="True"/>
 
 
 </ResourceDictionary>

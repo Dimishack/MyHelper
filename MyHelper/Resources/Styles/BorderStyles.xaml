@@ -1,9 +1,16 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
     <Style TargetType="Border" x:Key="BorderForAdd_EditStyle">
         <Setter Property="Background" Value="{StaticResource SolidColorBrush_Sandy}"/>
         <Setter Property="BorderBrush" Value="{StaticResource SolidColorBrush_DarkSandy}"/>
         <Setter Property="CornerRadius" Value="10,10,0,0"/>
         <Setter Property="BorderThickness" Value="1,4,1,0"/>
+    </Style>
+
+    <Style TargetType="Border" x:Key="BorderInListBoxStyle">
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius3}"/>
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_Linen}"/>
+        <Setter Property="Margin" Value="2"/>
     </Style>
 </ResourceDictionary>

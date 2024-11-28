@@ -32,7 +32,7 @@
                                        Margin="20,0,0,0"
                                        FontFamily="{StaticResource Murs Gothic Key}"
                                        FontSize="16"
-                                       FontWeight="Bold"/>
+                                       FontWeight="{StaticResource FontWeightBold}"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -62,7 +62,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
                     <Grid>
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5"/>
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="{StaticResource CornerRadius5}"/>
                         <ContentPresenter Margin="3,1,6,1"/>
                     </Grid>
                     <ControlTemplate.Triggers>

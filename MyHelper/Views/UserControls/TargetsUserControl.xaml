@@ -41,7 +41,7 @@
                 </Grid.RowDefinitions>
                 <UniformGrid Grid.Row="1" Columns="1" Margin="0,5,0,0">
                     <ToggleButton IsChecked="{Binding AddGroup}"
-                                  IsEnabled="{Binding EnableToggleButtons}"
+                                  IsEnabled="{Binding EnableElemetns}"
                                   Style="{StaticResource AddElementStyle}"
                                   Margin="1"/>
                     <ToggleButton IsChecked="{Binding ChangeGroup}" 
@@ -59,7 +59,8 @@
                 <ListBox ItemsSource="{Binding GroupsTargets}"
                          SelectedItem="{Binding SelectedTargetsGroup}"
                          DisplayMemberPath="Year"
-                         ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
+                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                         IsEnabled="{Binding EnableElemetns}"/>
             </Grid>
         </GroupBox>
         <Grid DockPanel.Dock="Left" Width="135">
@@ -67,7 +68,12 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <GroupBox Grid.Row="0" Header="Фильтры">
+            <GroupBox Grid.Row="0" Header="Сортировка">
+                <ComboBox ItemsSource="{Binding Sorts}"
+                          SelectedItem="{Binding SelectedSort}"
+                          Style="{StaticResource ComboBoxMainStyle}"/>
+            </GroupBox>
+            <GroupBox Grid.Row="1" Header="Фильтры">
                 <StackPanel Orientation="Vertical">
                     <StackPanel.Resources>
                         <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}"/>
@@ -79,20 +85,6 @@
                     <RadioButton Content="Невыполненные" Command="{Binding FilterCommand}"
                                  CommandParameter="Невыполненные"/>
                 </StackPanel>
-            </GroupBox>
-            <GroupBox Grid.Row="1" Header="Сортировка">
-                <ComboBox ItemsSource="{Binding Sorts}"
-                          SelectedItem="{Binding SelectedSort}"
-                          Style="{StaticResource ComboBoxMainStyle}"
-                          SelectedIndex="0">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Key}"
-                                       FontWeight="Bold"
-                                       Style="{StaticResource TextBlockMainStyle}"/>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
             </GroupBox>
         </Grid>
         <GroupBox Header="{Binding SelectedTargetsGroup.Name, FallbackValue='Выберите год'}">
@@ -147,7 +139,8 @@
                 </UniformGrid>
                 <Grid>
                     <ListBox ItemsSource="{Binding SelectedTargetsView}"
-                         SelectedItem="{Binding SelectedTarget}">
+                         SelectedItem="{Binding SelectedTarget}"
+                             IsEnabled="{Binding EnableElements}">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemMainStyle}">
                                 <Style.Triggers>
@@ -159,19 +152,21 @@
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Style="{StaticResource StackPanelInListBoxStyle}">
-                                    <StackPanel.Resources>
-                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
-                                    </StackPanel.Resources>
-                                    <TextBlock Text="{Binding Name, StringFormat='Цель: {0}'}"
-                                           FontWeight="Bold"/>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Выполнена: "/>
-                                        <CheckBox IsChecked="{Binding IsComplete}" HorizontalAlignment="Left"
+                                <Border Style="{StaticResource BorderInListBoxStyle}">
+                                    <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
+                                        <StackPanel.Resources>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
+                                        </StackPanel.Resources>
+                                        <TextBlock Text="{Binding Name, StringFormat='Цель: {0}'}"
+                                           FontWeight="{StaticResource FontWeightBold}"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Выполнена: "/>
+                                            <CheckBox IsChecked="{Binding IsComplete}" HorizontalAlignment="Left"
                                               VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
                                     </StackPanel>
-                                    <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
-                                </StackPanel>
+                                </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>

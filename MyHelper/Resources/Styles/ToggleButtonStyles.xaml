@@ -8,7 +8,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
                     <Border x:Name="border" Width="{TemplateBinding Width}"
-                            Height="{TemplateBinding Height}">
+                            Height="{TemplateBinding Height}"
+                            CornerRadius="{StaticResource CornerRadius5}">
                         <Border.Background>
                             <ImageBrush ImageSource="/Resources/Images/Menu.png"
                                         Stretch="Fill"/>
@@ -44,7 +45,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
-                    <Border x:Name="border" Background="{StaticResource SolidColorBrush_BrightOrange}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Border x:Name="border" 
+                            Background="{StaticResource SolidColorBrush_BrightOrange}" 
+                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                            CornerRadius="{StaticResource CornerRadius5}">
                         <Path x:Name="arrow" Data="{StaticResource Arrow_ComboBox}" 
                           Fill="{StaticResource SolidColorBrush_Mustard}" 
                           HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -87,7 +91,8 @@
                 <ControlTemplate TargetType="ToggleButton">
                     <Border x:Name="border" Background="{StaticResource SolidColorBrush_BrightOrange}" Margin="{TemplateBinding Margin}"
                             Padding="{TemplateBinding Padding}"
-                            IsEnabled="{TemplateBinding IsEnabled}">
+                            IsEnabled="{TemplateBinding IsEnabled}"
+                            CornerRadius="{StaticResource CornerRadius5}">
                         <fa:IconImage x:Name="icon" Foreground="{StaticResource SolidColorBrush_Mustard}"
                                   Icon="{TemplateBinding fa:IconImage.Icon}" Width="16"/>
                     </Border>

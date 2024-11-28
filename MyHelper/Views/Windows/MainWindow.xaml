@@ -59,7 +59,8 @@
                               Style="{StaticResource MainMenuStyle}"/>
                 <TextBlock Text="M Y  H E L P E R" 
                            VerticalAlignment="Center" FontSize="24"
-                           FontFamily="{StaticResource Murs Gothic Key}" FontWeight="Bold"
+                           FontFamily="{StaticResource Murs Gothic Key}" 
+                           FontWeight="{StaticResource FontWeightBold}"
                            Margin="20,0,0,0"/>
             </StackPanel>
             <Separator DockPanel.Dock="Top" Background="Black"/>

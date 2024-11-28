@@ -1,6 +1,7 @@
 ﻿using MyHelper.DAL.Entyties;
 using MyHelper.Models.Base;
 using System.Collections.ObjectModel;
+using System.Windows.Media.Effects;
 
 namespace MyHelper.Models.Challenges
 {

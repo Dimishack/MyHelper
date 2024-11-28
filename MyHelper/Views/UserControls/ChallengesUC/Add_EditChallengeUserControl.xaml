@@ -34,14 +34,23 @@
                        Text="Название:"/>
             <TextBlock Grid.Row="1" Grid.Column="0"
                        Text="Примечание:"/>
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ChallengeForAdd_Edit.Name}"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ChallengeForAdd_Edit.Note}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ChallengeForAdd_Edit.Name, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ChallengeForAdd_Edit.Note, UpdateSourceTrigger=PropertyChanged}"/>
             <UniformGrid Rows="1" Grid.Row="2" Grid.ColumnSpan="2">
-                <UniformGrid.Resources>
-                    <Style TargetType="Button" BasedOn="{StaticResource CheckOrCancelElementStyle}"/>
-                </UniformGrid.Resources>
-                <Button IsDefault="True" Command="{Binding AddChallengeCommand}"/>
-                <Button IsCancel="True" Command="{Binding CancelAdd_EditCommand}"/>
+                <Button IsDefault="True">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource CheckOrCancelElementStyle}">
+                            <Setter Property="Command" Value="{Binding AddChallengeCommand}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding EditChallenge}" Value="True">
+                                    <Setter Property="Command" Value="{Binding EditChallengeCommand}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button IsCancel="True" Command="{Binding CancelAdd_EditCommand}"
+                        Style="{StaticResource CheckOrCancelElementStyle}"/>
             </UniformGrid>
         </Grid>
     </Grid>

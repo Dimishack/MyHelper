@@ -7,7 +7,7 @@
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightBold}"/>
         <Setter Property="Padding" Value="5,0"/>
         <Setter Property="CommandParameter" Value="{Binding}"/>
         <Setter Property="Foreground" Value="Red"/>
@@ -32,7 +32,7 @@
         <Style.Triggers>
             <Trigger Property="IsDefault" Value="True">
                 <Setter Property="Content" Value="OK"/>
-                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="FontWeight" Value="{StaticResource FontWeightBold}"/>
             </Trigger>
             <Trigger Property="IsCancel" Value="True">
                 <Setter Property="Content" Value="Cancel"/>
@@ -50,7 +50,7 @@
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="border" Background="{TemplateBinding Background}"
                             Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}"
-                            IsEnabled="{TemplateBinding IsEnabled}">
+                            IsEnabled="{TemplateBinding IsEnabled}" CornerRadius="{StaticResource CornerRadius5}">
                         <fa:IconImage x:Name="icon" Icon="{TemplateBinding fa:IconImage.Icon}"
                                       Foreground="{TemplateBinding Foreground}" Width="16"/>
                     </Border>
@@ -94,7 +94,7 @@
         <Style.Triggers>
             <Trigger Property="IsDefault" Value="True">
                 <Setter Property="fa:IconImage.Icon" Value="Check"/>
-                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="FontWeight" Value="{StaticResource FontWeightBold}"/>
             </Trigger>
             <Trigger Property="IsCancel" Value="True">
                 <Setter Property="fa:IconImage.Icon" Value="Cancel"/>
@@ -126,7 +126,7 @@
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="border" Background="{TemplateBinding Background}" 
                             Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}"
-                            IsEnabled="{TemplateBinding IsEnabled}">
+                            IsEnabled="{TemplateBinding IsEnabled}" CornerRadius="{StaticResource CornerRadius5}">
                         <Grid>
                             <fa:IconImage x:Name="icon" Icon="Save" IconFont="Regular" Width="16" Foreground="{TemplateBinding Foreground}"/>
                             <TextBlock x:Name="text" Text="Автосохр." HorizontalAlignment="Center" VerticalAlignment="Center"

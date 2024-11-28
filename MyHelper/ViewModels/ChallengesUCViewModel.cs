@@ -36,7 +36,7 @@ namespace MyHelper.ViewModels
             get => _selectedChallenge;
             set
             {
-                if(!Set(ref _selectedChallenge, value)) return;
+                if (!Set(ref _selectedChallenge, value)) return;
 
                 PropertiesChanged(this);
             }
@@ -154,30 +154,54 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region EditChallenge : bool - Редактировать челлендж
+
+        ///<summary>Редактировать челлендж</summary>
+        private bool _editChallenge;
+
+        ///<summary>Редактировать челлендж</summary>
+        public bool EditChallenge
+        {
+            get => _editChallenge;
+            set
+            {
+                if(!Set(ref _editChallenge, value)) return;
+                if (value)
+                {
+                    ChallengeForAdd_Edit.Name = _selectedChallenge.Name;
+                    ChallengeForAdd_Edit.Note = _selectedChallenge.Note;
+                    OnPropertyChanged(nameof(ChallengeForAdd_Edit));
+                }
+                PropertiesChanged(this);
+            }
+        }
+
+        #endregion
+
         #region ChallengeForAdd_Edit : ChallengeModel - Челлендж для создания и редактирования
 
         ///<summary>Челлендж для создания и редактирования</summary>
-        private Challenge _challengeForAdd_Edit = new();
+        private Challenge_NameAndNote _challengeForAdd_Edit = new();
 
         ///<summary>Челлендж для создания и редактирования</summary>
-        public Challenge ChallengeForAdd_Edit { get => _challengeForAdd_Edit; set => Set(ref _challengeForAdd_Edit, value); }
+        public Challenge_NameAndNote ChallengeForAdd_Edit { get => _challengeForAdd_Edit; set => Set(ref _challengeForAdd_Edit, value); }
 
         #endregion
 
         #region ShowAdd_EditUserControl : bool - Отобразить окно создания и редактирования челленджей
 
-        [DependencyOn(nameof(AddChallenge))]
-        [ChangesWithProperties(nameof(EnableToggleButtons), true)]
+        [DependencyOn([nameof(AddChallenge), nameof(EditChallenge)])]
+        [ChangesWithProperties(nameof(EnableElements), true)]
         ///<summary>Отобразить окно создания и редактирования челленджей</summary>
-        public bool ShowAdd_EditUserControl => AddChallenge;
+        public bool ShowAdd_EditUserControl => _addChallenge || _editChallenge;
 
         #endregion
 
-        #region EnableToggleButtons : bool - Включить переключатели
+        #region EnableElements : bool - Включить переключатели
 
         [ChangesWithProperties(nameof(EnableToggleButtonsProgressAndEdit))]
         ///<summary>Включить переключатели</summary>
-        public bool EnableToggleButtons => !ShowAdd_EditUserControl;
+        public bool EnableElements => !ShowAdd_EditUserControl;
 
         #endregion
 
@@ -185,7 +209,7 @@ namespace MyHelper.ViewModels
 
         [DependencyOn(nameof(SelectedChallenge))]
         ///<summary>Включить переключатели для выполнения и редактирования челленджей</summary>
-        public bool EnableToggleButtonsProgressAndEdit => EnableToggleButtons && _selectedChallenge is not null;
+        public bool EnableToggleButtonsProgressAndEdit => EnableElements && _selectedChallenge is not null;
 
         #endregion
 
@@ -223,14 +247,14 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда - добавить челлендж</summary>
         public ICommand AddChallengeCommand => _addChallengeCommand
-            ??= new LambdaCommand(OnAddChallengeCommandExecuted, CanAddChallengeCommandExecute);
+            ??= new LambdaCommandAsync(OnAddChallengeCommandExecuted, CanAddChallengeCommandExecute);
 
         ///<summary>Проверка возможности выполнения - добавить челлендж</summary>
         private bool CanAddChallengeCommandExecute(object? p) => ShowAdd_EditUserControl
             && !string.IsNullOrWhiteSpace(_challengeForAdd_Edit.Name);
 
         ///<summary>Логика выполнения - добавить челлендж</summary>
-        private void OnAddChallengeCommandExecuted(object? p)
+        private async Task OnAddChallengeCommandExecuted(object? p)
         {
             var newChallenge = new Challenge()
             {
@@ -238,9 +262,38 @@ namespace MyHelper.ViewModels
                 Note = _challengeForAdd_Edit.Note,
                 InProgress = false
             };
-            _challengeRepository.Add(newChallenge);
+            await challengeRepository.AddAsync(newChallenge);
             Challenges.Add(new ChallengeModel(newChallenge));
             AddChallenge = false;
+        }
+
+        #endregion
+
+        #region EditChallengeCommand - Команда - редактировать челлендж
+
+        ///<summary>Команда - редактировать челлендж</summary>
+        private ICommand? _editChallengeCommand;
+
+        ///<summary>Команда - редактировать челлендж</summary>
+        public ICommand EditChallengeCommand => _editChallengeCommand
+            ??= new LambdaCommandAsync(OnEditChallengeCommandExecuted, CanEditChallengeCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - редактировать челлендж</summary>
+        private bool CanEditChallengeCommandExecute(object? p) => ShowAdd_EditUserControl
+            && _selectedChallenge is not null
+            && !string.IsNullOrWhiteSpace(_challengeForAdd_Edit.Name)
+            && (_selectedChallenge.Name != _challengeForAdd_Edit.Name
+            || _selectedChallenge.Note != _challengeForAdd_Edit.Note)
+            ;
+
+        ///<summary>Логика выполнения - редактировать челлендж</summary>
+        private async Task OnEditChallengeCommandExecuted(object? p)
+        {
+            SelectedChallenge.Name = ChallengeForAdd_Edit.Name;
+            SelectedChallenge.Note = ChallengeForAdd_Edit.Note;
+            await _challengeRepository.UpdateAsync(await _challengeRepository.GetAsync(_selectedChallenge.Id));
+            ChallengesView.Refresh();
+            EditChallenge = false;
         }
 
         #endregion
@@ -258,7 +311,47 @@ namespace MyHelper.ViewModels
         private bool CanCancelAdd_EditCommandExecute(object? p) => ShowAdd_EditUserControl;
 
         ///<summary>Логика выполнения - отмена создания (удаления) челленджа</summary>
-        private void OnCancelAdd_EditCommandExecuted(object? p) => AddChallenge = false;
+        private void OnCancelAdd_EditCommandExecuted(object? p) => AddChallenge = EditChallenge = false;
+
+        #endregion
+
+        #region DeleteChallengeCommand - Команда - удалить челлендж
+
+        ///<summary>Команда - удалить челлендж</summary>
+        private ICommand? _deleteChallengeCommand;
+
+        ///<summary>Команда - удалить челлендж</summary>
+        public ICommand DeleteChallengeCommand => _deleteChallengeCommand
+            ??= new LambdaCommand(OnDeleteChallengeCommandExecuted, CanDeleteChallengeCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - удалить челлендж</summary>
+        private bool CanDeleteChallengeCommandExecute(object? p) => !ShowAdd_EditUserControl
+            && _selectedChallenge is not null
+            ;
+
+        ///<summary>Логика выполнения - удалить челлендж</summary>
+        private void OnDeleteChallengeCommandExecuted(object? p)
+        {
+            _challengeRepository.Remove(_selectedChallenge.Id);
+            Challenges.Remove(_selectedChallenge);
+        }
+
+        #endregion
+
+        #region SaveRepositoryCommand - Команда - сохранить репозиторий челленджей
+
+        ///<summary>Команда - сохранить репозиторий челленджей</summary>
+        private ICommand? _saveRepositoryCommand;
+
+        ///<summary>Команда - сохранить репозиторий челленджей</summary>
+        public ICommand SaveRepositoryCommand => _saveRepositoryCommand
+            ??= new LambdaCommandAsync(OnSaveRepositoryCommandExecuted, CanSaveRepositoryCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - сохранить репозиторий челленджей</summary>
+        private bool CanSaveRepositoryCommandExecute(object? p) => _challengeRepository is not null && !_challengeRepository.AutoSaveChanges;
+
+        ///<summary>Логика выполнения - сохранить репозиторий челленджей</summary>
+        private async Task OnSaveRepositoryCommandExecuted(object? p) => await _challengeRepository.SaveChangedAsync();
 
         #endregion
 

@@ -14,6 +14,6 @@
         <Setter Property="VerticalOffset" Value="6"/>
         <Setter Property="HasDropShadow" Value="True"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontWeight" Value="{StaticResource FontWeightBold}"/>
     </Style>
 </ResourceDictionary>

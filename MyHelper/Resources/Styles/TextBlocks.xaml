@@ -10,7 +10,7 @@
         <Style.Triggers>
             <Trigger Property="Grid.Column" Value="0">
                 <Setter Property="HorizontalAlignment" Value="Right"/>
-                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="FontWeight" Value="{StaticResource FontWeightMedium}"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="3,0"/>
             </Trigger>

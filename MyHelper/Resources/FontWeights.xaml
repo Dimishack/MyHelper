@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Style TargetType="StackPanel" x:Key="StackPanelVerticalOrientationStyle">
-        <Setter Property="Orientation" Value="Vertical"/>
-    </Style>
+    <FontWeight x:Key="FontWeightBold">Bold</FontWeight>
+    <FontWeight x:Key="FontWeightMedium">Medium</FontWeight>
 </ResourceDictionary>
