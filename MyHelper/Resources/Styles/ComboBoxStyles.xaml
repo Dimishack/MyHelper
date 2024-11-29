@@ -4,30 +4,41 @@
 
 
     <Style TargetType="ComboBoxItem" x:Key="ComboBoxItemMainStyle">
-
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_Transparent}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBoxItem">
-                    <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            Background="Transparent" Padding="2,1">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{StaticResource CornerRadius3}"
+                            Background="{TemplateBinding Background}" Padding="2,1">
                         <ContentPresenter/>
                     </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background"
-                                    TargetName="border"
-                                    Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
-                        </Trigger>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background"
-                                    TargetName="border"
-                                    Value="#ffba61"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background"
+                                    Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background"
+                                    Value="{StaticResource SolidColorBrush_Melon}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="ComboBoxItem" x:Key="ComboBoxItem_Add_EditStyle" BasedOn="{StaticResource ComboBoxItemMainStyle}">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background"
+                                    Value="{StaticResource SolidColorBrush_MustartWithPear}"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background"
+                                    Value="{StaticResource SolidColorBrush_PearWithMustard}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="ComboBox" x:Key="ComboBoxMainStyle">
@@ -40,6 +51,9 @@
         <Setter Property="Padding" Value="3"/>
         <Setter Property="SelectedIndex" Value="0"/>
         <Setter Property="ItemContainerStyle" Value="{StaticResource ComboBoxItemMainStyle}"/>
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_Mandarin}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource SolidColorBrush_RichRedOrange}"/>
+        <Setter Property="Tag" Value="{StaticResource ToggleButtonForComboBoxStyle}"/>
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate>
@@ -65,11 +79,12 @@
                                PopupAnimation="Slide" 
                                AllowsTransparency="True">
                             <Border x:Name="dropDownBorder" 
-                                            MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, 
-                                            Path=ActualWidth}"
-                                            MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                    MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, 
+                                    Path=ActualWidth}"
+                                    MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                     CornerRadius="{StaticResource CornerRadius5}"
-                                            Background="{StaticResource SolidColorBrush_MangoTango}" BorderBrush="{StaticResource SolidColorBrush_BrightOrange}" BorderThickness="1">
+                                    Background="{TemplateBinding Background}" 
+                                    BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
                                 <ScrollViewer x:Name="DropDownScrollViewer">
                                     <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
                                         <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Contained" Margin="1"/>
@@ -79,7 +94,7 @@
                         </Popup>
                         <ToggleButton Grid.ColumnSpan="2" 
                                       IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsDropDownOpen, Mode=TwoWay}"
-                                      Style="{StaticResource ComboBoxToggleButton}"/>
+                                      Style="{TemplateBinding Tag}"/>
                         <ContentPresenter x:Name="contentPresenter" 
                           ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" 
                           ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
@@ -94,5 +109,12 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
+    <Style TargetType="ComboBox" x:Key="ComboBoxForAdd_Edit" BasedOn="{StaticResource ComboBoxMainStyle}">
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_StrongBronzeShade}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource SolidColorBrush_PearlBeige}"/>
+        <Setter Property="Tag" Value="{StaticResource ToggleButtonForComboBox_Add_EditUserControlStyle}"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource ComboBoxItem_Add_EditStyle}"/>
+    </Style>
+
 </ResourceDictionary>
