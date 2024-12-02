@@ -35,14 +35,7 @@ namespace MyHelper.Infrastructure.Behaviors
             int currentYear = AssociatedObject.DisplayDateStart.HasValue
                 ? AssociatedObject.DisplayDateStart.Value.Year
                 : dateToday.Year;
-            int lastYear = AssociatedObject.DisplayDateEnd.HasValue
-                ? AssociatedObject.DisplayDateEnd.Value.Year
-                : dateToday.Year + 1;
-            while (currentYear <= lastYear)
-            {
-                AssociatedObject.BlackoutDates.Add(new CalendarDateRange(new DateTime(currentYear, 12, 2), new DateTime(currentYear, 12, 31)));
-                currentYear++;
-            }
+            AssociatedObject.BlackoutDates.Add(new CalendarDateRange(new DateTime(currentYear + 1, 12, 2), new DateTime(currentYear + 1, 12, 31)));
         }
     }
 }

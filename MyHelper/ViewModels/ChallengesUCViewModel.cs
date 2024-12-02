@@ -168,20 +168,20 @@ namespace MyHelper.ViewModels
         #region ChallengeForAdd_Edit : Challenge_NameAndNote - Челлендж для создания и редактирования
 
         ///<summary>Челлендж для создания и редактирования</summary>
-        private Challenge_NameAndNote _challengeForAdd_Edit = new();
+        private Challenge _challengeForAdd_Edit = new();
 
         ///<summary>Челлендж для создания и редактирования</summary>
-        public Challenge_NameAndNote ChallengeForAdd_Edit { get => _challengeForAdd_Edit; set => Set(ref _challengeForAdd_Edit, value); }
+        public Challenge ChallengeForAdd_Edit { get => _challengeForAdd_Edit; set => Set(ref _challengeForAdd_Edit, value); }
 
         #endregion
 
         #region ChallengeForStart : Challenge_Start - Челлендж для старта
 
         ///<summary>Челлендж для старта</summary>
-        private Challenge_Start _challengeForStart = new();
+        private ChallengeModelStart _challengeForStart = new();
 
         ///<summary>Челлендж для старта</summary>
-        public Challenge_Start ChallengeForStart { get => _challengeForStart; set => Set(ref _challengeForStart, value); }
+        public ChallengeModelStart ChallengeForStart { get => _challengeForStart; set => Set(ref _challengeForStart, value); }
 
         #endregion
 

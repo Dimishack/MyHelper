@@ -1,6 +1,8 @@
 ﻿using MyHelper.DAL.Entyties;
+using MyHelper.Models.Enums;
 using System;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace MyHelper.Models.Challenges
 {
@@ -65,25 +67,25 @@ namespace MyHelper.Models.Challenges
             }
         }
 
-        public string? Status
+        public ChallengeStatus? Status
         {
             get
             {
                 if (DateStart.HasValue && DateEnd.HasValue)
                 {
                     var dateToday = _dateToday;
-                    if (dateToday < DateStart.Value) return "Подготовка";
-                    if (dateToday > DateEnd.Value) return "Завершение";
-                    return "Выполнение"; 
+                    if (dateToday < DateStart.Value) return ChallengeStatus.Ready;
+                    if (dateToday > DateEnd.Value) return ChallengeStatus.Success;
+                    return ChallengeStatus.Progress; 
                 }
-                return null;
+                return 0;
             }
         }
 
         public ObservableCollection<CheckModel> CheckList { get; } = [];
 
 
-        public void StartChallenge(Challenge_Start challenge)
+        public void StartChallenge(ChallengeModelStart challenge)
         {
             InProgress = true;
             DateStart = challenge.DateStart;
@@ -92,11 +94,14 @@ namespace MyHelper.Models.Challenges
             if (challenge.Regularity == "По дням недели")
             {
                 var result = 0;
-                var multi = 0;
+                var pow = 0;
                 for (int i = 0; i < challenge.DaysOfWeek.Length; i++)
                 {
                     if (challenge.DaysOfWeek[i])
-                        result = (i + 1) * (int)Math.Pow(10, multi++);
+                    {
+
+                        result += i * (int)Math.Pow(10, pow++);
+                    }
                 }
                 AdditionalRegularity = result;
             }

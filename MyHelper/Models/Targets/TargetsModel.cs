@@ -7,7 +7,6 @@ namespace MyHelper.Models.Targets
     internal class TargetsModel : BaseModel
     {
         private readonly TargetsGroup _targetsGroup;
-        private bool _disposed = false;
 
         public ObservableCollection<TargetModel> Targets { get; } = [];
 

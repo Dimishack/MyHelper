@@ -9,6 +9,7 @@
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+             xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters"
              xmlns:ucChallenges="clr-namespace:MyHelper.Views.UserControls.ChallengesUC"
              
              d:DesignHeight="450" d:DesignWidth="860"
@@ -17,6 +18,8 @@
         <TranslateTransform/>
     </UserControl.RenderTransform>
     <UserControl.Resources>
+        <c:ShowAdditionalRegularityConverter x:Key="ShowAdditionalRegularityConverter"/>
+
         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}"/>
         <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxMainStyle}"/>
         <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}">
@@ -110,9 +113,38 @@
                                             <Run Text="{Binding DateStart, StringFormat='{}{0:dd.MM.yyyy} - '}"/>
                                             <Run Text="{Binding DateEnd, StringFormat='{}{0:dd.MM.yyyy}'}"/>
                                         </TextBlock>
-                                        <TextBlock Text="{Binding DaysLeft, StringFormat='Осталось дней: {0}'}"/>
+                                        <TextBlock Text="{Binding DaysLeft, StringFormat='Осталось дней: {0}'}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Выполнение">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
                                         <TextBlock Text="{Binding Status, StringFormat='Статус: {0}'}"/>
                                         <TextBlock Text="{Binding Regularity, StringFormat='Регулярность: {0}'}"/>
+                                        <TextBlock>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="Text" Value="Доп. информация: ">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource ShowAdditionalRegularityConverter}"
+                                                              StringFormat="Доп. информация: {0}">
+                                                    <Binding Path="Regularity"/>
+                                                    <Binding Path="AdditionalRegularity"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
