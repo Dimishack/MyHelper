@@ -5,20 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MyHelper.Views.UserControls"
              mc:Ignorable="d"
-             xmlns:vm="clr-namespace:MyHelper.ViewModels"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
-             d:DataContext="{d:DesignInstance {x:Type vm:TargetsUCViewModel}, IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Height="0" VerticalAlignment="Bottom">
         <i:Interaction.Behaviors>
             <cusB:Show_Add_Edit_UserControlBehavior MaxHeight="135" ManagementShow="{Binding IsVisibleAdd_EditTarget}"/>
         </i:Interaction.Behaviors>
-        <Border Style="{StaticResource BorderForAdd_EditStyle}"/>
+        <Border Style="{StaticResource BorderStyle_AdditionalUserControl}"/>
         <Grid Margin="5">
             <Grid.Resources>
-                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockForAdd_EditUC}"/>
-                <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxForAdd_EditStyle}"/>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle_AdditionalUserControl}"/>
+                <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxStyle_AdditionalUserControl}"/>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>

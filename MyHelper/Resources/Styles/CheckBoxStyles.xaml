@@ -11,7 +11,7 @@
                             HorizontalAlignment="Left" VerticalAlignment="Center">
                         <Grid>
                             <Path x:Name="Dot" Stroke="{StaticResource SolidColorBrush_YellowBroom}" Margin="1" StrokeThickness="2"
-                                  Data="{StaticResource XMark_CheckBox}"/>
+                                  Data="{StaticResource XMark}"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>

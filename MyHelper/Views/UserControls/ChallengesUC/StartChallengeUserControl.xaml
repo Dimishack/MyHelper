@@ -4,19 +4,50 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MyHelper.Views.UserControls.ChallengesUC"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
              mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:MyHelper.ViewModels"
+             d:DataContext="{d:DesignInstance {x:Type vm:ChallengesUCViewModel}, IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid VerticalAlignment="Bottom">
-        <Border Style="{StaticResource BorderForAdd_EditStyle}">
+    <Grid VerticalAlignment="Bottom" Height="0">
+        <i:Interaction.Behaviors>
+            <cusB:Show_Add_Edit_UserControlBehavior MaxHeight="230" ManagementShow="{Binding StartChallenge}"/>
+        </i:Interaction.Behaviors>
+        <Border Style="{StaticResource BorderStyle_AdditionalUserControl}">
             <Grid Margin="5">
                 <Grid.Resources>
-                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockForAdd_EditUC}"/>
-                    <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxForAdd_EditStyle}"/>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle_AdditionalUserControl}">
+                        <Style.Triggers>
+                            <Trigger Property="Grid.Column" Value="1">
+                                <Setter Property="Margin" Value="4,2"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxStyle_AdditionalUserControl}"/>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxForAdd_Edit}">
-                        <Setter Property="Margin" Value="3,2"/>
+                        <Setter Property="Margin" Value="3.5,2"/>
+                        <Setter Property="ItemTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}"
+                                               FontWeight="{StaticResource FontWeightBold}"
+                                               Margin="2,0"
+                                               Style="{StaticResource TextBlockMainStyle}"/>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                     <Style TargetType="DatePicker" BasedOn="{StaticResource DatePickerMainStyle}">
                         <Setter Property="Margin" Value="3,2"/>
+                    </Style>
+                    <Style TargetType="StackPanel" x:Key="ThereStackPanelMainStyle">
+                        <Setter Property="Orientation" Value="Horizontal"/>
+                        <Setter Property="Margin" Value="3,2"/>
+                        <Setter Property="Grid.Column" Value="1"/>
+                        <Setter Property="Grid.Row" Value="5"/>
+                        <Setter Property="Visibility" Value="Hidden"/>
                     </Style>
                 </Grid.Resources>
                 <Grid.ColumnDefinitions>
@@ -30,48 +61,85 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Column="0" Grid.Row="0" Text="Старт: "/>
                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Продолж.: "/>
                 <TextBlock Grid.Column="0" Grid.Row="2" Text="Конец: "/>
-                <TextBlock Grid.Column="0" Grid.Row="3" Text="Регулярность: "/>
-                <DatePicker Grid.Column="1" Grid.Row="0"/>
-                <ComboBox Grid.Column="1" Grid.Row="1">
-                    <ComboBoxItem Content="123"/>
-                    <ComboBoxItem Content="123"/>
-                    <ComboBoxItem Content="123"/>
-                    <ComboBoxItem Content="123"/>
-                </ComboBox>
-                <DatePicker Grid.Column="1" Grid.Row="2"/>
-                <ComboBox Grid.Column="1" Grid.Row="3"/>
-                <Grid Grid.ColumnSpan="2" Grid.Row="4">
-                    <Grid.Resources>
-                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}">
-                            <Setter Property="HorizontalAlignment" Value="Right"/>
-                            <Setter Property="FontWeight" Value="{StaticResource FontWeightMedium}"/>
-                            <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="Margin" Value="3,0"/>
+                <TextBlock Grid.Column="0" Grid.Row="3" Text="Количество дней: "/>
+                <TextBlock Grid.Column="0" Grid.Row="4" Text="Регулярность: "/>
+                <DatePicker Grid.Column="1" Grid.Row="0" SelectedDate="{Binding ChallengeForStart.DateStart}">
+                    <i:Interaction.Behaviors>
+                        <cusB:BlackoutDatesForStartChallengeBehavior/>
+                    </i:Interaction.Behaviors>
+                </DatePicker>
+                <ComboBox Grid.Column="1" Grid.Row="1"
+                          ItemsSource="{Binding ChallengeForStart.Durations}"
+                          SelectedItem="{Binding ChallengeForStart.Duration}"/>
+                <TextBlock Grid.Column="1" Grid.Row="2" 
+                           Text="{Binding ChallengeForStart.DateEnd, StringFormat='{}{0:dd.MM.yyyy}'}"/>
+                <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ChallengeForStart.DayCount}"/>
+                <ComboBox Grid.Column="1" Grid.Row="4"
+                          ItemsSource="{Binding ChallengeForStart.Regularities}"
+                          SelectedItem="{Binding ChallengeForStart.Regularity}"/>
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel" BasedOn="{StaticResource ThereStackPanelMainStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ChallengeForStart.Regularity}"
+                                             Value="По дням недели">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
                         </Style>
-                    </Grid.Resources>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Каждый(-ую) " Grid.Column="0"/>
-                    <ComboBox Grid.Column="1"/>
-                    <TextBlock Text=" по " Grid.Column="2"/>
-                    <ComboBox Grid.Column="3"/>
-                    <TextBlock Text=" дня(-ей)" Grid.Column="4"/>
-                </Grid>
-                <UniformGrid Grid.ColumnSpan="2" Grid.Row="5" Rows="1">
+                    </StackPanel.Style>
+                    <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[0]}"/>
+                    <TextBlock Text="Пн."/>
+                    <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[1]}"/>
+                    <TextBlock Text="Вт."/>
+                    <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[2]}"/>
+                    <TextBlock Text="Ср."/>
+                    <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[3]}"/>
+                    <TextBlock Text="Чт."/>
+                    <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[4]}"/>
+                    <TextBlock Text="Пт."/>
+                    <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[5]}"/>
+                    <TextBlock Text="Сб."/>
+                    <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[6]}"/>
+                    <TextBlock Text="Вс."/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Grid.Row="5">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel" BasedOn="{StaticResource ThereStackPanelMainStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ChallengeForStart.Regularity}"
+                                             Value="Кол-во дней в неделю">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <RadioButton IsChecked="{Binding ChallengeForStart.CountDay[0]}"/>
+                    <TextBlock Text="1"/>
+                    <RadioButton IsChecked="{Binding ChallengeForStart.CountDay[1]}"/>
+                    <TextBlock Text="2"/>
+                    <RadioButton IsChecked="{Binding ChallengeForStart.CountDay[2]}"/>
+                    <TextBlock Text="3"/>
+                    <RadioButton IsChecked="{Binding ChallengeForStart.CountDay[3]}"/>
+                    <TextBlock Text="4"/>
+                    <RadioButton IsChecked="{Binding ChallengeForStart.CountDay[4]}"/>
+                    <TextBlock Text="5"/>
+                    <RadioButton IsChecked="{Binding ChallengeForStart.CountDay[5]}"/>
+                    <TextBlock Text="6"/>
+                </StackPanel>
+                <UniformGrid Grid.ColumnSpan="2" Grid.Row="6" Rows="1">
                     <UniformGrid.Resources>
                         <Style TargetType="Button" BasedOn="{StaticResource CheckOrCancelElementStyle}"/>
                     </UniformGrid.Resources>
-                    <Button IsDefault="True"/>
-                    <Button IsCancel="True"/>
+                    <Button IsDefault="True"
+                            Command="{Binding StartChallengeCommand}"/>
+                    <Button IsCancel="True"
+                            Command="{Binding HideAdditiionalCustomControl}"/>
                 </UniformGrid>
             </Grid>
         </Border>

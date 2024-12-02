@@ -1,7 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters">
-    
+    <c:DateFromCurrentYearConverter x:Key="StartDisplayConverter"/>
+    <c:DateUntilFollowingYearConverter x:Key="EndDisplayConverter"/>
+
     <Style TargetType="DatePickerTextBox" x:Key="MyDatePickerTextBox">
         <Setter Property="Template">
             <Setter.Value>
@@ -34,6 +36,8 @@
                 <Style TargetType="Calendar" BasedOn="{StaticResource CalendarMainStyle}"/>
             </Setter.Value>
         </Setter>
+        <Setter Property="DisplayDateStart" Value="{Binding {x:Null}, Converter={StaticResource StartDisplayConverter}, Mode=OneWay}"/>
+        <Setter Property="DisplayDateEnd" Value="{Binding {x:Null}, Converter={StaticResource EndDisplayConverter}, Mode=OneWay}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="DatePicker">
@@ -85,10 +89,21 @@
                             <DatePickerTextBox x:Name="PART_TextBox" Grid.Column="0"
                                            Style="{StaticResource MyDatePickerTextBox}"/>
                             <Button x:Name="PART_Button" Grid.Column="1" MinWidth="20" Margin="3,0,0,0" Template="{StaticResource CalendarButton}"/>
+                            <Border Grid.ColumnSpan="2" x:Name="VisualEnable" Background="{StaticResource SolidColorBrush_Sandy}" 
+                                    Opacity="0" 
+                                    IsHitTestVisible="False"
+                                    CornerRadius="{StaticResource CornerRadius3}"/>
                             <Popup x:Name="PART_Popup" AllowsTransparency="True" Placement="Bottom" PlacementTarget="{Binding ElementName=PART_TextBox}" StaysOpen="False"
                                PopupAnimation="Fade"/>
                         </Grid>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity"
+                                    TargetName="VisualEnable"
+                                    Value="0.4"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -19,8 +19,8 @@ namespace MyHelper.DAL.Migrations
                     Start = table.Column<DateTime>(type: "date", nullable: true),
                     End = table.Column<DateTime>(type: "date", nullable: true),
                     Duration = table.Column<string>(type: "varchar(20)", nullable: true),
-                    Regularity_CountDay = table.Column<int>(nullable: true),
-                    Regularity_UnitCalendar = table.Column<string>(nullable: true)
+                    Regularity = table.Column<string>(type: "varchar(20)", nullable: true),
+                    AdditionalRegularity = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {

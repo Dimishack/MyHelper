@@ -22,9 +22,7 @@
         <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}">
             <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Content}"/>
         </Style>
-        <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}">
-            <Setter Property="ItemsSource" Value="{Binding ChallengesView}"/>
-        </Style>
+        <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}"/>
     </UserControl.Resources>
     <UserControl.Triggers>
         <EventTrigger RoutedEvent="Loaded">
@@ -44,10 +42,16 @@
             </Grid.RowDefinitions>
             <GroupBox Header="Фильтры" Grid.Row="1">
                 <StackPanel Orientation="Vertical">
-                    <GroupBox Header="Процесс">
+                    <GroupBox Header="Выполнение">
                         <StackPanel Orientation="Vertical">
                             <RadioButton Content="Все" IsChecked="True"/>
                             <RadioButton Content="Не выполняются"/>
+                            <RadioButton Content="Выполняются"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Процесс">
+                        <StackPanel Orientation="Vertical">
+                            <RadioButton Content="Все" IsChecked="True"/>
                             <RadioButton Content="Подготовка"/>
                             <RadioButton Content="Выполнение"/>
                             <RadioButton Content="Завершение"/>
@@ -59,8 +63,8 @@
                             <RadioButton Content="Месяц"/>
                             <RadioButton Content="Квартал"/>
                             <RadioButton Content="Полгода"/>
+                            <RadioButton Content="Беременность"/>
                             <RadioButton Content="Год"/>
-                            <RadioButton Content="Пользовательский"/>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
@@ -81,7 +85,7 @@
                                 </Style>
                             </ToggleButton.Style>
                         </ToggleButton>
-                        <Button>
+                        <Button Command="{Binding StopChallengeCommand}">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource ButtonMainStyle}">
                                     <Setter Property="fa:IconImage.Icon" Value="CircleArrowRight"/>
@@ -89,16 +93,8 @@
                             </Button.Style>
                         </Button>
                     </UniformGrid>
-                    <ListBox SelectedItem="{Binding SelectedProgressingChallenge}">
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemMainStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding InProgress}" Value="False">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
+                    <ListBox ItemsSource="{Binding ChallengesOnProgressView}" 
+                             SelectedItem="{Binding SelectedProgressingChallenge}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource BorderInListBoxStyle}">
@@ -109,6 +105,14 @@
                                         <TextBlock Text="{Binding Name, StringFormat='Челлендж: {0}'}"
                                                    FontWeight="{StaticResource FontWeightBold}"/>
                                         <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
+                                        <TextBlock>
+                                            <Run Text="Промежуток: "/>
+                                            <Run Text="{Binding DateStart, StringFormat='{}{0:dd.MM.yyyy} - '}"/>
+                                            <Run Text="{Binding DateEnd, StringFormat='{}{0:dd.MM.yyyy}'}"/>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding DaysLeft, StringFormat='Осталось дней: {0}'}"/>
+                                        <TextBlock Text="{Binding Status, StringFormat='Статус: {0}'}"/>
+                                        <TextBlock Text="{Binding Regularity, StringFormat='Регулярность: {0}'}"/>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
@@ -119,7 +123,8 @@
             <GroupBox Header="Челленджи">
                 <DockPanel>
                     <UniformGrid Rows="1" DockPanel.Dock="Bottom">
-                        <ToggleButton IsEnabled="{Binding EnableToggleButtonsProgressAndEdit}">
+                        <ToggleButton IsEnabled="{Binding EnableToggleButtonsProgressAndEdit}"
+                                      IsChecked="{Binding StartChallenge}">
                             <ToggleButton.Style>
                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonMainStyle}">
                                     <Setter Property="fa:IconImage.Icon" Value="CircleArrowLeft"/>
@@ -138,7 +143,8 @@
                                 Command="{Binding SaveRepositoryCommand}"/>
                     </UniformGrid>
                     <Grid>
-                        <ListBox SelectedItem="{Binding SelectedChallenge}"
+                        <ListBox ItemsSource="{Binding ChallengesView}" 
+                                 SelectedItem="{Binding SelectedChallenge}"
                                  IsEnabled="{Binding EnableElements}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>

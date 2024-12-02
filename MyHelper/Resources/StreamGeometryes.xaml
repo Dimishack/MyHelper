@@ -13,18 +13,9 @@
     <StreamGeometry x:Key="Check_CheckBox" ice:Freeze="True">
         M1,4 L4.5,8 L9,1
     </StreamGeometry>
-    <PathGeometry x:Key="XMark_CheckBox" ice:Freeze="True">
-        <PathGeometry.Figures>
-            <PathFigureCollection>
-                <PathFigure StartPoint="1,1">
-                    <LineSegment Point="9,9"/>
-                </PathFigure>
-                <PathFigure StartPoint="1,9">
-                    <LineSegment Point="9,1"/>
-                </PathFigure>
-            </PathFigureCollection>
-        </PathGeometry.Figures>
-    </PathGeometry>
+    <StreamGeometry x:Key="XMark" ice:Freeze="True">
+        M1,1 L9,9 M1,9 L9,1
+    </StreamGeometry>
     <StreamGeometry x:Key="ArrowLeft_Calendar" ice:Freeze="True">
         M6,0 L0,6 L6,12 Z
     </StreamGeometry>

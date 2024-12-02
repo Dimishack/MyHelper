@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Style TargetType="Border" x:Key="BorderForAdd_EditStyle">
+    <Style TargetType="Border" x:Key="BorderStyle_AdditionalUserControl">
         <Setter Property="Background" Value="{StaticResource SolidColorBrush_Sandy}"/>
         <Setter Property="BorderBrush" Value="{StaticResource SolidColorBrush_DarkSandy}"/>
         <Setter Property="CornerRadius" Value="10,10,0,0"/>

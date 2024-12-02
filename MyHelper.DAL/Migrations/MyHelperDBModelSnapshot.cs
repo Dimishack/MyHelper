@@ -22,6 +22,9 @@ namespace MyHelper.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("AdditionalRegularity")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Duration")
                         .HasColumnType("varchar(20)");
 
@@ -38,11 +41,8 @@ namespace MyHelper.DAL.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("Regularity_CountDay")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Regularity_UnitCalendar")
-                        .HasColumnType("TEXT");
+                    b.Property<string>("Regularity")
+                        .HasColumnType("varchar(20)");
 
                     b.Property<DateTime?>("Start")
                         .HasColumnType("date");

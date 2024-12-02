@@ -1,11 +1,10 @@
 ﻿using MyHelper.DAL.Entyties;
-using MyHelper.Models.Base;
+using System;
 using System.Collections.ObjectModel;
-using System.Windows.Media.Effects;
 
 namespace MyHelper.Models.Challenges
 {
-    internal class ChallengeModel : BaseModel
+    internal class ChallengeModel
     {
         private readonly DateTime _dateToday = DateTime.Today;
         private readonly Challenge _challenge;
@@ -23,30 +22,33 @@ namespace MyHelper.Models.Challenges
         public string? Note { get => _challenge.Note; set => _challenge.Note = value; }
         public string? Duration { get => _challenge.Duration; set => _challenge.Duration = value; }
 
-        public DateOnly? DateStart
+        public DateTime? DateStart
         {
-            get => _challenge.Start.HasValue ? DateOnly.FromDateTime((DateTime)_challenge.Start) : null;
-            set => _challenge.Start = value.HasValue ? value.Value.ToDateTime(TimeOnly.MinValue) : null;
+            get => _challenge.Start;
+            set => _challenge.Start = value;
         }
-        public DateOnly? DateEnd
+        public DateTime? DateEnd
         {
-            get => _challenge.End.HasValue ? DateOnly.FromDateTime((DateTime)_challenge.End) : null;
-            set => _challenge.End = value.HasValue ? value.Value.ToDateTime(TimeOnly.MinValue) : null;
+            get => _challenge.End;
+            set => _challenge.End = value;
         }
 
         public bool InProgress
         {
             get => _challenge.InProgress;
-            set
-            {
-                if (value == _challenge.InProgress) return;
-                _challenge.InProgress = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(DateStart));
-                OnPropertyChanged(nameof(DateEnd));
-                OnPropertyChanged(nameof(DaysLeft));
-                OnPropertyChanged(nameof(Status));
-            }
+            set => _challenge.InProgress = value;
+        }
+
+        public string? Regularity
+        {
+            get => _challenge.Regularity;
+            set => _challenge.Regularity = value;
+        }
+
+        public int? AdditionalRegularity
+        {
+            get => _challenge.AdditionalRegularity;
+            set => _challenge.AdditionalRegularity = value;
         }
 
         public int? DaysLeft
@@ -55,9 +57,9 @@ namespace MyHelper.Models.Challenges
             {
                 if(DateStart.HasValue && DateEnd.HasValue)
                 {
-                    var dateToday = DateOnly.FromDateTime(_dateToday);
+                    var dateToday = _dateToday;
                     if (dateToday >= DateStart.Value && dateToday <= DateEnd.Value)
-                        return DateEnd.Value.DayNumber - DateStart.Value.DayNumber;
+                        return DateEnd.Value.DayOfYear - DateStart.Value.DayOfYear;
                 }
                 return null;
             }
@@ -69,7 +71,7 @@ namespace MyHelper.Models.Challenges
             {
                 if (DateStart.HasValue && DateEnd.HasValue)
                 {
-                    DateOnly dateToday = DateOnly.FromDateTime(_dateToday);
+                    var dateToday = _dateToday;
                     if (dateToday < DateStart.Value) return "Подготовка";
                     if (dateToday > DateEnd.Value) return "Завершение";
                     return "Выполнение"; 
@@ -78,19 +80,47 @@ namespace MyHelper.Models.Challenges
             }
         }
 
-        public int? Regularity_CountDay
-        {
-            get => _challenge.Regularity_CountDay;
-            set => _challenge.Regularity_CountDay = value;
-        }
-
-        public string? Regularity_UnitCalendr
-        {
-            get => _challenge.Regularity_UnitCalendar;
-            set => _challenge.Regularity_UnitCalendar = value;
-        }
-
         public ObservableCollection<CheckModel> CheckList { get; } = [];
+
+
+        public void StartChallenge(Challenge_Start challenge)
+        {
+            InProgress = true;
+            DateStart = challenge.DateStart;
+            DateEnd = challenge.DateEnd;
+            Regularity = challenge.Regularity;
+            if (challenge.Regularity == "По дням недели")
+            {
+                var result = 0;
+                var multi = 0;
+                for (int i = 0; i < challenge.DaysOfWeek.Length; i++)
+                {
+                    if (challenge.DaysOfWeek[i])
+                        result = (i + 1) * (int)Math.Pow(10, multi++);
+                }
+                AdditionalRegularity = result;
+            }
+            else if (Regularity == "Кол-во дней в неделю")
+            {
+                for (int i = 0; i < challenge.CountDay.Length; i++)
+                {
+                    if (challenge.CountDay[i])
+                    {
+                        AdditionalRegularity = i + 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void StopChallenge()
+        {
+            InProgress = false;
+            DateStart = null;
+            DateEnd = null;
+            Regularity = null;
+            AdditionalRegularity = null;
+        }
 
     }
 }

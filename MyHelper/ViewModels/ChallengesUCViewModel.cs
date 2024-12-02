@@ -18,10 +18,17 @@ namespace MyHelper.ViewModels
 
         #region Properties...
 
-        #region Chellenges : ObservableCollection<ChallengeModel> - Список челленджей
+        #region Challenges : ObservableCollection<ChallengeModel> - Список челленджей
 
         /// <summary>Список челленджей</summary>
         public ObservableCollection<ChallengeModel> Challenges { get; } = [];
+
+        #endregion
+
+        #region ChallengesOnProgress : ObservableCollection<ChallengeModel> - Список челленджей на выполнении
+
+        ///<summary>Список челленджей на выполнении</summary>
+        public ObservableCollection<ChallengeModel> ChallengesOnProgress { get; } = [];
 
         #endregion
 
@@ -57,6 +64,9 @@ namespace MyHelper.ViewModels
         private readonly CollectionViewSource _challengesViewSource = new();
         public ICollectionView ChallengesView => _challengesViewSource.View;
 
+        private readonly CollectionViewSource _challengesOnProgressViewSource = new();
+        public ICollectionView ChallengesOnProgressView => _challengesOnProgressViewSource.View;
+
         #region Sorts : Dictionary<string, SortDescription> - Список сортировки
 
         ///<summary>Список сортировки</summary>
@@ -83,49 +93,6 @@ namespace MyHelper.ViewModels
             {
                 if (!Set(ref _selectedSort, value)) return;
                 _challengesViewSource.SortDescriptions.Insert(0, Sorts[value.Key]);
-            }
-        }
-
-        #endregion
-
-        #region Durations : ObservableCollection<string> - Продолжительность
-
-        ///<summary>Продолжительность</summary>
-        public ObservableCollection<string> Durations { get; } = ["Все", "Месяц", "Квартал", "Полгода", "Год", "Пользовательский"];
-
-        #endregion
-
-        #region SelectedDuration : string - Выбранная продолжительность
-
-        ///<summary>Выбранная продолжительность</summary>
-        private string _selectedDuration = "Все";
-
-        ///<summary>Выбранная продолжительность</summary>
-        public string SelectedDuration
-        {
-            get => _selectedDuration;
-            set
-            {
-                if (!Set(ref _selectedDuration, value)) return;
-                Challenges.Clear();
-                var challenges = _challengeRepository.Items;
-                switch (value)
-                {
-                    case "Все":
-                        foreach (var challenge in challenges)
-                            Challenges.Add(new ChallengeModel(challenge));
-                        break;
-                    case "Месяц":
-                    case "Квартал":
-                    case "Полгода":
-                    case "Год":
-                    case "Пользовательский":
-                        foreach (var challenge in challenges.Where(c => c.InProgress && c.Duration == value))
-                            Challenges.Add(new ChallengeModel(challenge));
-                        break;
-                    default:
-                        throw new NotImplementedException("Данная функция не реализована!");
-                }
             }
         }
 
@@ -165,7 +132,7 @@ namespace MyHelper.ViewModels
             get => _editChallenge;
             set
             {
-                if(!Set(ref _editChallenge, value)) return;
+                if (!Set(ref _editChallenge, value)) return;
                 if (value)
                 {
                     ChallengeForAdd_Edit.Name = _selectedChallenge.Name;
@@ -178,7 +145,27 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region ChallengeForAdd_Edit : ChallengeModel - Челлендж для создания и редактирования
+        #region StartChallenge : bool - Начать челлендж
+
+        ///<summary>Начать челлендж</summary>
+        private bool _startChallenge;
+
+        ///<summary>Начать челлендж</summary>
+        public bool StartChallenge
+        {
+            get => _startChallenge;
+            set
+            {
+                if (!Set(ref _startChallenge, value)) return;
+                if (value)
+                    ChallengeForStart.ReturnToMainValues();
+                PropertiesChanged(this);
+            }
+        }
+
+        #endregion
+
+        #region ChallengeForAdd_Edit : Challenge_NameAndNote - Челлендж для создания и редактирования
 
         ///<summary>Челлендж для создания и редактирования</summary>
         private Challenge_NameAndNote _challengeForAdd_Edit = new();
@@ -188,12 +175,22 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region ChallengeForStart : Challenge_Start - Челлендж для старта
+
+        ///<summary>Челлендж для старта</summary>
+        private Challenge_Start _challengeForStart = new();
+
+        ///<summary>Челлендж для старта</summary>
+        public Challenge_Start ChallengeForStart { get => _challengeForStart; set => Set(ref _challengeForStart, value); }
+
+        #endregion
+
         #region ShowAdd_EditUserControl : bool - Отобразить окно создания и редактирования челленджей
 
-        [DependencyOn([nameof(AddChallenge), nameof(EditChallenge)])]
+        [DependencyOn([nameof(AddChallenge), nameof(EditChallenge), nameof(StartChallenge)])]
         [ChangesWithProperties(nameof(EnableElements), true)]
         ///<summary>Отобразить окно создания и редактирования челленджей</summary>
-        public bool ShowAdd_EditUserControl => _addChallenge || _editChallenge;
+        public bool ShowAdd_EditUserControl => _addChallenge || _editChallenge || _startChallenge;
 
         #endregion
 
@@ -209,7 +206,7 @@ namespace MyHelper.ViewModels
 
         [DependencyOn(nameof(SelectedChallenge))]
         ///<summary>Включить переключатели для выполнения и редактирования челленджей</summary>
-        public bool EnableToggleButtonsProgressAndEdit => EnableElements && _selectedChallenge is not null;
+        public bool EnableToggleButtonsProgressAndEdit => EnableElements && _selectedChallenge is not null && !_selectedChallenge.InProgress;
 
         #endregion
 
@@ -233,9 +230,17 @@ namespace MyHelper.ViewModels
         private void OnLoadCommandExecuted(object? p)
         {
             foreach (var challenge in _challengeRepository.Items)
-                Challenges.Add(new ChallengeModel(challenge));
+            {
+                var newChallenge = new ChallengeModel(challenge);
+                Challenges.Add(newChallenge);
+                if (challenge.InProgress)
+                    ChallengesOnProgress.Add(newChallenge);
+            }
             _challengesViewSource.Source = Challenges;
             OnPropertyChanged(nameof(ChallengesView));
+            _challengesOnProgressViewSource.Source = ChallengesOnProgress;
+            OnPropertyChanged(nameof(ChallengesOnProgressView));
+            
         }
 
         #endregion
@@ -262,7 +267,7 @@ namespace MyHelper.ViewModels
                 Note = _challengeForAdd_Edit.Note,
                 InProgress = false
             };
-            await challengeRepository.AddAsync(newChallenge);
+            await _challengeRepository.AddAsync(newChallenge);
             Challenges.Add(new ChallengeModel(newChallenge));
             AddChallenge = false;
         }
@@ -298,20 +303,88 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region CancelAdd_EditCommand - Команда - отмена создания (удаления) челленджа
+        #region StartChallengeCommand - Команда - начать челлендж
 
-        ///<summary>Команда - отмена создания (удаления) челленджа</summary>
-        private ICommand? _cancelAdd_EditCommand;
+        ///<summary>Команда - начать челлендж</summary>
+        private ICommand? _startChallengeCommand;
 
-        ///<summary>Команда - отмена создания (удаления) челленджа</summary>
-        public ICommand CancelAdd_EditCommand => _cancelAdd_EditCommand
-            ??= new LambdaCommand(OnCancelAdd_EditCommandExecuted, CanCancelAdd_EditCommandExecute);
+        ///<summary>Команда - начать челлендж</summary>
+        public ICommand StartChallengeCommand => _startChallengeCommand
+            ??= new LambdaCommand(OnStartChallengeCommandExecuted, CanStartChallengeCommandExecute);
 
-        ///<summary>Проверка возможности выполнения - отмена создания (удаления) челленджа</summary>
-        private bool CanCancelAdd_EditCommandExecute(object? p) => ShowAdd_EditUserControl;
+        ///<summary>Проверка возможности выполнения - начать челлендж</summary>
+        private bool CanStartChallengeCommandExecute(object? p)
+        {
+            var result = ShowAdd_EditUserControl
+            && _selectedChallenge is not null;
+            if (_challengeForStart.Regularity == "По дням недели")
+            {
+                var atLeastOnDayOfWeek = false;
+                foreach (var dayOfweek in _challengeForStart.DaysOfWeek)
+                {
+                    if (dayOfweek)
+                    {
+                        atLeastOnDayOfWeek = true;
+                        break;
+                    }
+                }
+                result = atLeastOnDayOfWeek;
+            }
 
-        ///<summary>Логика выполнения - отмена создания (удаления) челленджа</summary>
-        private void OnCancelAdd_EditCommandExecuted(object? p) => AddChallenge = EditChallenge = false;
+            return result;
+        }
+
+        ///<summary>Логика выполнения - начать челлендж</summary>
+        private void OnStartChallengeCommandExecuted(object? p)
+        {
+            SelectedChallenge.StartChallenge(_challengeForStart);
+            ChallengesOnProgress.Add(_selectedChallenge);
+            ChallengesView.Refresh();
+            ChallengesOnProgressView.Refresh();
+            _challengeRepository.Update(_challengeRepository.Get(_selectedChallenge.Id));
+            StartChallenge = false;
+        }
+
+        #endregion
+
+        #region StopChallengeCommand - Команда - остановить челлендж
+
+        ///<summary>Команда - остановить челлендж</summary>
+        private ICommand? _stopChallengeCommand;
+
+        ///<summary>Команда - остановить челлендж</summary>
+        public ICommand StopChallengeCommand => _stopChallengeCommand
+            ??= new LambdaCommand(OnStopChallengeCommandExecuted, CanStopChallengeCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - остановить челлендж</summary>
+        private bool CanStopChallengeCommandExecute(object? p) => 
+            _selectedProgressingChallenge is not null
+            && _selectedProgressingChallenge.InProgress;
+
+        ///<summary>Логика выполнения - остановить челлендж</summary>
+        private void OnStopChallengeCommandExecuted(object? p)
+        {
+            SelectedProgressingChallenge.StopChallenge();
+            ChallengesOnProgress.Remove(_selectedProgressingChallenge);
+            _challengeRepository.Update(_challengeRepository.Get(_selectedChallenge.Id));
+        }
+
+        #endregion
+
+        #region HideAdditiionalCustomControl - Команда - скрыть дополнительное окно
+
+        ///<summary>Команда - скрыть дополнительное окно</summary>
+        private ICommand? _hideAdditionalCustomControl;
+
+        ///<summary>Команда - скрыть дополнительное окно</summary>
+        public ICommand HideAdditiionalCustomControl => _hideAdditionalCustomControl
+            ??= new LambdaCommand(OnHideAdditiionalCustomControlExecuted, CanHideAdditiionalCustomControlExecute);
+
+        ///<summary>Проверка возможности выполнения - скрыть дополнительное окно</summary>
+        private bool CanHideAdditiionalCustomControlExecute(object? p) => ShowAdd_EditUserControl || StartChallenge;
+
+        ///<summary>Логика выполнения - скрыть дополнительное окно</summary>
+        private void OnHideAdditiionalCustomControlExecuted(object? p) => StartChallenge = AddChallenge = EditChallenge = false;
 
         #endregion
 
@@ -327,6 +400,7 @@ namespace MyHelper.ViewModels
         ///<summary>Проверка возможности выполнения - удалить челлендж</summary>
         private bool CanDeleteChallengeCommandExecute(object? p) => !ShowAdd_EditUserControl
             && _selectedChallenge is not null
+            && !_selectedChallenge.InProgress
             ;
 
         ///<summary>Логика выполнения - удалить челлендж</summary>
@@ -356,7 +430,6 @@ namespace MyHelper.ViewModels
         #endregion
 
         #endregion
-
 
         public ChallengesUCViewModel() : this(null, null) { }
     }

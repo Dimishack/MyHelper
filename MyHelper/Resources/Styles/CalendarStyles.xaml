@@ -51,8 +51,17 @@
                                       TextElement.Foreground="{StaticResource SolidColorBrush_DarkGreenishYellowGreen}"
                                       HorizontalAlignment="Center" VerticalAlignment="Center"
                                       TextElement.FontSize="11"/>
+                        <Path x:Name="blackout" Data="{StaticResource XMark}" 
+                              Stroke="{StaticResource SolidColorBrush_WalnutBrown}" StrokeThickness="4"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                              Opacity="0.5" Visibility="Collapsed" Margin="-100"/>
                     </Grid>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsBlackedOut" Value="True">
+                            <Setter Property="Visibility"
+                                    TargetName="blackout"
+                                    Value="Visible"/>
+                        </Trigger>
                         <Trigger Property="IsToday" Value="True">
                             <Setter Property="Background"
                                     TargetName="border"

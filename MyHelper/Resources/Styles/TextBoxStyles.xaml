@@ -39,7 +39,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="TextBox" x:Key="TextBoxForAdd_EditStyle" BasedOn="{StaticResource TextBoxMainStyle}">
+    <Style TargetType="TextBox" x:Key="TextBoxStyle_AdditionalUserControl" BasedOn="{StaticResource TextBoxMainStyle}">
         <Setter Property="Margin" Value="3,3,5,3"/>
     </Style>
 

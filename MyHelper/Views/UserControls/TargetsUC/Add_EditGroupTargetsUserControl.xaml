@@ -11,11 +11,11 @@
         <i:Interaction.Behaviors>
             <cusB:Show_Add_Edit_UserControlBehavior MaxHeight="115" ManagementShow="{Binding IsVisibleAdd_EditGroup}"/>
         </i:Interaction.Behaviors>
-        <Border Style="{StaticResource BorderForAdd_EditStyle}"/>
+        <Border Style="{StaticResource BorderStyle_AdditionalUserControl}"/>
         <Grid Margin="5">
             <Grid.Resources>
-                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockForAdd_EditUC}"/>
-                <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxForAdd_EditStyle}"/>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle_AdditionalUserControl}"/>
+                <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxStyle_AdditionalUserControl}"/>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>

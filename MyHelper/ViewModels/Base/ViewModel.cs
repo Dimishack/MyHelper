@@ -34,6 +34,7 @@ namespace MyHelper.ViewModels.Base
                         {
                             OnPropertyChanged(property.Name);
                             LinkPropertiesChanged(viewModelType, property.Name);
+                            break;
                         }
                     } 
                 }
