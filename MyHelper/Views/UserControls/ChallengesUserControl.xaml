@@ -38,18 +38,28 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <DockPanel>
-        <Grid DockPanel.Dock="Left" Width="150">
+        <Grid DockPanel.Dock="Left" Width="140">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+            <GroupBox Header="Сортировка" Grid.Row="0">
+                <ComboBox ItemsSource="{Binding Sorts}"
+                          SelectedItem="{Binding SelectedSort}"/>
+            </GroupBox>
             <GroupBox Header="Фильтры" Grid.Row="1">
                 <StackPanel Orientation="Vertical">
                     <GroupBox Header="Выполнение">
                         <StackPanel Orientation="Vertical">
-                            <RadioButton Content="Все" IsChecked="True"/>
-                            <RadioButton Content="Не выполняются"/>
-                            <RadioButton Content="Выполняются"/>
+                            <RadioButton Content="Все" IsChecked="True"
+                                         Command="{Binding ProgressFilterCommand}"
+                                         CommandParameter="{Binding Path=Content, RelativeSource={RelativeSource Self}}"/>
+                            <RadioButton Content="Не выполняются"
+                                         Command="{Binding ProgressFilterCommand}"
+                                         CommandParameter="{Binding Path=Content, RelativeSource={RelativeSource Self}}"/>
+                            <RadioButton Content="Выполняются"
+                                         Command="{Binding ProgressFilterCommand}"
+                                         CommandParameter="{Binding Path=Content, RelativeSource={RelativeSource Self}}"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Процесс">
@@ -72,84 +82,78 @@
                     </GroupBox>
                 </StackPanel>
             </GroupBox>
-            <GroupBox Header="Сортировка" Grid.Row="0">
-                <ComboBox ItemsSource="{Binding Sorts}"
-                          SelectedItem="{Binding SelectedSort}"/>
-            </GroupBox>
         </Grid>
         <UniformGrid Rows="1">
             <GroupBox Header="На выполнении">
                 <DockPanel>
                     <UniformGrid DockPanel.Dock="Bottom" Rows="1">
-                        <ToggleButton>
+                        <ToggleButton IsEnabled="{Binding EnableToggleButtonChecklist}"
+                                      IsChecked="{Binding ShowChecklist}">
                             <ToggleButton.Style>
                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonMainStyle}">
                                     <Setter Property="fa:IconImage.Icon" Value="Table"/>
                                 </Style>
                             </ToggleButton.Style>
                         </ToggleButton>
-                        <Button Command="{Binding StopChallengeCommand}">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource ButtonMainStyle}">
-                                    <Setter Property="fa:IconImage.Icon" Value="CircleArrowRight"/>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                        <Button Command="{Binding StopChallengeCommand}" Style="{StaticResource DeleteElementStyle}"/>
                     </UniformGrid>
-                    <ListBox ItemsSource="{Binding ChallengesOnProgressView}" 
+                    <Grid>
+                        <ListBox ItemsSource="{Binding ChallengesOnProgressView}" 
                              SelectedItem="{Binding SelectedProgressingChallenge}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Border Style="{StaticResource BorderInListBoxStyle}">
-                                    <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
-                                        <StackPanel.Resources>
-                                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
-                                        </StackPanel.Resources>
-                                        <TextBlock Text="{Binding Name, StringFormat='Челлендж: {0}'}"
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource BorderInListBoxStyle}">
+                                        <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
+                                            <StackPanel.Resources>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
+                                            </StackPanel.Resources>
+                                            <TextBlock Text="{Binding Name, StringFormat='Челлендж: {0}'}"
                                                    FontWeight="{StaticResource FontWeightBold}"/>
-                                        <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
-                                        <TextBlock>
+                                            <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
+                                            <TextBlock>
                                             <Run Text="Промежуток: "/>
                                             <Run Text="{Binding DateStart, StringFormat='{}{0:dd.MM.yyyy} - '}"/>
                                             <Run Text="{Binding DateEnd, StringFormat='{}{0:dd.MM.yyyy}'}"/>
-                                        </TextBlock>
-                                        <TextBlock Text="{Binding DaysLeft, StringFormat='Осталось дней: {0}'}">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Status}" Value="Выполнение">
-                                                            <Setter Property="Visibility" Value="Visible"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock Text="{Binding Status, StringFormat='Статус: {0}'}"/>
-                                        <TextBlock Text="{Binding Regularity, StringFormat='Регулярность: {0}'}"/>
-                                        <TextBlock>
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}">
-                                                    <Style.Triggers>
-                                                        <Trigger Property="Text" Value="Доп. информация: ">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                            <TextBlock.Text>
-                                                <MultiBinding Converter="{StaticResource ShowAdditionalRegularityConverter}"
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding DaysLeft, StringFormat='Осталось дней: {0}'}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Выполнение">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding Status, StringFormat='Статус: {0}'}"/>
+                                            <TextBlock Text="{Binding Regularity, StringFormat='Регулярность: {0}'}"/>
+                                            <TextBlock>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="Text" Value="Доп. информация: ">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource ShowAdditionalRegularityConverter}"
                                                               StringFormat="Доп. информация: {0}">
-                                                    <Binding Path="Regularity"/>
-                                                    <Binding Path="AdditionalRegularity"/>
-                                                </MultiBinding>
-                                            </TextBlock.Text>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                                                        <Binding Path="Regularity"/>
+                                                        <Binding Path="AdditionalRegularity"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <ucChallenges:ChecklistUserControl/>
+                    </Grid>
                 </DockPanel>
             </GroupBox>
             <GroupBox Header="Челленджи">

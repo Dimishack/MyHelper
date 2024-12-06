@@ -1,27 +1,37 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Style TargetType="Thumb">
+    <Style TargetType="Thumb" x:Key="ThumbMainStyle">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_Mandarin}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Thumb">
                     <Border x:Name="border_thumb" Width="{TemplateBinding Width}" CornerRadius="{StaticResource CornerRadius5}"
-                            Background="{StaticResource SolidColorBrush_Mandarin}" Margin="4,2"/>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background"
-                                    TargetName="border_thumb"
-                                    Value="{StaticResource SolidColorBrush_YellowBroom}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
+                            Background="{TemplateBinding Background}" Margin="4,2"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background"
+                        Value="{StaticResource SolidColorBrush_YellowBroom}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="Thumb" x:Key="Thumb_AdditionalUserControl" BasedOn="{StaticResource ThumbMainStyle}">
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_WalnutBrown}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource SolidColorBrush_LightBrownishGray}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style TargetType="ScrollBar">
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Style.Triggers>
@@ -39,7 +49,7 @@
                                     <RowDefinition Height="23"/>
                                 </Grid.RowDefinitions>
                                 <Border x:Name="border" Grid.Row="1" CornerRadius="5"
-                                    Background="{StaticResource SolidColorBrush_GoldenTainoi}"
+                                    Background="{TemplateBinding Background}"
                                         Margin="2,3">
                                     <Track x:Name="PART_Track"
                                            IsDirectionReversed="True">
@@ -49,7 +59,7 @@
                                                           Style="{StaticResource ScrollBar_Track}"/>
                                         </Track.DecreaseRepeatButton>
                                         <Track.Thumb>
-                                            <Thumb/>
+                                            <Thumb Style="{StaticResource ThumbMainStyle}"/>
                                         </Track.Thumb>
                                         <Track.IncreaseRepeatButton>
                                             <RepeatButton Margin="3,2,3,2"
@@ -66,6 +76,61 @@
                                           Focusable="False"
                                           Command="ScrollBar.LineDownCommand"
                                           Style="{StaticResource ScrollBar_DownArrow}"/>
+
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="ScrollBar" x:Key="ScrollBar_AdditionalUserControlStyle">
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_StrongBronzeShade}"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="Width" Value="25"/>
+                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="Margin" Value="2"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ScrollBar">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="23"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="23"/>
+                                </Grid.RowDefinitions>
+                                <Border x:Name="border" Grid.Row="1" CornerRadius="5"
+                                    Background="{TemplateBinding Background}"
+                                        Margin="2,3">
+                                    <Track x:Name="PART_Track"
+                                           IsDirectionReversed="True">
+                                        <Track.DecreaseRepeatButton>
+                                            <RepeatButton Margin="3,2,3,2"
+                                                          Command="ScrollBar.PageUpCommand"
+                                                          Style="{StaticResource ScrollBar_Track}"/>
+                                        </Track.DecreaseRepeatButton>
+                                        <Track.Thumb>
+                                            <Thumb Style="{StaticResource Thumb_AdditionalUserControl}"/>
+                                        </Track.Thumb>
+                                        <Track.IncreaseRepeatButton>
+                                            <RepeatButton Margin="3,2,3,2"
+                                                          Command="ScrollBar.PageDownCommand"
+                                                          Style="{StaticResource ScrollBar_Track}"/>
+                                        </Track.IncreaseRepeatButton>
+                                    </Track>
+                                </Border>
+                                <RepeatButton x:Name="rb_Up" Grid.Row="0"
+                                          Focusable="False"
+                                          Command="ScrollBar.LineUpCommand"
+                                          Style="{StaticResource ScrollBar_UpArrow_AdditionalUserControl}"/>
+                                <RepeatButton x:Name="rb_Down" Grid.Row="2"
+                                          Focusable="False"
+                                          Command="ScrollBar.LineDownCommand"
+                                          Style="{StaticResource ScrollBar_DownArrow_AdditionalUserControl}"/>
 
                             </Grid>
                         </ControlTemplate>

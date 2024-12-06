@@ -162,7 +162,8 @@
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="Выполнена: "/>
                                             <CheckBox IsChecked="{Binding IsComplete}" HorizontalAlignment="Left"
-                                              VerticalAlignment="Center"/>
+                                              VerticalAlignment="Center"
+                                                      Style="{StaticResource CheckBoxMainStyle}"/>
                                         </StackPanel>
                                         <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
                                     </StackPanel>

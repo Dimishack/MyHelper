@@ -1,25 +1,22 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Style TargetType="CheckBox">
+    <Style TargetType="CheckBox" x:Key="CheckBoxMainStyle">
         <Setter Property="IsChecked" Value="{x:Null}"/>
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_Cream}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource SolidColorBrush_YellowBroom}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
                     <Border x:Name="border" CornerRadius="1" 
-                            BorderBrush="{StaticResource SolidColorBrush_YellowBroom}" BorderThickness="2" 
-                            Background="{StaticResource SolidColorBrush_Cream}"
+                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" 
+                            Background="{TemplateBinding Background}"
                             HorizontalAlignment="Left" VerticalAlignment="Center">
                         <Grid>
-                            <Path x:Name="Dot" Stroke="{StaticResource SolidColorBrush_YellowBroom}" Margin="1" StrokeThickness="2"
+                            <Path x:Name="Dot" Stroke="{TemplateBinding BorderBrush}" Margin="1" StrokeThickness="2"
                                   Data="{StaticResource XMark}"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush"
-                                    TargetName="border"
-                                    Value="{StaticResource SolidColorBrush_YellowCurry}"/>
-                        </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter Property="Data"
                                     TargetName="Dot"
@@ -34,5 +31,24 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush"
+                        Value="{StaticResource SolidColorBrush_YellowCurry}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
+
+    <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxMainStyle}"
+           x:Key="CheckBoxStyle_AdditionalUserControl">
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_LightSandy}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource SolidColorBrush_LightBrownishGray}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush"
+                        Value="{StaticResource SolidColorBrush_DarkSandy}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
 </ResourceDictionary>

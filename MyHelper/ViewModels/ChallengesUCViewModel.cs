@@ -1,4 +1,5 @@
-﻿using MyHelper.DAL.Entyties;
+﻿using Microsoft.EntityFrameworkCore;
+using MyHelper.DAL.Entyties;
 using MyHelper.Infrastructure.Attributes;
 using MyHelper.Infrastructure.Commands;
 using MyHelper.Interfaces;
@@ -32,6 +33,13 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region Checklist : ObservableCollection<CheckModel> - Чек-лист
+
+        ///<summary>Чек-лист</summary>
+        public ObservableCollection<CheckModel> Checklist { get; } = [];
+
+        #endregion
+
         #region SelectedChallenge : ChallengeModel - Выбранный челлендж
 
         ///<summary>Выбранный челлендж</summary>
@@ -57,7 +65,23 @@ namespace MyHelper.ViewModels
         private ChallengeModel? _selectedProgressingChallenge;
 
         ///<summary>Выбранный челлендж в прогрессе</summary>
-        public ChallengeModel? SelectedProgressingChallenge { get => _selectedProgressingChallenge; set => Set(ref _selectedProgressingChallenge, value); }
+        public ChallengeModel? SelectedProgressingChallenge
+        {
+            get => _selectedProgressingChallenge;
+            set
+            {
+                if (_selectedProgressingChallenge == value) return;
+                if (value is not null && value.CheckList.Count == 0)
+                {
+                    var checklist = _challengeRepository.Items.Include(cs => cs.CheckList).FirstOrDefault(c => c.Id == value.Id)?.CheckList;
+                    if(checklist is not null)
+                        foreach (var check in checklist)
+                            value.CheckList.Add(new CheckModel(check));
+                }
+                Set(ref _selectedProgressingChallenge, value);
+                PropertiesChanged(this);
+            }
+        }
 
         #endregion
 
@@ -66,6 +90,9 @@ namespace MyHelper.ViewModels
 
         private readonly CollectionViewSource _challengesOnProgressViewSource = new();
         public ICollectionView ChallengesOnProgressView => _challengesOnProgressViewSource.View;
+
+        private readonly CollectionViewSource _checklistViewSource = new();
+        public ICollectionView ChecklistView => _checklistViewSource.View;
 
         #region Sorts : Dictionary<string, SortDescription> - Список сортировки
 
@@ -165,6 +192,30 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region ShowChecklist : bool - Показать чек-лист
+
+        ///<summary>Показать чек-лист</summary>
+        private bool _showChecklist;
+
+        ///<summary>Показать чек-лист</summary>
+        public bool ShowChecklist
+        {
+            get => _showChecklist;
+            set
+            {
+                if (!Set(ref _showChecklist, value)) return;
+                if (value)
+                    foreach (var check in _selectedProgressingChallenge.CheckList)
+                    {
+                        Checklist.Add(check);
+                        OnPropertyChanged(nameof(ChecklistView));
+                    }
+                else Checklist.Clear();
+            }
+        }
+
+        #endregion
+
         #region ChallengeForAdd_Edit : Challenge_NameAndNote - Челлендж для создания и редактирования
 
         ///<summary>Челлендж для создания и редактирования</summary>
@@ -185,20 +236,21 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region ShowAdd_EditUserControl : bool - Отобразить окно создания и редактирования челленджей
+        #region ShowAdd_EditUserControl : bool - Отобразить окно создания и редактирования
 
-        [DependencyOn([nameof(AddChallenge), nameof(EditChallenge), nameof(StartChallenge)])]
+        [DependencyOn([nameof(AddChallenge), nameof(EditChallenge)])]
         [ChangesWithProperties(nameof(EnableElements), true)]
-        ///<summary>Отобразить окно создания и редактирования челленджей</summary>
-        public bool ShowAdd_EditUserControl => _addChallenge || _editChallenge || _startChallenge;
+        ///<summary>Отобразить окно создания и редактирования</summary>
+        public bool ShowAdd_EditUserControl => _addChallenge || _editChallenge;
 
         #endregion
 
         #region EnableElements : bool - Включить переключатели
 
+        [DependencyOn([nameof(StartChallenge), nameof(ShowChecklist)])]
         [ChangesWithProperties(nameof(EnableToggleButtonsProgressAndEdit))]
         ///<summary>Включить переключатели</summary>
-        public bool EnableElements => !ShowAdd_EditUserControl;
+        public bool EnableElements => !ShowAdd_EditUserControl && !_startChallenge && !_showChecklist;
 
         #endregion
 
@@ -207,6 +259,15 @@ namespace MyHelper.ViewModels
         [DependencyOn(nameof(SelectedChallenge))]
         ///<summary>Включить переключатели для выполнения и редактирования челленджей</summary>
         public bool EnableToggleButtonsProgressAndEdit => EnableElements && _selectedChallenge is not null && !_selectedChallenge.InProgress;
+
+        #endregion
+
+        #region EnableToggleButtonChecklist : bool - Включить переключатель отображения чек-листа
+
+        [DependencyOn(nameof(SelectedProgressingChallenge))]
+        ///<summary>Включить переключатель отображения чек-листа</summary>
+        public bool EnableToggleButtonChecklist => _selectedProgressingChallenge is not null
+            && _selectedProgressingChallenge.CheckList.Count > 0;
 
         #endregion
 
@@ -238,9 +299,16 @@ namespace MyHelper.ViewModels
             }
             _challengesViewSource.Source = Challenges;
             OnPropertyChanged(nameof(ChallengesView));
+
             _challengesOnProgressViewSource.Source = ChallengesOnProgress;
             OnPropertyChanged(nameof(ChallengesOnProgressView));
-            
+            _challengesOnProgressViewSource.SortDescriptions.Add(new SortDescription("Status", ListSortDirection.Descending));
+            _challengesOnProgressViewSource.SortDescriptions.Add(new SortDescription("DateStart", ListSortDirection.Ascending));
+            _challengesOnProgressViewSource.SortDescriptions.Add(new SortDescription("DaysLeft", ListSortDirection.Ascending));
+
+            _checklistViewSource.Source = Checklist;
+            _checklistViewSource.SortDescriptions.Add(new SortDescription("NumberDay", ListSortDirection.Ascending));
+
         }
 
         #endregion
@@ -310,12 +378,12 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда - начать челлендж</summary>
         public ICommand StartChallengeCommand => _startChallengeCommand
-            ??= new LambdaCommand(OnStartChallengeCommandExecuted, CanStartChallengeCommandExecute);
+            ??= new LambdaCommandAsync(OnStartChallengeCommandExecutedAsync, CanStartChallengeCommandExecute);
 
         ///<summary>Проверка возможности выполнения - начать челлендж</summary>
         private bool CanStartChallengeCommandExecute(object? p)
         {
-            var result = ShowAdd_EditUserControl
+            var result = _startChallenge
             && _selectedChallenge is not null;
             if (_challengeForStart.Regularity == "По дням недели")
             {
@@ -335,13 +403,12 @@ namespace MyHelper.ViewModels
         }
 
         ///<summary>Логика выполнения - начать челлендж</summary>
-        private void OnStartChallengeCommandExecuted(object? p)
+        private async Task OnStartChallengeCommandExecutedAsync(object? p)
         {
-            SelectedChallenge.StartChallenge(_challengeForStart);
+            var checklist = SelectedChallenge.StartChallenge(_challengeForStart);
+            await _checkRepository.AddRangeAsync(checklist);
             ChallengesOnProgress.Add(_selectedChallenge);
-            ChallengesView.Refresh();
-            ChallengesOnProgressView.Refresh();
-            _challengeRepository.Update(_challengeRepository.Get(_selectedChallenge.Id));
+            await _challengeRepository.UpdateAsync(await _challengeRepository.GetAsync(_selectedChallenge.Id));
             StartChallenge = false;
         }
 
@@ -357,14 +424,16 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand(OnStopChallengeCommandExecuted, CanStopChallengeCommandExecute);
 
         ///<summary>Проверка возможности выполнения - остановить челлендж</summary>
-        private bool CanStopChallengeCommandExecute(object? p) => 
-            _selectedProgressingChallenge is not null
+        private bool CanStopChallengeCommandExecute(object? p) => !_showChecklist
+            && _selectedProgressingChallenge is not null
             && _selectedProgressingChallenge.InProgress;
 
         ///<summary>Логика выполнения - остановить челлендж</summary>
         private void OnStopChallengeCommandExecuted(object? p)
         {
             SelectedProgressingChallenge.StopChallenge();
+            _challengeRepository.Get(_selectedProgressingChallenge.Id).CheckList.Clear();
+            Challenges.First(c => c.Id == _selectedProgressingChallenge.Id).StopChallenge();
             ChallengesOnProgress.Remove(_selectedProgressingChallenge);
             _challengeRepository.Update(_challengeRepository.Get(_selectedChallenge.Id));
         }
@@ -426,6 +495,44 @@ namespace MyHelper.ViewModels
 
         ///<summary>Логика выполнения - сохранить репозиторий челленджей</summary>
         private async Task OnSaveRepositoryCommandExecuted(object? p) => await _challengeRepository.SaveChangedAsync();
+
+        #endregion
+
+        #region ProgressFilterCommand - Команда - фильтровать выполнение (Челленджи)
+
+        ///<summary>Команда - фильтровать выполнение (Челленджи)</summary>
+        private ICommand? _progressFilterCommand;
+
+        ///<summary>Команда - фильтровать выполнение (Челленджи)</summary>
+        public ICommand ProgressFilterCommand => _progressFilterCommand
+            ??= new LambdaCommand<string>(OnProgressFilterCommandExecuted, CanProgressFilterCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - фильтровать выполнение (Челленджи)</summary>
+        private bool CanProgressFilterCommandExecute(string p) => Challenges.Count > 0;
+
+        ///<summary>Логика выполнения - фильтровать выполнение (Челленджи)</summary>
+        private void OnProgressFilterCommandExecuted(string p)
+        {
+            var challenges = _challengeRepository.Items;
+            Challenges.Clear();
+            switch (p)
+            {
+                case "Все":
+                    foreach (var challenge in challenges)
+                        Challenges.Add(new ChallengeModel(challenge));
+                    break;
+                case "Выполняются":
+                    foreach (var challenge in challenges.Where(c => c.InProgress))
+                        Challenges.Add(new ChallengeModel(challenge));
+                    break;
+                case "Не выполняются":
+                    foreach (var challenge in challenges.Where(c => !c.InProgress))
+                        Challenges.Add(new ChallengeModel(challenge));
+                    break;
+                default:
+                    break;
+            }
+        }
 
         #endregion
 

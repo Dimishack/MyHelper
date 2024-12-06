@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="MyHelper.Views.UserControls.ChallengesUC.ChecklistUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MyHelper.Views.UserControls.ChallengesUC"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
+             xmlns:vm="clr-namespace:MyHelper.ViewModels"
+             d:DataContext="{d:DesignInstance {x:Type vm:ChallengesUCViewModel}, IsDesignTimeCreatable=True}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid VerticalAlignment="Bottom" Height="0">
+        <i:Interaction.Behaviors>
+            <cusB:Show_Add_Edit_UserControlBehavior MaxHeight="480" ManagementShow="{Binding ShowChecklist}"/>
+        </i:Interaction.Behaviors>
+        <Border Style="{StaticResource BorderStyle_AdditionalUserControl}">
+            <DockPanel Margin="5">
+                <DockPanel.Resources>
+                    <Style TargetType="TextBlock" 
+                           BasedOn="{StaticResource TextBlockStyle_AdditionalUserControl}"/>
+                </DockPanel.Resources>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                    <TextBlock Text="Челлендж: "/>
+                    <TextBlock Text="{Binding SelectedProgressingChallenge.Name}"/>
+                </StackPanel>
+                <Grid Margin="5" DockPanel.Dock="Bottom">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Margin="-7" Opacity="0.7"
+                            CornerRadius="{StaticResource CornerRadius5}"
+                        Background="{StaticResource SolidColorBrush_PearWithMustard}"
+                            Grid.ColumnSpan="2"/>
+                    <TextBlock Grid.Column="0">
+                    <Run Text="Вып./Невып."/>
+                    </TextBlock>
+                    <ProgressBar Grid.Column="1"
+                             Background="{StaticResource SolidColorBrush_Transparent}"
+                             BorderThickness="0"
+                             Maximum="1" Value="1">
+                        <ProgressBar.Foreground>
+                            <LinearGradientBrush>
+                                <GradientStop Color="#fdeaa8" Offset="0"/>
+                                <GradientStop Color="#ba984e" Offset="1"/>
+                            </LinearGradientBrush>
+                        </ProgressBar.Foreground>
+                    </ProgressBar>
+                </Grid>
+                <DataGrid Grid.ColumnSpan="2" Grid.Row="1"
+                          ItemsSource="{Binding ChecklistView}"
+                          Style="{StaticResource DataGridStyle_AdditionalUserControl}">
+                    <DataGrid.RowHeaderStyle>
+                        <Style TargetType="DataGridRowHeader" BasedOn="{StaticResource DataGridRowHeaderStyle_AdditionalUsrControl}">
+                            <Setter Property="Content" Value="{Binding NumberDay}"/>
+                        </Style>
+                    </DataGrid.RowHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat='{}{0:dd.MM.yy}'}"
+                                        Width="*" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="День недели" Binding="{Binding WeekDay}"
+                                        Width="*" IsReadOnly="True"/>
+                        <DataGridCheckBoxColumn Header="Вып." Binding="{Binding Checked}" Width="40">
+                            <DataGridCheckBoxColumn.ElementStyle>
+                                <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxStyle_AdditionalUserControl}"/>
+                            </DataGridCheckBoxColumn.ElementStyle>
+                        </DataGridCheckBoxColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>

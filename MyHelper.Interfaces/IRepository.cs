@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyHelper.Interfaces
@@ -13,6 +14,9 @@ namespace MyHelper.Interfaces
 
         T Add(T item);
         Task<T> AddAsync(T item);
+
+        void AddRange(IList<T> item);
+        Task AddRangeAsync(IList<T> item);
 
         bool Update(T item);
         Task<bool> UpdateAsync(T item);

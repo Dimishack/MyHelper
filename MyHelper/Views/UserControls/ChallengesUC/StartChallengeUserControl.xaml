@@ -7,9 +7,7 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
-             mc:Ignorable="d" 
-             xmlns:vm="clr-namespace:MyHelper.ViewModels"
-             d:DataContext="{d:DesignInstance {x:Type vm:ChallengesUCViewModel}, IsDesignTimeCreatable=True}"
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid VerticalAlignment="Bottom" Height="0">
         <i:Interaction.Behaviors>
@@ -49,6 +47,7 @@
                         <Setter Property="Grid.Row" Value="5"/>
                         <Setter Property="Visibility" Value="Hidden"/>
                     </Style>
+                    <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxStyle_AdditionalUserControl}"/>
                 </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -93,19 +92,19 @@
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Style>
-                    <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[0]}"/>
-                    <TextBlock Text="Пн."/>
                     <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[1]}"/>
-                    <TextBlock Text="Вт."/>
+                    <TextBlock Text="Пн."/>
                     <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[2]}"/>
-                    <TextBlock Text="Ср."/>
+                    <TextBlock Text="Вт."/>
                     <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[3]}"/>
-                    <TextBlock Text="Чт."/>
+                    <TextBlock Text="Ср."/>
                     <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[4]}"/>
-                    <TextBlock Text="Пт."/>
+                    <TextBlock Text="Чт."/>
                     <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[5]}"/>
-                    <TextBlock Text="Сб."/>
+                    <TextBlock Text="Пт."/>
                     <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[6]}"/>
+                    <TextBlock Text="Сб."/>
+                    <CheckBox IsChecked="{Binding ChallengeForStart.DaysOfWeek[0]}"/>
                     <TextBlock Text="Вс."/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Grid.Row="5">

@@ -18,18 +18,8 @@ namespace MyHelper.Infrastructure.Converters
                 while(number > 0)
                 {
                     int divide = 10;
-                    var value = (number % divide) switch
-                    {
-                        0 => "Пн",
-                        1 => "Вт",
-                        2 => "Ср",
-                        3 => "Чт",
-                        4 => "Пт",
-                        5 => "Сб",
-                        6 => "Вс",
-                        _ => throw new NotImplementedException()
-                    };
-                    result.Append(value + ", ");
+                    var value = (number % divide) - 1;
+                    result.Append((DayOfWeek)value + ", ");
                     number /= divide;
                 }
                 return result.ToString();

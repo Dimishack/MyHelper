@@ -32,10 +32,10 @@
                 <ResourceDictionary Source="Resources/Styles/StackPanelStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ScrollBarStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/GroupBoxStyles.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/DataGrid.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ListBoxStyles.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/ComboBoxStyles.xaml"/>
-                
+                <ResourceDictionary Source="Resources/Styles/DataGridStyles.xaml"/>
+
                 <ResourceDictionary Source="Resources/Templates/ViewTemplates.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/WindowStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>

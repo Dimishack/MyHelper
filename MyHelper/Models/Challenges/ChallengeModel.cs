@@ -1,8 +1,6 @@
 ﻿using MyHelper.DAL.Entyties;
 using MyHelper.Models.Enums;
-using System;
 using System.Collections.ObjectModel;
-using System.Windows;
 
 namespace MyHelper.Models.Challenges
 {
@@ -57,7 +55,7 @@ namespace MyHelper.Models.Challenges
         {
             get
             {
-                if(DateStart.HasValue && DateEnd.HasValue)
+                if (DateStart.HasValue && DateEnd.HasValue)
                 {
                     var dateToday = _dateToday;
                     if (dateToday >= DateStart.Value && dateToday <= DateEnd.Value)
@@ -76,7 +74,7 @@ namespace MyHelper.Models.Challenges
                     var dateToday = _dateToday;
                     if (dateToday < DateStart.Value) return ChallengeStatus.Ready;
                     if (dateToday > DateEnd.Value) return ChallengeStatus.Success;
-                    return ChallengeStatus.Progress; 
+                    return ChallengeStatus.Progress;
                 }
                 return 0;
             }
@@ -85,7 +83,7 @@ namespace MyHelper.Models.Challenges
         public ObservableCollection<CheckModel> CheckList { get; } = [];
 
 
-        public void StartChallenge(ChallengeModelStart challenge)
+        public IList<Check> StartChallenge(ChallengeModelStart challenge)
         {
             InProgress = true;
             DateStart = challenge.DateStart;
@@ -95,14 +93,17 @@ namespace MyHelper.Models.Challenges
             {
                 var result = 0;
                 var pow = 0;
-                for (int i = 0; i < challenge.DaysOfWeek.Length; i++)
+                for (int i = 1; i < challenge.DaysOfWeek.Length; i++)
                 {
                     if (challenge.DaysOfWeek[i])
                     {
 
-                        result += i * (int)Math.Pow(10, pow++);
+                        result += (i + 1) * (int)Math.Pow(10, pow++);
                     }
                 }
+                if (challenge.DaysOfWeek[0])
+                    result += 1 * (int)Math.Pow(10, pow);
+
                 AdditionalRegularity = result;
             }
             else if (Regularity == "Кол-во дней в неделю")
@@ -116,6 +117,27 @@ namespace MyHelper.Models.Challenges
                     }
                 }
             }
+            List<Check> checklist = [];
+            int index = 0;
+            int step = 1;
+
+            if (Regularity == "Через день")
+                step = 2;
+
+            while (index < challenge.DayCount)
+            {
+                var check = new Check()
+                {
+                    NumberDay = index + 1,
+                    Date = DateStart.Value.AddDays(index),
+                    Checked = false,
+                    ChallengeId = Id,
+                };
+                index += step;
+                checklist.Add(check);
+                CheckList.Add(new CheckModel(check));
+            }
+            return checklist;
         }
 
         public void StopChallenge()
@@ -125,6 +147,7 @@ namespace MyHelper.Models.Challenges
             DateEnd = null;
             Regularity = null;
             AdditionalRegularity = null;
+            CheckList.Clear();
         }
 
     }

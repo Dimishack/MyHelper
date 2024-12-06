@@ -9,13 +9,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
-                    <Border Background="Transparent"/>
+                    <Border Background="{StaticResource SolidColorBrush_Transparent}"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
     <Style x:Key="ScrollBar_UpArrow" TargetType="RepeatButton">
+        <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_BrightOrange}"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="0,0,0,4"/>
         <Setter Property="Template">
@@ -25,26 +26,38 @@
                     BorderThickness="0"
                         SnapsToDevicePixels="True">
                         <Path x:Name="arrow" Data="{StaticResource ArrowUp_ScrollBar}" 
-                              Fill="{StaticResource SolidColorBrush_BrightOrange}"/>
+                              Fill="{TemplateBinding Foreground}"/>
                     </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Fill"
-                                    TargetName="arrow"
-                                    Value="{StaticResource SolidColorBrush_MangoTango}"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Fill"
-                                    TargetName="arrow"
-                                    Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground"
+                        Value="{StaticResource SolidColorBrush_MangoTango}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground"
+                        Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ScrollBar_UpArrow_AdditionalUserControl" TargetType="RepeatButton"
+           BasedOn="{StaticResource ScrollBar_UpArrow}">
+        <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_WalnutBrown}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_BeigeBrown}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_DarkSandy}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="ScrollBar_DownArrow" TargetType="RepeatButton">
+        <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_BrightOrange}"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -53,23 +66,34 @@
                     BorderThickness="0"
                         SnapsToDevicePixels="True">
                         <Path x:Name="arrow" Data="{StaticResource ArrowDown_ScrollBar}" 
-                              Fill="{StaticResource SolidColorBrush_BrightOrange}"/>
+                              Fill="{TemplateBinding Foreground}"/>
                     </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Fill"
-                                    TargetName="arrow"
-                                    Value="{StaticResource SolidColorBrush_MangoTango}"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Fill"
-                                    TargetName="arrow"
-                                    Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground"
+                        Value="{StaticResource SolidColorBrush_MangoTango}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground"
+                        Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ScrollBar_DownArrow_AdditionalUserControl" TargetType="RepeatButton"
+           BasedOn="{StaticResource ScrollBar_DownArrow}">
+        <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_WalnutBrown}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_BeigeBrown}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_DarkSandy}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

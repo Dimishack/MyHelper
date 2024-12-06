@@ -6,8 +6,6 @@
              xmlns:local="clr-namespace:MyHelper.Views.UserControls.ChallengesUC"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
-             xmlns:vm="clr-namespace:MyHelper.ViewModels"
-             d:DataContext="{d:DesignInstance {x:Type vm:ChallengesUCViewModel}, IsDesignTimeCreatable=True}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid VerticalAlignment="Bottom"
