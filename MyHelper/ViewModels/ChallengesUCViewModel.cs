@@ -12,10 +12,13 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    internal class ChallengesUCViewModel(IRepository<Challenge> challengeRepository, IRepository<Check> checkRepository) : ViewModel
+    internal class ChallengesUCViewModel(IRepository<Challenge> challengeRepository, IRepository<Check> checkRepository) : ViewModel, IDisposable
     {
         private readonly IRepository<Challenge> _challengeRepository = challengeRepository;
         private readonly IRepository<Check> _checkRepository = checkRepository;
+        private int _challengesCount = 0;
+        private int _challengesOnProgressCount = 0;
+        private bool _disposed = false;
 
         #region Properties...
 
@@ -30,13 +33,6 @@ namespace MyHelper.ViewModels
 
         ///<summary>Список челленджей на выполнении</summary>
         public ObservableCollection<ChallengeModel> ChallengesOnProgress { get; } = [];
-
-        #endregion
-
-        #region Checklist : ObservableCollection<CheckModel> - Чек-лист
-
-        ///<summary>Чек-лист</summary>
-        public ObservableCollection<CheckModel> Checklist { get; } = [];
 
         #endregion
 
@@ -74,14 +70,31 @@ namespace MyHelper.ViewModels
                 if (value is not null && value.CheckList.Count == 0)
                 {
                     var checklist = _challengeRepository.Items.Include(cs => cs.CheckList).FirstOrDefault(c => c.Id == value.Id)?.CheckList;
-                    if(checklist is not null)
+                    if (checklist is not null)
+                    {
+                        int progressCount = 0;
                         foreach (var check in checklist)
+                        {
+                            if (check.Checked) progressCount++;
                             value.CheckList.Add(new CheckModel(check));
+                        }
+                        value.ProgressCount = progressCount;
+                    }
                 }
                 Set(ref _selectedProgressingChallenge, value);
                 PropertiesChanged(this);
             }
         }
+
+        #endregion
+
+        #region SelectedCheck : CheckModel - Выбранный чек
+
+        ///<summary>Выбранный чек</summary>
+        private CheckModel? _selectedCheck;
+
+        ///<summary>Выбранный чек</summary>
+        public CheckModel? SelectedCheck { get => _selectedCheck; set => Set(ref _selectedCheck, value); }
 
         #endregion
 
@@ -205,12 +218,12 @@ namespace MyHelper.ViewModels
             {
                 if (!Set(ref _showChecklist, value)) return;
                 if (value)
-                    foreach (var check in _selectedProgressingChallenge.CheckList)
-                    {
-                        Checklist.Add(check);
-                        OnPropertyChanged(nameof(ChecklistView));
-                    }
-                else Checklist.Clear();
+                {
+                    _checklistViewSource.Source = _selectedProgressingChallenge?.CheckList;
+                    OnPropertyChanged(nameof(ChecklistView));
+                    _checklistViewSource.SortDescriptions[0] = new SortDescription("NumberDay", ListSortDirection.Ascending);
+                    SelectedCheck = _selectedProgressingChallenge?.CheckList.FirstOrDefault(c => c.Date == DateOnly.FromDateTime(DateTime.Today));
+                }
             }
         }
 
@@ -247,10 +260,10 @@ namespace MyHelper.ViewModels
 
         #region EnableElements : bool - Включить переключатели
 
-        [DependencyOn([nameof(StartChallenge), nameof(ShowChecklist)])]
+        [DependencyOn(nameof(StartChallenge))]
         [ChangesWithProperties(nameof(EnableToggleButtonsProgressAndEdit))]
         ///<summary>Включить переключатели</summary>
-        public bool EnableElements => !ShowAdd_EditUserControl && !_startChallenge && !_showChecklist;
+        public bool EnableElements => !ShowAdd_EditUserControl && !_startChallenge;
 
         #endregion
 
@@ -271,6 +284,46 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region CheckedProgressFilterAll : bool - Чек фильтра выполнения "Все"
+
+        ///<summary>Чек фильтра выполнения "Все"</summary>
+        private bool _checkedProgressFilterAll = true;
+
+        ///<summary>Чек фильтра выполнения "Все"</summary>
+        public bool CheckedProgressFilterAll { get => _checkedProgressFilterAll; set => Set(ref _checkedProgressFilterAll, value); }
+
+        #endregion
+
+        #region CheckedProcessFilterAll : bool - Чек фильтра процесса "Все"
+
+        ///<summary>Чек фильтров процесса и продолжительности "Все"</summary>
+        private bool _checkedProcessFilterAll = true;
+
+        ///<summary>Чек фильтров процесса и продолжительности "Все"</summary>
+        public bool CheckedProcessFilterAll { get => _checkedProcessFilterAll; set => Set(ref _checkedProcessFilterAll, value); }
+
+        #endregion
+
+        #region CheckedDurationFilterAll : bool - Чек фильтра продолжительности "Все"
+
+        ///<summary>Чек фильтра продолжительности "Все"</summary>
+        private bool _checkDurationFilterAll = true;
+
+        ///<summary>Чек фильтра продолжительности "Все"</summary>
+        public bool CheckedDurationFilterAll { get => _checkDurationFilterAll; set => Set(ref _checkDurationFilterAll, value); }
+
+        #endregion
+
+        #region CleanUpBehaviors : bool - Очистить поведение
+
+        ///<summary>Очистить поведение</summary>
+        private bool _cleanUpBehaviors = false;
+
+        ///<summary>Очистить поведение</summary>
+        public bool CleanUpBehaviors { get => _cleanUpBehaviors; set => Set(ref _cleanUpBehaviors, value); }
+
+        #endregion
+
         #endregion
 
         #region Commands...
@@ -282,10 +335,7 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда - загрузка пользовательского окна</summary>
         public ICommand LoadCommand => _loadCommand
-            ??= new LambdaCommand(OnLoadCommandExecuted, CanLoadCommandExecute);
-
-        ///<summary>Проверка возможности выполнения - загрузка пользовательского окна</summary>
-        private bool CanLoadCommandExecute(object? p) => true;
+            ??= new LambdaCommand(OnLoadCommandExecuted);
 
         ///<summary>Логика выполнения - загрузка пользовательского окна</summary>
         private void OnLoadCommandExecuted(object? p)
@@ -295,8 +345,13 @@ namespace MyHelper.ViewModels
                 var newChallenge = new ChallengeModel(challenge);
                 Challenges.Add(newChallenge);
                 if (challenge.InProgress)
+                {
+                    newChallenge.CheckedChanged += NewChallenge_CheckedChanged;
                     ChallengesOnProgress.Add(newChallenge);
+                }
             }
+            _challengesCount = Challenges.Count;
+            _challengesOnProgressCount = ChallengesOnProgress.Count;
             _challengesViewSource.Source = Challenges;
             OnPropertyChanged(nameof(ChallengesView));
 
@@ -305,11 +360,25 @@ namespace MyHelper.ViewModels
             _challengesOnProgressViewSource.SortDescriptions.Add(new SortDescription("Status", ListSortDirection.Descending));
             _challengesOnProgressViewSource.SortDescriptions.Add(new SortDescription("DateStart", ListSortDirection.Ascending));
             _challengesOnProgressViewSource.SortDescriptions.Add(new SortDescription("DaysLeft", ListSortDirection.Ascending));
+            ChallengesOnProgressView.MoveCurrentToFirst();
 
-            _checklistViewSource.Source = Checklist;
             _checklistViewSource.SortDescriptions.Add(new SortDescription("NumberDay", ListSortDirection.Ascending));
 
         }
+
+        #endregion
+
+        #region ClosedCommand - Команда - закрытие пользовательского окна
+
+        ///<summary>Команда - закрытие пользовательского окна</summary>
+        private ICommand? _closedCommand;
+
+        ///<summary>Команда - закрытие пользовательского окна</summary>
+        public ICommand ClosedCommand => _closedCommand
+            ??= new LambdaCommand(OnClosedCommandExecuted);
+
+        ///<summary>Логика выполнения - закрытие пользовательского окна</summary>
+        private void OnClosedCommandExecuted(object? p) => Dispose();
 
         #endregion
 
@@ -337,6 +406,7 @@ namespace MyHelper.ViewModels
             };
             await _challengeRepository.AddAsync(newChallenge);
             Challenges.Add(new ChallengeModel(newChallenge));
+            _challengesCount++;
             AddChallenge = false;
         }
 
@@ -406,9 +476,12 @@ namespace MyHelper.ViewModels
         private async Task OnStartChallengeCommandExecutedAsync(object? p)
         {
             var checklist = SelectedChallenge.StartChallenge(_challengeForStart);
-            await _checkRepository.AddRangeAsync(checklist);
+            _selectedChallenge.CheckedChanged += NewChallenge_CheckedChanged;
+            var getChallenge = await _challengeRepository.GetAsync(_selectedChallenge.Id);
+            getChallenge.CheckList = checklist;
             ChallengesOnProgress.Add(_selectedChallenge);
-            await _challengeRepository.UpdateAsync(await _challengeRepository.GetAsync(_selectedChallenge.Id));
+            await _challengeRepository.UpdateAsync(getChallenge);
+            _challengesOnProgressCount++;
             StartChallenge = false;
         }
 
@@ -421,7 +494,7 @@ namespace MyHelper.ViewModels
 
         ///<summary>Команда - остановить челлендж</summary>
         public ICommand StopChallengeCommand => _stopChallengeCommand
-            ??= new LambdaCommand(OnStopChallengeCommandExecuted, CanStopChallengeCommandExecute);
+            ??= new LambdaCommandAsync(OnStopChallengeCommandExecuted, CanStopChallengeCommandExecute);
 
         ///<summary>Проверка возможности выполнения - остановить челлендж</summary>
         private bool CanStopChallengeCommandExecute(object? p) => !_showChecklist
@@ -429,13 +502,27 @@ namespace MyHelper.ViewModels
             && _selectedProgressingChallenge.InProgress;
 
         ///<summary>Логика выполнения - остановить челлендж</summary>
-        private void OnStopChallengeCommandExecuted(object? p)
+        private async Task OnStopChallengeCommandExecuted(object? p)
         {
             SelectedProgressingChallenge.StopChallenge();
-            _challengeRepository.Get(_selectedProgressingChallenge.Id).CheckList.Clear();
+            _selectedProgressingChallenge.CheckedChanged -= NewChallenge_CheckedChanged;
+            var getChallenge = await _challengeRepository.GetAsync(_selectedProgressingChallenge.Id);
+            getChallenge.CheckList.Clear();
             Challenges.First(c => c.Id == _selectedProgressingChallenge.Id).StopChallenge();
+            await _challengeRepository.UpdateAsync(getChallenge);
             ChallengesOnProgress.Remove(_selectedProgressingChallenge);
-            _challengeRepository.Update(_challengeRepository.Get(_selectedChallenge.Id));
+            if(--_challengesOnProgressCount <= 10)
+            {
+                if (!CheckedDurationFilterAll)
+                {
+                    CheckedDurationFilterAll = true;
+                    OnDurationFilterCommandExecuted("Все"); 
+                }
+                if (!CheckedProcessFilterAll)
+                {
+                    CheckedProcessFilterAll = true;
+                }
+            }
         }
 
         #endregion
@@ -477,6 +564,11 @@ namespace MyHelper.ViewModels
         {
             _challengeRepository.Remove(_selectedChallenge.Id);
             Challenges.Remove(_selectedChallenge);
+            if (--_challengesCount <= 10 && !_checkedProgressFilterAll)
+            {
+                CheckedProgressFilterAll = true;
+                OnProgressFilterCommandExecuted("Все");
+            }
         }
 
         #endregion
@@ -508,21 +600,18 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand<string>(OnProgressFilterCommandExecuted, CanProgressFilterCommandExecute);
 
         ///<summary>Проверка возможности выполнения - фильтровать выполнение (Челленджи)</summary>
-        private bool CanProgressFilterCommandExecute(string p) => Challenges.Count > 0;
+        private bool CanProgressFilterCommandExecute(string p) => _challengesCount > 10;
 
         ///<summary>Логика выполнения - фильтровать выполнение (Челленджи)</summary>
         private void OnProgressFilterCommandExecuted(string p)
         {
             var challenges = _challengeRepository.Items;
             Challenges.Clear();
+
             switch (p)
             {
                 case "Все":
                     foreach (var challenge in challenges)
-                        Challenges.Add(new ChallengeModel(challenge));
-                    break;
-                case "Выполняются":
-                    foreach (var challenge in challenges.Where(c => c.InProgress))
                         Challenges.Add(new ChallengeModel(challenge));
                     break;
                 case "Не выполняются":
@@ -536,7 +625,87 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region DurationFilterCommand - Команда - фильтровать список по продолжительности (Челленджи на выполнении)
+
+        ///<summary>Команда - фильтровать список по продолжительности (Челленджи на выполнении)</summary>
+        private ICommand? _durationFilterCommand;
+
+        ///<summary>Команда - фильтровать список по продолжительности (Челленджи на выполнении)</summary>
+        public ICommand DurationFilterCommand => _durationFilterCommand
+            ??= new LambdaCommand<string>(OnDurationFilterCommandExecuted, CanDurationFilterCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - фильтровать список по продолжительности (Челленджи на выполнении)</summary>
+        private bool CanDurationFilterCommandExecute(string p) => _challengesOnProgressCount > 10;
+
+        ///<summary>Логика выполнения - фильтровать список по продолжительности (Челленджи на выполнении)</summary>
+        private void OnDurationFilterCommandExecuted(string p)
+        {
+
+            var challenges = _challengeRepository.Items.Where(c => c.InProgress);
+            ChallengesOnProgress.Clear();
+            switch (p)
+            {
+                case "Все":
+                    foreach (var challenge in challenges)
+                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
+                    break;
+                case "Месяц":
+                    foreach (var challenge in challenges.Where(c => c.Duration == "Месяц"))
+                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
+                    break;
+                case "Квартал":
+                    foreach (var challenge in challenges.Where(c => c.Duration == "Квартал"))
+                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
+                    break;
+                case "Полгода":
+                    foreach (var challenge in challenges.Where(c => c.Duration == "Полгода"))
+                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
+                    break;
+                case "Беременность":
+                    foreach (var challenge in challenges.Where(c => c.Duration == "Беременность"))
+                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
+                    break;
+                case "Год":
+                    foreach (var challenge in challenges.Where(c => c.Duration == "Год"))
+                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
+                    break;
+                default:
+                    break;
+            }
+        }
+
         #endregion
+
+        #endregion
+
+        private async void NewChallenge_CheckedChanged(object? sender, EventArgs e)
+        {
+            if (sender is CheckModel check)
+                await _checkRepository.UpdateAsync(await _checkRepository.GetAsync(check.Id));
+        }
+
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing) { }
+                CleanUpBehaviors = true;
+                foreach (var challengeOnProgress in ChallengesOnProgress)
+                    challengeOnProgress.Dispose();
+                ChallengesOnProgress.Clear();
+                foreach (var challenge in Challenges)
+                    challenge.Dispose();
+                Challenges.Clear();
+                _disposed = true;
+            }
+        }
 
         public ChallengesUCViewModel() : this(null, null) { }
     }

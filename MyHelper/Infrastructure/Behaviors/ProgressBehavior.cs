@@ -7,7 +7,7 @@ namespace MyHelper.Infrastructure.Behaviors
 {
     class ProgressBehavior : Behavior<ProgressBar>
     {
-        private Storyboard? _storyboard;
+        private DoubleAnimation? _animation;
 
         protected override void OnAttached()
         {
@@ -27,13 +27,8 @@ namespace MyHelper.Infrastructure.Behaviors
         {
             if (AssociatedObject is not null)
             {
-                if (_storyboard != null)
-                {
-                    _storyboard.Stop();
-                    _storyboard.Children.Clear();
-                    _storyboard = null;
-                }
-                AssociatedObject.Unloaded -= AssociatedObject_Unloaded; 
+                _animation = null;
+                AssociatedObject.Unloaded -= AssociatedObject_Unloaded;
             }
         }
 
@@ -54,21 +49,17 @@ namespace MyHelper.Infrastructure.Behaviors
         {
             if (AssociatedObject is null)
                 return;
-            if(_storyboard is null)
+            if (_animation is null)
             {
-                _storyboard = new Storyboard();
-                Storyboard.SetTargetProperty(_storyboard, new PropertyPath(ProgressBar.ValueProperty));
-                Storyboard.SetTarget(_storyboard, AssociatedObject);
+                _animation = new DoubleAnimation
+                {
+                    To = Progress,
+                    Duration = TimeSpan.FromMilliseconds(300),
+                    DecelerationRatio = 0.8
+                };
             }
-            var animation = new DoubleAnimation
-            {
-                To = Progress,
-                Duration = TimeSpan.FromMilliseconds(300),
-                DecelerationRatio = 0.8
-            };
-            _storyboard.Children.Clear();
-            _storyboard.Children.Add(animation);
-            _storyboard.Begin();
+            else _animation.To = Progress;
+            AssociatedObject.BeginAnimation(ProgressBar.ValueProperty, _animation);
         }
     }
 }

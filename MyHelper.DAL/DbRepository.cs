@@ -3,7 +3,6 @@ using MyHelper.DAL.Context;
 using MyHelper.DAL.Entyties.Base;
 using MyHelper.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -39,22 +38,6 @@ namespace MyHelper.DAL
             if (AutoSaveChanges)
                 await _db.SaveChangesAsync().ConfigureAwait(false);
             return item;
-        }
-
-        public void AddRange(IList<T> items)
-        {
-            if(items == null) throw new ArgumentNullException(nameof(items));
-            _dbSet.AddRange(items);
-            if (AutoSaveChanges)
-                _db.SaveChanges();
-        }
-
-        public async Task AddRangeAsync(IList<T> items)
-        {
-            if(items == null) throw new ArgumentNullException(nameof(items));
-            await _dbSet.AddRangeAsync(items);
-            if (AutoSaveChanges)
-                await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public T Get(int id) => Items.SingleOrDefault(x => x.Id == id);

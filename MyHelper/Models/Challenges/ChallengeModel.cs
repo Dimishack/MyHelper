@@ -1,21 +1,74 @@
 ﻿using MyHelper.DAL.Entyties;
+using MyHelper.Models.Base;
 using MyHelper.Models.Enums;
 using System.Collections.ObjectModel;
 
 namespace MyHelper.Models.Challenges
 {
-    internal class ChallengeModel
+    internal class ChallengeModel : BaseModel, IDisposable
     {
         private readonly DateTime _dateToday = DateTime.Today;
         private readonly Challenge _challenge;
+        public event EventHandler? CheckedChanged;
         public ChallengeModel(Challenge challenge)
         {
             _challenge = challenge;
+            int progressCount = 0; 
+            if (_challenge.InProgress)
+                CheckList.CollectionChanged += CheckList_CollectionChanged;
             foreach (var check in challenge.CheckList)
             {
+                if (check.Checked) progressCount++;
                 CheckList.Add(new CheckModel(check));
             }
+            ProgressCount = progressCount;
         }
+
+        private void CheckList_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                    if(e.NewItems is not null && e.NewItems[0] is CheckModel newCheck)
+                        newCheck.PropertyChanged += Check_PropertyChanged;
+                    break;
+                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                    if (e.OldItems is not null && e.OldItems[0] is CheckModel oldCheck)
+                        oldCheck.PropertyChanged -= Check_PropertyChanged;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void Check_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if(sender is CheckModel check 
+                && e.PropertyName == nameof(check.Checked))
+            {
+                ProgressCount += check.Checked ? 1 : -1;
+                CheckedChanged?.Invoke(sender, EventArgs.Empty);
+            }
+        }
+
+        private int _progressCount = 0;
+
+        public int ProgressCount
+        {
+            get => _progressCount;
+            set
+            {
+                if (Set(ref _progressCount, value))
+                {
+                    OnPropertyChanged(nameof(Progress));
+                    OnPropertyChanged(nameof(OffsetProgressed));
+                }
+            }
+        }
+
+        public double Progress => (double)_progressCount / CheckList.Count;
+
+        public double OffsetProgressed => 2.0 - Progress;
 
         public int Id => _challenge.Id;
         public string Name { get => _challenge.Name; set => _challenge.Name = value; }
@@ -55,11 +108,15 @@ namespace MyHelper.Models.Challenges
         {
             get
             {
-                if (DateStart.HasValue && DateEnd.HasValue)
+                if (DateEnd.HasValue)
                 {
-                    var dateToday = _dateToday;
-                    if (dateToday >= DateStart.Value && dateToday <= DateEnd.Value)
-                        return DateEnd.Value.DayOfYear - DateStart.Value.DayOfYear;
+                    if (Status == ChallengeStatus.Progress)
+                    {
+                        int result = DateEnd.Value.DayOfYear - _dateToday.DayOfYear + 1;
+                        if (DateEnd.Value.Year > _dateToday.Year)
+                            result += DateTime.IsLeapYear(_dateToday.Year) ? 366 : 365;
+                        return result;
+                    }
                 }
                 return null;
             }
@@ -71,9 +128,8 @@ namespace MyHelper.Models.Challenges
             {
                 if (DateStart.HasValue && DateEnd.HasValue)
                 {
-                    var dateToday = _dateToday;
-                    if (dateToday < DateStart.Value) return ChallengeStatus.Ready;
-                    if (dateToday > DateEnd.Value) return ChallengeStatus.Success;
+                    if (_dateToday < DateStart.Value) return ChallengeStatus.Ready;
+                    if (_dateToday > DateEnd.Value) return ChallengeStatus.Success;
                     return ChallengeStatus.Progress;
                 }
                 return 0;
@@ -89,6 +145,7 @@ namespace MyHelper.Models.Challenges
             DateStart = challenge.DateStart;
             DateEnd = challenge.DateEnd;
             Regularity = challenge.Regularity;
+            Duration = challenge.Duration;
             if (challenge.Regularity == "По дням недели")
             {
                 var result = 0;
@@ -124,6 +181,7 @@ namespace MyHelper.Models.Challenges
             if (Regularity == "Через день")
                 step = 2;
 
+            CheckList.CollectionChanged += CheckList_CollectionChanged;
             while (index < challenge.DayCount)
             {
                 var check = new Check()
@@ -147,8 +205,14 @@ namespace MyHelper.Models.Challenges
             DateEnd = null;
             Regularity = null;
             AdditionalRegularity = null;
-            CheckList.Clear();
+            while(CheckList.Count > 0) CheckList.RemoveAt(0);
+            CheckList.CollectionChanged -= CheckList_CollectionChanged;
         }
 
+        public void Dispose()
+        {
+            while (CheckList.Count > 0) CheckList.RemoveAt(0);
+            CheckList.CollectionChanged -= CheckList_CollectionChanged;
+        }
     }
 }

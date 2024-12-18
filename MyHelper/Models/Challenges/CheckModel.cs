@@ -10,7 +10,16 @@ namespace MyHelper.Models.Challenges
         public int Id => _check.Id;
         public int NumberDay { get => _check.NumberDay; set => _check.NumberDay = value; }
         public DayOfWeek WeekDay => Date.DayOfWeek;
-        public bool Checked { get => _check.Checked; set => _check.Checked = value; }
+        public bool Checked
+        {
+            get => _check.Checked;
+            set
+            {
+                if(_check.Checked == value) return;
+                _check.Checked = value;
+                OnPropertyChanged();
+            }
+        }
         public DateOnly Date { get => DateOnly.FromDateTime(_check.Date); set => _check.Date = value.ToDateTime(TimeOnly.MinValue); }
     }
 }

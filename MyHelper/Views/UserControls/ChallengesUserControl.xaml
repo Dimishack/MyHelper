@@ -36,6 +36,9 @@
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
         </i:EventTrigger>
+        <i:EventTrigger EventName="Unloaded">
+            <i:InvokeCommandAction Command="{Binding ClosedCommand}"/>
+        </i:EventTrigger>
     </i:Interaction.Triggers>
     <DockPanel>
         <Grid DockPanel.Dock="Left" Width="140">
@@ -51,15 +54,15 @@
                 <StackPanel Orientation="Vertical">
                     <GroupBox Header="Выполнение">
                         <StackPanel Orientation="Vertical">
-                            <RadioButton Content="Все" IsChecked="True"
-                                         Command="{Binding ProgressFilterCommand}"
-                                         CommandParameter="{Binding Path=Content, RelativeSource={RelativeSource Self}}"/>
-                            <RadioButton Content="Не выполняются"
-                                         Command="{Binding ProgressFilterCommand}"
-                                         CommandParameter="{Binding Path=Content, RelativeSource={RelativeSource Self}}"/>
-                            <RadioButton Content="Выполняются"
-                                         Command="{Binding ProgressFilterCommand}"
-                                         CommandParameter="{Binding Path=Content, RelativeSource={RelativeSource Self}}"/>
+                            <StackPanel.Resources>
+                                <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}">
+                                    <Setter Property="Command" Value="{Binding ProgressFilterCommand}"/>
+                                    <Setter Property="CommandParameter" 
+                                            Value="{Binding RelativeSource={RelativeSource Self}, Path=Content}"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <RadioButton Content="Все" IsChecked="{Binding CheckedProgressFilterAll}"/>
+                            <RadioButton Content="Не выполняются"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Процесс">
@@ -72,7 +75,14 @@
                     </GroupBox>
                     <GroupBox Header="Продолжительность">
                         <StackPanel Orientation="Vertical">
-                            <RadioButton Content="Все" IsChecked="True"/>
+                            <StackPanel.Resources>
+                                <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}">
+                                    <Setter Property="Command" Value="{Binding DurationFilterCommand}"/>
+                                    <Setter Property="CommandParameter" 
+                                            Value="{Binding RelativeSource={RelativeSource Self}, Path=Content}"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <RadioButton Content="Все" IsChecked="{Binding CheckedDurationFilterAll}"/>
                             <RadioButton Content="Месяц"/>
                             <RadioButton Content="Квартал"/>
                             <RadioButton Content="Полгода"/>
@@ -99,7 +109,16 @@
                     </UniformGrid>
                     <Grid>
                         <ListBox ItemsSource="{Binding ChallengesOnProgressView}" 
-                             SelectedItem="{Binding SelectedProgressingChallenge}">
+                                 SelectedItem="{Binding SelectedProgressingChallenge}">
+                            <ListBox.Style>
+                                <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ShowChecklist}" Value="True">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListBox.Style>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border Style="{StaticResource BorderInListBoxStyle}">
@@ -120,7 +139,7 @@
                                                     <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}">
                                                         <Setter Property="Visibility" Value="Collapsed"/>
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Status}" Value="Выполнение">
+                                                            <DataTrigger Binding="{Binding Status}" Value="Progress">
                                                                 <Setter Property="Visibility" Value="Visible"/>
                                                             </DataTrigger>
                                                         </Style.Triggers>

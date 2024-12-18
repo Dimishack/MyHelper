@@ -35,23 +35,39 @@
                         Background="{StaticResource SolidColorBrush_PearWithMustard}"
                             Grid.ColumnSpan="2"/>
                     <TextBlock Grid.Column="0">
-                    <Run Text="Вып./Невып."/>
+                    <Run Text="Вып./Всего: "/>
                     </TextBlock>
                     <ProgressBar Grid.Column="1"
-                             Background="{StaticResource SolidColorBrush_Transparent}"
-                             BorderThickness="0"
-                             Maximum="1" Value="1">
+                                 Background="{StaticResource SolidColorBrush_Transparent}"
+                                 BorderThickness="0"
+                                 Maximum="1">
+                        <i:Interaction.Behaviors>
+                            <cusB:ProgressBehavior Progress="{Binding SelectedProgressingChallenge.Progress}"/>
+                        </i:Interaction.Behaviors>
                         <ProgressBar.Foreground>
                             <LinearGradientBrush>
                                 <GradientStop Color="#fdeaa8" Offset="0"/>
-                                <GradientStop Color="#ba984e" Offset="1"/>
+                                <GradientStop Color="#ba984e" Offset="1">
+                                    <i:Interaction.Behaviors>
+                                        <cusB:OffsetOfCompleteBehavior OffsetOfComplete="{Binding SelectedProgressingChallenge.OffsetProgressed}"
+                                                                       IsCleanUp="{Binding CleanUpBehaviors}"/>
+                                    </i:Interaction.Behaviors>
+                                </GradientStop>
                             </LinearGradientBrush>
                         </ProgressBar.Foreground>
                     </ProgressBar>
+                    <TextBlock Grid.Column="1"
+                               HorizontalAlignment="Center">
+                        <Run Text="{Binding SelectedProgressingChallenge.ProgressCount, Mode=OneWay}"/>
+                        <Run Text="{Binding SelectedProgressingChallenge.CheckList.Count, Mode=OneWay, StringFormat='/{0}'}"/>
+                    </TextBlock>
                 </Grid>
-                <DataGrid Grid.ColumnSpan="2" Grid.Row="1"
+                <DataGrid x:Name="dataGrid" Grid.ColumnSpan="2" Grid.Row="1"
                           ItemsSource="{Binding ChecklistView}"
-                          Style="{StaticResource DataGridStyle_AdditionalUserControl}">
+                          SelectedItem="{Binding SelectedCheck}"
+                          Style="{StaticResource DataGridStyle_AdditionalUserControl}"
+                          IsEnabled="{Binding ShowChecklist}"
+                          IsEnabledChanged="DataGrid_IsEnabledChanged">
                     <DataGrid.RowHeaderStyle>
                         <Style TargetType="DataGridRowHeader" BasedOn="{StaticResource DataGridRowHeaderStyle_AdditionalUsrControl}">
                             <Setter Property="Content" Value="{Binding NumberDay}"/>
@@ -62,7 +78,8 @@
                                         Width="*" IsReadOnly="True"/>
                         <DataGridTextColumn Header="День недели" Binding="{Binding WeekDay}"
                                         Width="*" IsReadOnly="True"/>
-                        <DataGridCheckBoxColumn Header="Вып." Binding="{Binding Checked}" Width="40">
+                        <DataGridCheckBoxColumn Header="Вып." Binding="{Binding Checked, UpdateSourceTrigger=PropertyChanged}" Width="40"
+                                                IsReadOnly="True">
                             <DataGridCheckBoxColumn.ElementStyle>
                                 <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxStyle_AdditionalUserControl}"/>
                             </DataGridCheckBoxColumn.ElementStyle>

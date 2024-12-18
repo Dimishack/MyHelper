@@ -5,5 +5,15 @@ namespace MyHelper.Views.UserControls.ChallengesUC
     public partial class ChecklistUserControl : UserControl
     {
         public ChecklistUserControl() => InitializeComponent();
+
+        private void DataGrid_IsEnabledChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
+        {
+            if((bool)e.NewValue)
+            {
+                dataGrid.Focus();
+                if(dataGrid.SelectedItem is not null)
+                    dataGrid.ScrollIntoView(dataGrid.SelectedItem);
+            }
+        }
     }
 }
