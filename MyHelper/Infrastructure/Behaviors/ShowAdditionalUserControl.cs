@@ -5,7 +5,7 @@ using System.Windows.Media.Animation;
 
 namespace MyHelper.Infrastructure.Behaviors
 {
-    class Show_Add_Edit_UserControlBehavior : Behavior<Grid>
+    class ShowAdditionalUserControl : Behavior<Grid>
     {
         private DoubleAnimation? _showAnimation = null;
         private DoubleAnimation? _hideAnimation = null;
@@ -56,7 +56,7 @@ namespace MyHelper.Infrastructure.Behaviors
 
         // Using a DependencyProperty as the backing store for MaxHeight.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MaxHeightProperty =
-            DependencyProperty.Register("MaxHeight", typeof(double), typeof(Show_Add_Edit_UserControlBehavior), new PropertyMetadata(0.0));
+            DependencyProperty.Register("MaxHeight", typeof(double), typeof(ShowAdditionalUserControl), new PropertyMetadata(0.0));
 
 
 
@@ -68,11 +68,11 @@ namespace MyHelper.Infrastructure.Behaviors
 
         // Using a DependencyProperty as the backing store for ManagementShow.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ManagementShowProperty =
-            DependencyProperty.Register("ManagementShow", typeof(bool), typeof(Show_Add_Edit_UserControlBehavior), new PropertyMetadata(false, OnManagementShowChanged));
+            DependencyProperty.Register("ManagementShow", typeof(bool), typeof(ShowAdditionalUserControl), new PropertyMetadata(false, OnManagementShowChanged));
 
         private static void OnManagementShowChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if(d is Show_Add_Edit_UserControlBehavior behavior)
+            if(d is ShowAdditionalUserControl behavior)
             {
                 if (behavior.ManagementShow) behavior.ShowUserControl();
                 else behavior.HideUserControl();

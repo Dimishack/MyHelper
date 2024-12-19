@@ -44,12 +44,7 @@ namespace MyHelper.Data
             var timer = Stopwatch.StartNew();
             _logger.LogInformation("Инициализация челленджей...");
 
-            var rnd = new Random();
-            var challenges = new Collection<Challenge>(Enumerable.Range(1, 10).Select(c => new Challenge()
-            {
-                Name = $"Challenge {c}",
-                Note = $"Note {c}",
-            }).ToList());
+            var challenges = new Collection<Challenge>();
             foreach (var challenge in challenges)
             await _db.Challenges.AddAsync(challenge);
             await _db.SaveChangesAsync();

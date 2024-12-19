@@ -11,7 +11,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid VerticalAlignment="Bottom" Height="0">
         <i:Interaction.Behaviors>
-            <cusB:Show_Add_Edit_UserControlBehavior MaxHeight="230" ManagementShow="{Binding StartChallenge}"/>
+            <cusB:ShowAdditionalUserControl MaxHeight="230" ManagementShow="{Binding StartChallenge}"/>
         </i:Interaction.Behaviors>
         <Border Style="{StaticResource BorderStyle_AdditionalUserControl}">
             <Grid Margin="5">
@@ -74,19 +74,19 @@
                 </DatePicker>
                 <ComboBox Grid.Column="1" Grid.Row="1"
                           ItemsSource="{Binding ChallengeForStart.Durations}"
-                          SelectedItem="{Binding ChallengeForStart.Duration}"/>
+                          SelectedIndex="{Binding ChallengeForStart.Duration}"/>
                 <TextBlock Grid.Column="1" Grid.Row="2" 
                            Text="{Binding ChallengeForStart.DateEnd, StringFormat='{}{0:dd.MM.yyyy}'}"/>
                 <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding ChallengeForStart.DayCount}"/>
                 <ComboBox Grid.Column="1" Grid.Row="4"
                           ItemsSource="{Binding ChallengeForStart.Regularities}"
-                          SelectedItem="{Binding ChallengeForStart.Regularity}"/>
+                          SelectedIndex="{Binding ChallengeForStart.Regularity}"/>
                 <StackPanel>
                     <StackPanel.Style>
                         <Style TargetType="StackPanel" BasedOn="{StaticResource ThereStackPanelMainStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ChallengeForStart.Regularity}"
-                                             Value="По дням недели">
+                                             Value="3">
                                     <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -112,7 +112,7 @@
                         <Style TargetType="StackPanel" BasedOn="{StaticResource ThereStackPanelMainStyle}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ChallengeForStart.Regularity}"
-                                             Value="Кол-во дней в неделю">
+                                             Value="2">
                                     <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>

@@ -6,14 +6,12 @@
              xmlns:local="clr-namespace:MyHelper.Views.UserControls"
              mc:Ignorable="d" 
              
-             xmlns:vm="clr-namespace:MyHelper.ViewModels"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters"
              xmlns:ucChallenges="clr-namespace:MyHelper.Views.UserControls.ChallengesUC"
              
-             d:DesignHeight="450" d:DesignWidth="860"
-             d:DataContext="{d:DesignInstance vm:ChallengesUCViewModel, IsDesignTimeCreatable=True}">
+             d:DesignHeight="450" d:DesignWidth="860">
     <UserControl.RenderTransform>
         <TranslateTransform/>
     </UserControl.RenderTransform>
@@ -65,9 +63,16 @@
                             <RadioButton Content="Не выполняются"/>
                         </StackPanel>
                     </GroupBox>
-                    <GroupBox Header="Процесс">
+                    <GroupBox Header="Статус">
                         <StackPanel Orientation="Vertical">
-                            <RadioButton Content="Все" IsChecked="True"/>
+                            <StackPanel.Resources>
+                                <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}">
+                                    <Setter Property="Command" Value="{Binding StatusFilterCommand}"/>
+                                    <Setter Property="CommandParameter"
+                                            Value="{Binding RelativeSource={RelativeSource Self}, Path=Content}"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <RadioButton Content="Все" IsChecked="{Binding CheckedStatusFilterAll}"/>
                             <RadioButton Content="Подготовка"/>
                             <RadioButton Content="Выполнение"/>
                             <RadioButton Content="Завершение"/>
@@ -131,8 +136,8 @@
                                             <TextBlock Text="{Binding Note, StringFormat='Примечание: {0}'}"/>
                                             <TextBlock>
                                             <Run Text="Промежуток: "/>
-                                            <Run Text="{Binding DateStart, StringFormat='{}{0:dd.MM.yyyy} - '}"/>
-                                            <Run Text="{Binding DateEnd, StringFormat='{}{0:dd.MM.yyyy}'}"/>
+                                            <Run Text="{Binding DateStart, Mode=OneWay, StringFormat='{}{0:dd.MM.yyyy} - '}"/>
+                                            <Run Text="{Binding DateEnd, Mode=OneWay, StringFormat='{}{0:dd.MM.yyyy}'}"/>
                                             </TextBlock>
                                             <TextBlock Text="{Binding DaysLeft, StringFormat='Осталось дней: {0}'}">
                                                 <TextBlock.Style>

@@ -18,8 +18,8 @@ namespace MyHelper.DAL.Migrations
                     InProgress = table.Column<bool>(nullable: false),
                     Start = table.Column<DateTime>(type: "date", nullable: true),
                     End = table.Column<DateTime>(type: "date", nullable: true),
-                    Duration = table.Column<string>(type: "varchar(20)", nullable: true),
-                    Regularity = table.Column<string>(type: "varchar(20)", nullable: true),
+                    Duration = table.Column<int>(nullable: false),
+                    Regularity = table.Column<int>(nullable: false),
                     AdditionalRegularity = table.Column<int>(nullable: true)
                 },
                 constraints: table =>

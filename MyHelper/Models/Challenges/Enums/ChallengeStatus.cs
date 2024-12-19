@@ -1,4 +1,4 @@
-﻿namespace MyHelper.Models.Enums
+﻿namespace MyHelper.Models.Challenges.Enums
 {
     internal enum ChallengeStatus
     {

@@ -11,7 +11,7 @@
     <Grid VerticalAlignment="Bottom"
           Height="0">
         <i:Interaction.Behaviors>
-            <cusB:Show_Add_Edit_UserControlBehavior MaxHeight="135" ManagementShow="{Binding ShowAdd_EditUserControl}"/>
+            <cusB:ShowAdditionalUserControl MaxHeight="135" ManagementShow="{Binding ShowAdd_EditUserControl}"/>
         </i:Interaction.Behaviors>
         <Border Style="{StaticResource BorderStyle_AdditionalUserControl}"/>
         <Grid Margin="5" >
@@ -32,7 +32,7 @@
                        Text="Название:"/>
             <TextBlock Grid.Row="1" Grid.Column="0"
                        Text="Примечание:"/>
-            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ChallengeForAdd_Edit.Name, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox x:Name="tb_Name" Grid.Row="0" Grid.Column="1" Text="{Binding ChallengeForAdd_Edit.Name, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ChallengeForAdd_Edit.Note, UpdateSourceTrigger=PropertyChanged}"/>
             <UniformGrid Rows="1" Grid.Row="2" Grid.ColumnSpan="2">
                 <Button IsDefault="True">

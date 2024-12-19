@@ -4,6 +4,7 @@ using MyHelper.Infrastructure.Attributes;
 using MyHelper.Infrastructure.Commands;
 using MyHelper.Interfaces;
 using MyHelper.Models.Challenges;
+using MyHelper.Models.Challenges.Enums;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,9 +17,11 @@ namespace MyHelper.ViewModels
     {
         private readonly IRepository<Challenge> _challengeRepository = challengeRepository;
         private readonly IRepository<Check> _checkRepository = checkRepository;
-        private int _challengesCount = 0;
-        private int _challengesOnProgressCount = 0;
+        private readonly ChallengesOnProgressingCache _challengesOnProgressingCache = new();
         private bool _disposed = false;
+        private int _challengesCount = 0;
+        private Func<ChallengeOnProgressingModel, bool>? _statusFilter = null;
+        private Func<ChallengeOnProgressingModel, bool>? _durationFilter = null;
 
         #region Properties...
 
@@ -32,7 +35,7 @@ namespace MyHelper.ViewModels
         #region ChallengesOnProgress : ObservableCollection<ChallengeModel> - Список челленджей на выполнении
 
         ///<summary>Список челленджей на выполнении</summary>
-        public ObservableCollection<ChallengeModel> ChallengesOnProgress { get; } = [];
+        public ObservableCollection<ChallengeOnProgressingModel> ChallengesOnProgress { get; } = [];
 
         #endregion
 
@@ -58,10 +61,10 @@ namespace MyHelper.ViewModels
         #region SelectedProgressingChallenge : ChallengeModel - Выбранный челлендж в прогрессе
 
         ///<summary>Выбранный челлендж в прогрессе</summary>
-        private ChallengeModel? _selectedProgressingChallenge;
+        private ChallengeOnProgressingModel? _selectedProgressingChallenge;
 
         ///<summary>Выбранный челлендж в прогрессе</summary>
-        public ChallengeModel? SelectedProgressingChallenge
+        public ChallengeOnProgressingModel? SelectedProgressingChallenge
         {
             get => _selectedProgressingChallenge;
             set
@@ -69,7 +72,11 @@ namespace MyHelper.ViewModels
                 if (_selectedProgressingChallenge == value) return;
                 if (value is not null && value.CheckList.Count == 0)
                 {
-                    var checklist = _challengeRepository.Items.Include(cs => cs.CheckList).FirstOrDefault(c => c.Id == value.Id)?.CheckList;
+                    var checklist = _challengeRepository.Items
+                        .Include(cs => cs.CheckList)
+                        .Where(ch => ch.InProgress)
+                        .FirstOrDefault(c => c.Id == value.Id)?
+                        .CheckList;
                     if (checklist is not null)
                     {
                         int progressCount = 0;
@@ -112,8 +119,8 @@ namespace MyHelper.ViewModels
         ///<summary>Список сортировки</summary>
         public Dictionary<string, SortDescription> Sorts { get; } = new()
         {
-            {"В порядке возврастания", new SortDescription("Id", ListSortDirection.Ascending)},
-            {"В порядке убывания", new SortDescription("Id", ListSortDirection.Descending)},
+            {"Сначала старые", new SortDescription("Id", ListSortDirection.Ascending)},
+            {"Сначала свежие", new SortDescription("Id", ListSortDirection.Descending)},
             {"По челленджам (Z -> Я)", new SortDescription("Name", ListSortDirection.Ascending)},
             {"По челленджам (Я -> Z)", new SortDescription("Name", ListSortDirection.Descending)},
         };
@@ -294,13 +301,13 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region CheckedProcessFilterAll : bool - Чек фильтра процесса "Все"
+        #region CheckedStatusFilterAll : bool - Чек фильтра статуса "Все"
 
-        ///<summary>Чек фильтров процесса и продолжительности "Все"</summary>
-        private bool _checkedProcessFilterAll = true;
+        ///<summary>Чек фильтра статуса "Все"</summary>
+        private bool _checkedStatusFilterAll = true;
 
-        ///<summary>Чек фильтров процесса и продолжительности "Все"</summary>
-        public bool CheckedProcessFilterAll { get => _checkedProcessFilterAll; set => Set(ref _checkedProcessFilterAll, value); }
+        ///<summary>Чек фильтра статуса "Все"</summary>
+        public bool CheckedStatusFilterAll { get => _checkedStatusFilterAll; set => Set(ref _checkedStatusFilterAll, value); }
 
         #endregion
 
@@ -346,24 +353,22 @@ namespace MyHelper.ViewModels
                 Challenges.Add(newChallenge);
                 if (challenge.InProgress)
                 {
-                    newChallenge.CheckedChanged += NewChallenge_CheckedChanged;
-                    ChallengesOnProgress.Add(newChallenge);
+                    ChallengeOnProgressingModel newChallengeOnProgressing = new(challenge);
+                    _challengesOnProgressingCache.Add(newChallengeOnProgressing);
+                    ChallengesOnProgress.Add(newChallengeOnProgressing);
+                    ChallengesOnProgress.Last().CheckedChanged += NewChallenge_CheckedChanged;
                 }
             }
             _challengesCount = Challenges.Count;
-            _challengesOnProgressCount = ChallengesOnProgress.Count;
             _challengesViewSource.Source = Challenges;
             OnPropertyChanged(nameof(ChallengesView));
 
             _challengesOnProgressViewSource.Source = ChallengesOnProgress;
             OnPropertyChanged(nameof(ChallengesOnProgressView));
-            _challengesOnProgressViewSource.SortDescriptions.Add(new SortDescription("Status", ListSortDirection.Descending));
             _challengesOnProgressViewSource.SortDescriptions.Add(new SortDescription("DateStart", ListSortDirection.Ascending));
             _challengesOnProgressViewSource.SortDescriptions.Add(new SortDescription("DaysLeft", ListSortDirection.Ascending));
+            _challengesOnProgressViewSource.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
             ChallengesOnProgressView.MoveCurrentToFirst();
-
-            _checklistViewSource.SortDescriptions.Add(new SortDescription("NumberDay", ListSortDirection.Ascending));
-
         }
 
         #endregion
@@ -455,7 +460,7 @@ namespace MyHelper.ViewModels
         {
             var result = _startChallenge
             && _selectedChallenge is not null;
-            if (_challengeForStart.Regularity == "По дням недели")
+            if (_challengeForStart.Regularity == (int)ChallengeRegularity.ByDayOfTheWeek)
             {
                 var atLeastOnDayOfWeek = false;
                 foreach (var dayOfweek in _challengeForStart.DaysOfWeek)
@@ -475,13 +480,14 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - начать челлендж</summary>
         private async Task OnStartChallengeCommandExecutedAsync(object? p)
         {
-            var checklist = SelectedChallenge.StartChallenge(_challengeForStart);
-            _selectedChallenge.CheckedChanged += NewChallenge_CheckedChanged;
             var getChallenge = await _challengeRepository.GetAsync(_selectedChallenge.Id);
-            getChallenge.CheckList = checklist;
-            ChallengesOnProgress.Add(_selectedChallenge);
-            await _challengeRepository.UpdateAsync(getChallenge);
-            _challengesOnProgressCount++;
+            ChallengeOnProgressingModel newChallengeOnProgressingModel = new(getChallenge, ChallengeForStart);
+            if (_challengesOnProgressingCache.Add(newChallengeOnProgressingModel))
+            {
+                ChallengesOnProgress.Add(newChallengeOnProgressingModel);
+                ChallengesOnProgress.Last().CheckedChanged += NewChallenge_CheckedChanged;
+                await _challengeRepository.UpdateAsync(getChallenge);
+            }
             StartChallenge = false;
         }
 
@@ -504,25 +510,28 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - остановить челлендж</summary>
         private async Task OnStopChallengeCommandExecuted(object? p)
         {
-            SelectedProgressingChallenge.StopChallenge();
-            _selectedProgressingChallenge.CheckedChanged -= NewChallenge_CheckedChanged;
-            var getChallenge = await _challengeRepository.GetAsync(_selectedProgressingChallenge.Id);
-            getChallenge.CheckList.Clear();
-            Challenges.First(c => c.Id == _selectedProgressingChallenge.Id).StopChallenge();
-            await _challengeRepository.UpdateAsync(getChallenge);
-            ChallengesOnProgress.Remove(_selectedProgressingChallenge);
-            if(--_challengesOnProgressCount <= 10)
+            if (_challengesOnProgressingCache.Remove(_selectedProgressingChallenge))
             {
-                if (!CheckedDurationFilterAll)
+                SelectedProgressingChallenge.StopChallenge();
+                _selectedProgressingChallenge.CheckedChanged -= NewChallenge_CheckedChanged;
+                var getChallenge = await _challengeRepository.GetAsync(_selectedProgressingChallenge.Id);
+                await _challengeRepository.UpdateAsync(getChallenge);
+                ChallengesOnProgress.Remove(_selectedProgressingChallenge);
+                if (_challengesOnProgressingCache.Count <= 10)
                 {
-                    CheckedDurationFilterAll = true;
-                    OnDurationFilterCommandExecuted("Все"); 
-                }
-                if (!CheckedProcessFilterAll)
-                {
-                    CheckedProcessFilterAll = true;
+                    if (!CheckedDurationFilterAll)
+                    {
+                        CheckedDurationFilterAll = true;
+                        OnDurationFilterCommandExecuted("Все");
+                    }
+                    if (!CheckedStatusFilterAll)
+                    {
+                        CheckedStatusFilterAll = true;
+                        OnStatusFilterCommandExecuted("Все");
+                    }
                 }
             }
+            OnPropertyChanged(nameof(EnableToggleButtonsProgressAndEdit));
         }
 
         #endregion
@@ -600,7 +609,8 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand<string>(OnProgressFilterCommandExecuted, CanProgressFilterCommandExecute);
 
         ///<summary>Проверка возможности выполнения - фильтровать выполнение (Челленджи)</summary>
-        private bool CanProgressFilterCommandExecute(string p) => _challengesCount > 10;
+        private bool CanProgressFilterCommandExecute(string p) => _challengesCount > 10 
+            && ChallengesOnProgress.Count > 0;
 
         ///<summary>Логика выполнения - фильтровать выполнение (Челленджи)</summary>
         private void OnProgressFilterCommandExecuted(string p)
@@ -635,42 +645,79 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand<string>(OnDurationFilterCommandExecuted, CanDurationFilterCommandExecute);
 
         ///<summary>Проверка возможности выполнения - фильтровать список по продолжительности (Челленджи на выполнении)</summary>
-        private bool CanDurationFilterCommandExecute(string p) => _challengesOnProgressCount > 10;
+        private bool CanDurationFilterCommandExecute(string p) => _challengesOnProgressingCache.Count > 10;
 
         ///<summary>Логика выполнения - фильтровать список по продолжительности (Челленджи на выполнении)</summary>
         private void OnDurationFilterCommandExecuted(string p)
         {
-
-            var challenges = _challengeRepository.Items.Where(c => c.InProgress);
+            var challenges = _statusFilter is null
+                ? _challengesOnProgressingCache.GetChallenges()
+                : _challengesOnProgressingCache.GetChallenges(_statusFilter);
             ChallengesOnProgress.Clear();
-            switch (p)
+            int? duration = p switch
             {
-                case "Все":
-                    foreach (var challenge in challenges)
-                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
-                    break;
-                case "Месяц":
-                    foreach (var challenge in challenges.Where(c => c.Duration == "Месяц"))
-                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
-                    break;
-                case "Квартал":
-                    foreach (var challenge in challenges.Where(c => c.Duration == "Квартал"))
-                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
-                    break;
-                case "Полгода":
-                    foreach (var challenge in challenges.Where(c => c.Duration == "Полгода"))
-                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
-                    break;
-                case "Беременность":
-                    foreach (var challenge in challenges.Where(c => c.Duration == "Беременность"))
-                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
-                    break;
-                case "Год":
-                    foreach (var challenge in challenges.Where(c => c.Duration == "Год"))
-                        ChallengesOnProgress.Add(new ChallengeModel(challenge));
-                    break;
-                default:
-                    break;
+                "Все" => null,
+                "Месяц" => (int)ChallengeDuration.Month,
+                "Квартал" => (int)ChallengeDuration.Quarter,
+                "Полгода" => (int)ChallengeDuration.HalfYear,
+                "Беременность" => (int)ChallengeDuration.Pregnancy,
+                "Год" => (int)ChallengeDuration.Year,
+                _ => throw new NotImplementedException($"Неизвестный фильтр: {p}")
+            };
+            if (duration is null)
+            {
+                foreach (var challenge in challenges)
+                    ChallengesOnProgress.Add(challenge);
+                _durationFilter = null;
+            }
+            else
+            {
+                _durationFilter = c => c.Duration == duration;
+                foreach (var challenge in challenges.Where(_durationFilter))
+                    ChallengesOnProgress.Add(challenge);
+            }
+        }
+
+        #endregion
+
+        #region StatusFilterCommand - Команда - фильтровать список по процессу (Челленджи на выполнении)
+
+        ///<summary>Команда - фильтровать список по процессу (Челленджи на выполнении)</summary>
+        private ICommand? _statusFilterCommand;
+
+        ///<summary>Команда - фильтровать список по процессу (Челленджи на выполнении)</summary>
+        public ICommand StatusFilterCommand => _statusFilterCommand
+            ??= new LambdaCommand(OnStatusFilterCommandExecuted, CanStatusFilterCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - фильтровать список по процессу (Челленджи на выполнении)</summary>
+        private bool CanStatusFilterCommandExecute(object? p) => _challengesOnProgressingCache.Count > 10;
+
+        ///<summary>Логика выполнения - фильтровать список по процессу (Челленджи на выполнении)</summary>
+        private void OnStatusFilterCommandExecuted(object? p)
+        {
+            var challenges = _durationFilter is null
+                ? _challengesOnProgressingCache.GetChallenges()
+                : _challengesOnProgressingCache.GetChallenges(_durationFilter);
+            ChallengesOnProgress.Clear();
+            ChallengeStatus? status = p switch
+            {
+                "Все" => null,
+                "Подготовка" => ChallengeStatus.Ready,
+                "Выполнение" => ChallengeStatus.Progress,
+                "Завершение" => ChallengeStatus.Success,
+                _ => throw new NotImplementedException($"Неизвестный фильтр: {p}")
+            };
+            if (status is null)
+            {
+                foreach (var challenge in challenges)
+                    ChallengesOnProgress.Add(challenge);
+                _statusFilter = null;
+            }
+            else
+            {
+                _statusFilter = c => c.Status == status;
+                foreach (var challenge in challenges.Where(_statusFilter))
+                    ChallengesOnProgress.Add(challenge);
             }
         }
 
@@ -678,12 +725,17 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region Events...
+
         private async void NewChallenge_CheckedChanged(object? sender, EventArgs e)
         {
             if (sender is CheckModel check)
                 await _checkRepository.UpdateAsync(await _checkRepository.GetAsync(check.Id));
         }
 
+        #endregion
+
+        #region Methods...
 
         public void Dispose()
         {
@@ -700,12 +752,12 @@ namespace MyHelper.ViewModels
                 foreach (var challengeOnProgress in ChallengesOnProgress)
                     challengeOnProgress.Dispose();
                 ChallengesOnProgress.Clear();
-                foreach (var challenge in Challenges)
-                    challenge.Dispose();
                 Challenges.Clear();
                 _disposed = true;
             }
         }
+
+        #endregion
 
         public ChallengesUCViewModel() : this(null, null) { }
     }

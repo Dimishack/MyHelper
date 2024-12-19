@@ -1,4 +1,5 @@
 ﻿using MyHelper.Models.Base;
+using MyHelper.Models.Challenges.Enums;
 using System.Collections.ObjectModel;
 
 namespace MyHelper.Models.Challenges
@@ -43,20 +44,20 @@ namespace MyHelper.Models.Challenges
                     _dateStart = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(Durations));
-                    if(_currentDateStart.Month != value.Month)
+                    if (_duration == -1)
+                        Duration = 0;
+                    if (_currentDateStart.Month != value.Month)
                     {
                         _currentDateStart = value;
                         Duration = _duration;
                     }
-                    if (_duration is null)
-                        Duration = "Месяц";
                     else DateEnd = value.AddDays(_currentDayDuration);
                 }
             }
         }
 
-        private string? _duration = "Месяц";
-        public string? Duration
+        private int _duration = 0;
+        public int Duration
         {
             get => _duration;
             set
@@ -66,9 +67,9 @@ namespace MyHelper.Models.Challenges
                     _duration = value;
                     OnPropertyChanged();
                 }
-                if (value is not null)
+                if (value != -1)
                 {
-                    _currentDayDuration = CurrentDayDuration(value, _dateStart);
+                    _currentDayDuration = CurrentDayDuration((ChallengeDuration)value + 1, _dateStart);
                     DateEnd = _dateStart.AddDays(_currentDayDuration);
                 }
 
@@ -90,10 +91,11 @@ namespace MyHelper.Models.Challenges
             }
         }
 
-        public string[] Regularities { get; } = ["Каждый день", "Через день", "Кол-во дней в неделю", "По дням недели"];
+        public string[] Regularities { get; } = ["Каждый день"];
+        //public string[] Regularities { get; } = ["Каждый день", "Через день", "По кол-ву дней в неделю", "По дням недели"];
 
-        private string _regularity = "Каждый день";
-        public string Regularity
+        private int _regularity = 0;
+        public int Regularity
         {
             get => _regularity;
             set
@@ -132,30 +134,30 @@ namespace MyHelper.Models.Challenges
         public void ReturnToMainValues()
         {
             DateStart = DateTime.Today;
-            Duration = "Месяц";
-            Regularity = "Каждый день";
+            Duration = 0;
+            Regularity = 0;
             for (int i = 0; i < DaysOfWeek.Length; i++) DaysOfWeek[i] = false;
             for (int i = 0; i < CountDay.Length - 1; i++) CountDay[i] = false;
             CountDay[^1] = true;
         }
 
-        private int CurrentDayDuration(string duration, DateTime start)
+        private int CurrentDayDuration(ChallengeDuration duration, DateTime start)
         {
             int result = 0;
             switch (duration)
             {
-                case "Месяц":
+                case ChallengeDuration.Month:
                     result = DateTime.DaysInMonth(start.Year, start.Month) - 1;
                     break;
-                case "Квартал":
-                case "Полгода":
-                case "Беременность":
+                case ChallengeDuration.Quarter:
+                case ChallengeDuration.HalfYear:
+                case ChallengeDuration.Pregnancy:
                     int month = start.Month;
                     int year = start.Year;
-                    int max = duration == "Квартал" ? 3 : duration == "Полгода" ? 6 : 9;
+                    int max = duration == ChallengeDuration.Quarter ? 3 : duration == ChallengeDuration.HalfYear ? 6 : 9;
                     for (int i = 0; i < max; i++)
                     {
-                        if(month + 1 > 12)
+                        if (month + 1 > 12)
                         {
                             year++;
                             month = 1;
@@ -164,7 +166,7 @@ namespace MyHelper.Models.Challenges
                     }
                     result--;
                     break;
-                case "Год":
+                case ChallengeDuration.Year:
                     result = Year;
                     break;
                 default:

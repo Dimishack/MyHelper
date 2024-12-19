@@ -9,7 +9,7 @@
              mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
     <Grid Height="0" VerticalAlignment="Bottom">
         <i:Interaction.Behaviors>
-            <cusB:Show_Add_Edit_UserControlBehavior MaxHeight="115" ManagementShow="{Binding IsVisibleAdd_EditGroup}"/>
+            <cusB:ShowAdditionalUserControl MaxHeight="115" ManagementShow="{Binding IsVisibleAdd_EditGroup}"/>
         </i:Interaction.Behaviors>
         <Border Style="{StaticResource BorderStyle_AdditionalUserControl}"/>
         <Grid Margin="5">

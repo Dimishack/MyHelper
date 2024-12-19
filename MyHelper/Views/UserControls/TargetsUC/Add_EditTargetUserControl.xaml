@@ -10,7 +10,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Height="0" VerticalAlignment="Bottom">
         <i:Interaction.Behaviors>
-            <cusB:Show_Add_Edit_UserControlBehavior MaxHeight="135" ManagementShow="{Binding IsVisibleAdd_EditTarget}"/>
+            <cusB:ShowAdditionalUserControl MaxHeight="135" ManagementShow="{Binding IsVisibleAdd_EditTarget}"/>
         </i:Interaction.Behaviors>
         <Border Style="{StaticResource BorderStyle_AdditionalUserControl}"/>
         <Grid Margin="5">

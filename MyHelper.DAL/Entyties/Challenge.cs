@@ -15,11 +15,9 @@ namespace MyHelper.DAL.Entyties
         [Column(TypeName = "date")]
         public DateTime? End { get; set; }
 
-        [Column(TypeName = "varchar(20)")]
-        public string? Duration { get; set; }
+        public int Duration { get; set; }
 
-        [Column(TypeName = "varchar(20)")]
-        public string? Regularity { get; set; }
+        public int Regularity { get; set; }
 
         public int? AdditionalRegularity { get; set; }
 

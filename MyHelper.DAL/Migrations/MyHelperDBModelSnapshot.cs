@@ -25,8 +25,8 @@ namespace MyHelper.DAL.Migrations
                     b.Property<int?>("AdditionalRegularity")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Duration")
-                        .HasColumnType("varchar(20)");
+                    b.Property<int>("Duration")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("End")
                         .HasColumnType("date");
@@ -41,8 +41,8 @@ namespace MyHelper.DAL.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Regularity")
-                        .HasColumnType("varchar(20)");
+                    b.Property<int>("Regularity")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("Start")
                         .HasColumnType("date");
