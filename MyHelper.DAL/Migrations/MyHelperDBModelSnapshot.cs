@@ -77,6 +77,37 @@ namespace MyHelper.DAL.Migrations
                     b.ToTable("Check");
                 });
 
+            modelBuilder.Entity("MyHelper.DAL.Entyties.MyTask", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("End")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Group")
+                        .IsRequired()
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<bool>("Important")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(300)");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Prompt")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tasks");
+                });
+
             modelBuilder.Entity("MyHelper.DAL.Entyties.Target", b =>
                 {
                     b.Property<int>("Id")

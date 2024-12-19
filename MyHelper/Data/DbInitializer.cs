@@ -21,6 +21,7 @@ namespace MyHelper.Data
             _logger.LogInformation("Миграция БД выполнена за {0} мс", timer.ElapsedMilliseconds);
             if (!await _db.TargetsGroups.AnyAsync()) await InitializeTargets();
             if (!await _db.Challenges.AnyAsync()) await InitializeChallenges();
+            if (!await _db.Tasks.AnyAsync()) await InitializeTasks();
             _logger.LogInformation("Инициализация БД выполнена за {0} с", timer.Elapsed.TotalSeconds);
         }
 
@@ -46,7 +47,27 @@ namespace MyHelper.Data
 
             var challenges = new Collection<Challenge>();
             foreach (var challenge in challenges)
-            await _db.Challenges.AddAsync(challenge);
+                await _db.Challenges.AddAsync(challenge);
+            await _db.SaveChangesAsync();
+            _logger.LogInformation("Инициализация челленджей выполнена за {0} мс", timer.ElapsedMilliseconds);
+        }
+
+        private async Task InitializeTasks()
+        {
+            var timer = Stopwatch.StartNew();
+            _logger.LogInformation("Инициализация челленджей...");
+
+            Random rnd = new Random();
+            var tasks = new Collection<MyTask>(Enumerable.Range(0,20).Select(t => new MyTask()
+            {
+                Name = $"Task {t}",
+                Note = $"Note {t}",
+                Prompt = rnd.Next(0,2) == 1,
+                Important = rnd.Next(0,2) == 1,
+                Group = $"Group {rnd.Next(0,3)}"
+            }).ToList());
+            foreach (var myTask in tasks)
+                await _db.Tasks.AddAsync(myTask);
             await _db.SaveChangesAsync();
             _logger.LogInformation("Инициализация челленджей выполнена за {0} мс", timer.ElapsedMilliseconds);
         }

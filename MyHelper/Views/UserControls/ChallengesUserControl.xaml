@@ -20,9 +20,6 @@
 
         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}"/>
         <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxMainStyle}"/>
-        <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}">
-            <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Content}"/>
-        </Style>
         <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}"/>
     </UserControl.Resources>
     <UserControl.Triggers>

@@ -1,9 +1,5 @@
 ﻿using MyHelper.Models.Books;
-using MyHelper.Models.Challenges;
-using MyHelper.Models.MyTasks;
 using MyHelper.Services.Interfaces;
-using MyHelper.ViewModels;
-using MyHelper.Views.Windows;
 using MyHelper.Views.Windows.Books;
 using System.Windows;
 
@@ -11,33 +7,6 @@ namespace MyHelper.Services
 {
     class OpenWindowsServices : IOpenWindows
     {
-
-        public bool OpenCreator_EditorTaskWindow(MyTask task, IList<string> groups, string title)
-        {
-            groups[0] = string.Empty;
-            var window = new Creator_EditorTaskWindow
-            {
-                Title = title,
-                Task = task.Task,
-                Prompt = task.Prompt,
-                Important = task.Important,
-                Term = task.Term ?? DateTime.Today,
-                SelectedGroup = task.Group ?? string.Empty,
-                Note = task.Note,
-                Groups = groups,
-                Owner = App.ActivedWindow,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            };
-            if (window.ShowDialog() != true) return false;
-
-            task.Task = window.Task;
-            task.Prompt = window.Prompt;
-            task.Important = window.Important;
-            task.Term = window.Term;
-            task.Group = window.SelectedGroup == string.Empty ? null : window.SelectedGroup;
-            task.Note = window.Note;
-            return true;
-        }
 
         public bool OpenCreator_EditorBookWindow(MyBook book, string title)
         {

@@ -12,6 +12,7 @@ namespace MyHelper.ViewModels
                                   IWorkWithJSONFile workWithJSONFile,
                                   IRepository<Target> targetRepository,
                                   IRepository<TargetsGroup> targetsGroupRepository,
+                                  IRepository<MyTask> tasksRepository,
                                   IRepository<Challenge> challengeRepository,
                                   IRepository<Check> checkRepostiory) : ViewModel
     {
@@ -108,7 +109,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _showTasksView, value)) return;
-                ChangeCurrentView(value, () => CurrentViewModel = new ListTasksUCViewModel(_workWithJSONFile, _openWindows, _userDialog));
+                ChangeCurrentView(value, () => CurrentViewModel = new TasksUCViewModel(tasksRepository));
             }
         }
 

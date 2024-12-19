@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MyHelper.DAL.Migrations
 {
-    public partial class Initialize : Migration
+    public partial class Imitialize : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,6 +39,24 @@ namespace MyHelper.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TargetsGroups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tasks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "varchar(300)", nullable: false),
+                    Note = table.Column<string>(nullable: true),
+                    Group = table.Column<string>(type: "varchar(20)", nullable: false),
+                    End = table.Column<DateTime>(type: "date", nullable: false),
+                    Prompt = table.Column<bool>(nullable: false),
+                    Important = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tasks", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -103,6 +121,9 @@ namespace MyHelper.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Target");
+
+            migrationBuilder.DropTable(
+                name: "Tasks");
 
             migrationBuilder.DropTable(
                 name: "Challenges");

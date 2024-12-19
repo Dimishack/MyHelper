@@ -11,6 +11,7 @@ namespace MyHelper.DAL
             .AddTransient<IRepository<TargetsGroup>, DbRepository<TargetsGroup>>()
             .AddTransient<IRepository<Check>, DbRepository<Check>>()
             .AddTransient<IRepository<Challenge>, DbRepository<Challenge>>()
+            .AddTransient<IRepository<MyTask>, DbRepository<MyTask>>()
             ;
     }
 }
