@@ -12,12 +12,16 @@
              d:DataContext="{d:DesignInstance {x:Type vm:TasksUCViewModel},IsDesignTimeCreatable=True}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.RenderTransform>
+        <TranslateTransform/>
+    </UserControl.RenderTransform>
     <UserControl.Triggers>
         <EventTrigger RoutedEvent="Loaded">
             <BeginStoryboard Storyboard="{StaticResource ShowMainUserControlAnimation}"/>
         </EventTrigger>
     </UserControl.Triggers>
     <UserControl.Resources>
+        <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}"/>
         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}"/>
         <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxMainStyle}"/>
     </UserControl.Resources>
@@ -27,22 +31,57 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <DockPanel>
-        <ListBox Style="{StaticResource ListBoxMainStyle}"
-                 ItemsSource="{Binding TasksView}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border Style="{StaticResource BorderInListBoxStyle}">
-                        <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
-                            <StackPanel.Resources>
-                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
-                            </StackPanel.Resources>
-                            <TextBlock Text="{Binding Name, StringFormat='Задача: {0}'}"
+        <Grid DockPanel.Dock="Left" Width="160">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <GroupBox Header="Сортировка">
+                <ComboBox ItemsSource="{Binding Sort}" DisplayMemberPath="Key"
+                          SelectedItem="{Binding SelectedSort}"
+                          />
+            </GroupBox>
+        </Grid>
+        <GroupBox DockPanel.Dock="Right" Header="Группы" Width="160">
+            <ListBox ItemsSource="{Binding Groups}"
+                     SelectedItem="{Binding SelectedGroup}"
+                     PreviewMouseLeftButtonDown="ListBox_PreviewMouseLeftButtonDown">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock>
+                            <Run Text="{Binding Key, Mode=OneWay}"/>
+                            <Run Text="{Binding Value, Mode=OneWay, StringFormat=' ({0})'}"/>
+                        </TextBlock>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
+        <GroupBox Header="Задачи">
+            <DockPanel>
+                <UniformGrid DockPanel.Dock="Bottom" Rows="1">
+                    <ToggleButton Style="{StaticResource AddElementStyle}"/>
+                    <ToggleButton Style="{StaticResource EditElementStyle}"/>
+                    <Button Style="{StaticResource DeleteElementStyle}"
+                            Command="{Binding RemoveTaskCommand}"/>
+                </UniformGrid>
+                <ListBox ItemsSource="{Binding TasksView}"
+                         SelectedItem="{Binding SelectedTask}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource BorderInListBoxStyle}">
+                                <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="{Binding Name, StringFormat='Задача: {0}'}"
                                FontWeight="{StaticResource FontWeightBold}"/>
-                            <TextBlock Text="{Binding Note, StringFormat='Note: {0}'}"/>
-                        </StackPanel>
-                    </Border>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                                    <TextBlock Text="{Binding Group, StringFormat='Группа: {0}'}"/>
+                                    <TextBlock Text="{Binding Note, StringFormat='Note: {0}'}"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </GroupBox>
     </DockPanel>
 </UserControl>
