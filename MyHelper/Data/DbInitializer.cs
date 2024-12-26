@@ -58,14 +58,7 @@ namespace MyHelper.Data
             _logger.LogInformation("Инициализация челленджей...");
 
             Random rnd = new Random();
-            var tasks = new Collection<MyTask>(Enumerable.Range(0,20).Select(t => new MyTask()
-            {
-                Name = $"Task {t}",
-                Note = $"Note {t}",
-                Prompt = rnd.Next(0,2) == 1,
-                Important = rnd.Next(0,2) == 1,
-                Group = $"Group {rnd.Next(0,3)}"
-            }).ToList());
+            var tasks = new Collection<MyTask>();
             foreach (var myTask in tasks)
                 await _db.Tasks.AddAsync(myTask);
             await _db.SaveChangesAsync();

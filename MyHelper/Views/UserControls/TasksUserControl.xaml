@@ -5,11 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MyHelper.Views.UserControls"
              
-             xmlns:vm="clr-namespace:MyHelper.ViewModels"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
+             xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters.MultiValueConverters"
+             xmlns:tasksUC="clr-namespace:MyHelper.Views.UserControls.TasksUC"
              
-             d:DataContext="{d:DesignInstance {x:Type vm:TasksUCViewModel},IsDesignTimeCreatable=True}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.RenderTransform>
@@ -21,6 +21,8 @@
         </EventTrigger>
     </UserControl.Triggers>
     <UserControl.Resources>
+        <c:PriorityTasksConverter x:Key="PriorityTasksConverter"/>
+
         <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}"/>
         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}"/>
         <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxMainStyle}"/>
@@ -29,22 +31,55 @@
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
         </i:EventTrigger>
+        <i:EventTrigger EventName="Unloaded">
+            <i:InvokeCommandAction Command="{Binding ClosedCommand}"/>
+        </i:EventTrigger>
     </i:Interaction.Triggers>
     <DockPanel>
         <Grid DockPanel.Dock="Left" Width="160">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <GroupBox Header="Сортировка">
                 <ComboBox ItemsSource="{Binding Sort}" DisplayMemberPath="Key"
                           SelectedItem="{Binding SelectedSort}"
-                          />
+                          IsEnabled="{Binding EnableFrameworkElements}"/>
+            </GroupBox>
+            <GroupBox Header="Фильтры" Grid.Row="1">
+                <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
+                    <StackPanel.Resources>
+                        <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}">
+                            <Setter Property="CommandParameter"
+                                    Value="{Binding RelativeSource={RelativeSource Self}, Path=Content}"/>
+                            <Setter Property="Command"
+                                    Value="{Binding PriorityFilterCommand}"/>
+                            <Setter Property="IsEnabled" Value="{Binding EnableFrameworkElements}"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <RadioButton Content="Все" IsChecked="{Binding CheckedPriorityFilterAll}"/>
+                    <RadioButton Content="Важные/Срочные"/>
+                    <RadioButton Content="Важные/Несрочные"/>
+                    <RadioButton Content="Неважные/Срочные"/>
+                    <RadioButton Content="Неважные/Несрочные"/>
+                </StackPanel>
             </GroupBox>
         </Grid>
         <GroupBox DockPanel.Dock="Right" Header="Группы" Width="160">
             <ListBox ItemsSource="{Binding Groups}"
                      SelectedItem="{Binding SelectedGroup}"
-                     PreviewMouseLeftButtonDown="ListBox_PreviewMouseLeftButtonDown">
+                     PreviewMouseLeftButtonDown="ListBox_PreviewMouseLeftButtonDown"
+                     IsEnabled="{Binding EnableFrameworkElements}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemMainStyle}">
+                        <Setter Property="IsEnabled" Value="True"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Value}" Value="0">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock>
@@ -58,29 +93,69 @@
         <GroupBox Header="Задачи">
             <DockPanel>
                 <UniformGrid DockPanel.Dock="Bottom" Rows="1">
-                    <ToggleButton Style="{StaticResource AddElementStyle}"/>
-                    <ToggleButton Style="{StaticResource EditElementStyle}"/>
+                    <ToggleButton Style="{StaticResource AddElementStyle}"
+                                  IsChecked="{Binding AddElement}"
+                                  IsEnabled="{Binding EnableFrameworkElements}"/>
+                    <ToggleButton Style="{StaticResource EditElementStyle}"
+                                  IsChecked="{Binding EditElement}"
+                                  IsEnabled="{Binding EnableToggleButtonEditElement}"/>
                     <Button Style="{StaticResource DeleteElementStyle}"
-                            Command="{Binding RemoveTaskCommand}"/>
+                            Command="{Binding DeleteElementCommand}"/>
                 </UniformGrid>
-                <ListBox ItemsSource="{Binding TasksView}"
-                         SelectedItem="{Binding SelectedTask}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Border Style="{StaticResource BorderInListBoxStyle}">
-                                <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
-                                    <StackPanel.Resources>
-                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
-                                    </StackPanel.Resources>
-                                    <TextBlock Text="{Binding Name, StringFormat='Задача: {0}'}"
+                <Grid>
+                    <ListBox ItemsSource="{Binding TasksView}"
+                         SelectedItem="{Binding SelectedTask}"
+                         IsEnabled="{Binding EnableFrameworkElements}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource BorderInListBoxStyle}">
+                                    <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
+                                        <StackPanel.Resources>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}"/>
+                                        </StackPanel.Resources>
+                                        <TextBlock Text="{Binding Name, StringFormat='Задача: {0}'}"
                                FontWeight="{StaticResource FontWeightBold}"/>
-                                    <TextBlock Text="{Binding Group, StringFormat='Группа: {0}'}"/>
-                                    <TextBlock Text="{Binding Note, StringFormat='Note: {0}'}"/>
-                                </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource PriorityTasksConverter}">
+                                                    <Binding Path="Important"/>
+                                                    <Binding Path="Prompt"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
+                                                        Path=DataContext.CheckedPriorityFilterAll}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding End, StringFormat='Срок: до {0:dd.MM.yyyy}'}"/>
+                                        <TextBlock Text="{Binding Group, StringFormat='Группа: {0}'}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockInListBoxStyle}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, 
+                                                        Path=DataContext.SelectedGroup.Key}" Value="Все">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding Note, StringFormat='Note: {0}'}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <tasksUC:Add_EditTaskUserControl/>
+                </Grid>
             </DockPanel>
         </GroupBox>
     </DockPanel>
