@@ -2,23 +2,23 @@
 using System.Text;
 using System.Windows.Data;
 
-namespace MyHelper.Infrastructure.Converters
+namespace MyHelper.Infrastructure.Converters.MultiValueConverters
 {
     internal class ShowAdditionalRegularityConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values.Length != 2 || values[0] is not string regularity || values[1] is not int additional) return null;
-            if(regularity == "Кол-во дней в неделю")
+            if (regularity == "Кол-во дней в неделю")
                 return additional;
             else if (regularity == "По дням недели")
             {
-                StringBuilder result = new ();
+                StringBuilder result = new();
                 int number = additional;
-                while(number > 0)
+                while (number > 0)
                 {
                     int divide = 10;
-                    var value = (number % divide) - 1;
+                    var value = number % divide - 1;
                     result.Append((DayOfWeek)value + ", ");
                     number /= divide;
                 }

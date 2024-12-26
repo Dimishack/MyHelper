@@ -1,12 +1,13 @@
 ﻿using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
-namespace MyHelper.Infrastructure.Converters
+namespace MyHelper.Infrastructure.Converters.ValueConverters
 {
-    class DateFromCurrentYearConverter : IValueConverter
+    class EmptyTextToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-            => new DateTime(DateTime.Today.Year, 1, 1);
+            => value is string text && !string.IsNullOrWhiteSpace(text) ? Visibility.Collapsed : Visibility.Visible;
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
