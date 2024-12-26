@@ -218,7 +218,9 @@ namespace MyHelper.Models.Challenges
 
         public void Dispose()
         {
-            while (CheckList.Count > 0) CheckList.RemoveAt(0);
+            for (int i = 0; i < CheckList.Count; i++)
+                CheckList[i].PropertyChanged -= Check_PropertyChanged;
+            CheckList.Clear();
             CheckList.CollectionChanged -= CheckList_CollectionChanged;
         }
     }

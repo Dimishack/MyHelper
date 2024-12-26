@@ -6,10 +6,13 @@
              xmlns:local="clr-namespace:MyHelper.Views.UserControls"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
+             xmlns:vm="clr-namespace:MyHelper.ViewModels"
+             d:DataContext="{d:DesignInstance {x:Type vm:TargetsUCViewModel}, IsDesignTimeCreatable=True}"
+             
              mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
     <Grid Height="0" VerticalAlignment="Bottom">
         <i:Interaction.Behaviors>
-            <cusB:ShowAdditionalUserControl MaxHeight="115" ManagementShow="{Binding IsVisibleAdd_EditGroup}"/>
+            <cusB:ShowAdditionalUserControl MaxHeight="115" ManagementShow="{Binding ShowAdd_EditUserControl}"/>
         </i:Interaction.Behaviors>
         <Border Style="{StaticResource BorderStyle_AdditionalUserControl}"/>
         <Grid Margin="5">
@@ -38,10 +41,10 @@
                 <Button IsDefault="True">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource CheckOrCancelElementStyle}">
-                            <Setter Property="Command" Value="{Binding CreateGroupCommand}"/>
+                            <Setter Property="Command" Value="{Binding AddElementCommand}"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ChangeGroup}" Value="True">
-                                    <Setter Property="Command" Value="{Binding ChangeGroupCommand}"/>
+                                <DataTrigger Binding="{Binding EditElement}" Value="True">
+                                    <Setter Property="Command" Value="{Binding EditElementCommand}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

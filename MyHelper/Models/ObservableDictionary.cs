@@ -19,6 +19,8 @@ namespace MyHelper.Models
 
         public bool IsReadOnly => false;
 
+        public IList<TKey> Keys => _items.Where(x => x != null).Select(x => x.Key).ToList();
+
         public TValue this[TKey key]
         {
             get
@@ -137,7 +139,7 @@ namespace MyHelper.Models
                 else
                 {
                     int end = _freeLists.Count - 1;
-                    while(end -  start == 1)
+                    while (end - start != 1)
                     {
                         int indexDiff = (start + end) / 2;
                         int diff = _freeLists[(start + end) / 2];

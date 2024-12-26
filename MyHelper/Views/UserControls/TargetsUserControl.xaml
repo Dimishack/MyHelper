@@ -9,6 +9,8 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
+             xmlns:vm="clr-namespace:MyHelper.ViewModels"
+             d:DataContext="{d:DesignInstance {x:Type vm:TargetsUCViewModel}, IsDesignTimeCreatable=True}"
              
              d:DesignHeight="450" d:DesignWidth="700"
              MinHeight="300">
@@ -26,7 +28,7 @@
     </UserControl.Triggers>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
         </i:EventTrigger>
         <i:EventTrigger EventName="Unloaded">
             <i:InvokeCommandAction Command="{Binding ClosedCommand}"/>
@@ -40,15 +42,15 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <UniformGrid Grid.Row="1" Columns="1" Margin="0,5,0,0">
-                    <ToggleButton IsChecked="{Binding AddGroup}"
-                                  IsEnabled="{Binding EnableElemetns}"
+                    <ToggleButton IsChecked="{Binding AddElement}"
+                                  IsEnabled="{Binding EnableFrameworkElements}"
                                   Style="{StaticResource AddElementStyle}"
                                   Margin="1"/>
-                    <ToggleButton IsChecked="{Binding ChangeGroup}" 
-                                  IsEnabled="{Binding EnableToggleButtonChangeGroup}"
+                    <ToggleButton IsChecked="{Binding EditElement}" 
+                                  IsEnabled="{Binding EnableToggleButtonEditGroup}"
                                   Style="{StaticResource EditElementStyle}"
                                   Margin="1"/>
-                    <Button Command="{Binding RemoveTargetsGroupCommand}"
+                    <Button Command="{Binding DeleteElementCommand}"
                             Style="{StaticResource DeleteElementStyle}"
                             Margin="1"/>
                     <Button Style="{StaticResource ButtonSaveStyle}"
@@ -129,10 +131,10 @@
                 </Border>
                 <UniformGrid DockPanel.Dock="Bottom" Rows="1">
                     <ToggleButton IsChecked="{Binding AddTarget}"
-                                  IsEnabled="{Binding EnableToggleButtonCreateTarget}"
+                                  IsEnabled="{Binding EnableToggleButtonAddTarget}"
                                   Style="{StaticResource AddElementStyle}"/>
                     <ToggleButton IsChecked="{Binding ChangeTarget}"
-                                  IsEnabled="{Binding EnableToggleButtonChangeTarget}"
+                                  IsEnabled="{Binding EnableToggleButtonEditTarget}"
                                   Style="{StaticResource EditElementStyle}"/>
                     <Button Command="{Binding RemoveTargetCommand}"
                             Style="{StaticResource DeleteElementStyle}"/>

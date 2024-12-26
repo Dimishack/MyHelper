@@ -7,10 +7,12 @@
              mc:Ignorable="d"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
+             xmlns:vm="clr-namespace:MyHelper.ViewModels"
+             d:DataContext="{d:DesignInstance {x:Type vm:TargetsUCViewModel}, IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Height="0" VerticalAlignment="Bottom">
         <i:Interaction.Behaviors>
-            <cusB:ShowAdditionalUserControl MaxHeight="135" ManagementShow="{Binding IsVisibleAdd_EditTarget}"/>
+            <cusB:ShowAdditionalUserControl MaxHeight="135" ManagementShow="{Binding ShowAdd_EditTargetUserControl}"/>
         </i:Interaction.Behaviors>
         <Border Style="{StaticResource BorderStyle_AdditionalUserControl}"/>
         <Grid Margin="5">
@@ -40,10 +42,10 @@
                 <Button IsDefault="True">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource CheckOrCancelElementStyle}">
-                            <Setter Property="Command" Value="{Binding CreateTargetCommand}"/>
+                            <Setter Property="Command" Value="{Binding AddTargetCommand}"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ChangeTarget}" Value="True">
-                                    <Setter Property="Command" Value="{Binding ChangeTargetCommand}"/>
+                                <DataTrigger Binding="{Binding EditTarget}" Value="True">
+                                    <Setter Property="Command" Value="{Binding EditTargetCommand}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

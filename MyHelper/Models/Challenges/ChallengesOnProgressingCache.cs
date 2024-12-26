@@ -19,5 +19,6 @@
         public readonly IList<ChallengeOnProgressingModel> GetChallenges() => [.. Cache.Values];
         public readonly IList<ChallengeOnProgressingModel> GetChallenges(Func<ChallengeOnProgressingModel, bool> predicate) 
             => [.. Cache.Values.Where(predicate)];
+        public readonly void Clear() => Cache.Clear();
     }
 }

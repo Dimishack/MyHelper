@@ -38,10 +38,10 @@
                 <Button IsDefault="True">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource CheckOrCancelElementStyle}">
-                            <Setter Property="Command" Value="{Binding AddChallengeCommand}"/>
+                            <Setter Property="Command" Value="{Binding AddElementCommand}"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding EditChallenge}" Value="True">
-                                    <Setter Property="Command" Value="{Binding EditChallengeCommand}"/>
+                                <DataTrigger Binding="{Binding EditElement}" Value="True">
+                                    <Setter Property="Command" Value="{Binding EditElementCommand}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

@@ -8,7 +8,7 @@
              
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-             xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters"
+             xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters.MultiValueConverters"
              xmlns:ucChallenges="clr-namespace:MyHelper.Views.UserControls.ChallengesUC"
              
              d:DesignHeight="450" d:DesignWidth="860">
@@ -29,7 +29,7 @@
     </UserControl.Triggers>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
         </i:EventTrigger>
         <i:EventTrigger EventName="Unloaded">
             <i:InvokeCommandAction Command="{Binding ClosedCommand}"/>
@@ -189,13 +189,13 @@
                             </ToggleButton.Style>
                         </ToggleButton>
                         <ToggleButton Style="{StaticResource AddElementStyle}"
-                                      IsEnabled="{Binding EnableElements}"
-                                      IsChecked="{Binding AddChallenge}"/>
+                                      IsEnabled="{Binding EnableFrameworkElements}"
+                                      IsChecked="{Binding AddElement}"/>
                         <ToggleButton Style="{StaticResource EditElementStyle}"
                                       IsEnabled="{Binding EnableToggleButtonsProgressAndEdit}"
-                                      IsChecked="{Binding EditChallenge}"/>
+                                      IsChecked="{Binding EditElement}"/>
                         <Button Style="{StaticResource DeleteElementStyle}"
-                                Command="{Binding DeleteChallengeCommand}"/>
+                                Command="{Binding DeleteElementCommand}"/>
                         <Button Style="{StaticResource ButtonSaveStyle}"
                                 Command="{Binding SaveRepositoryCommand}"/>
                     </UniformGrid>
