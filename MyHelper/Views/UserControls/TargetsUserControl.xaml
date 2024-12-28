@@ -9,8 +9,6 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
-             xmlns:vm="clr-namespace:MyHelper.ViewModels"
-             d:DataContext="{d:DesignInstance {x:Type vm:TargetsUCViewModel}, IsDesignTimeCreatable=True}"
              
              d:DesignHeight="450" d:DesignWidth="700"
              MinHeight="300">

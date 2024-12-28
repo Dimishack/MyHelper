@@ -6,7 +6,6 @@
         xmlns:fa="http://schemas.fontawesome.com/icons/"
         xmlns:local="clr-namespace:MyHelper"
         
-        xmlns:vm="clr-namespace:MyHelper.ViewModels"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         
         mc:Ignorable="d"
@@ -16,8 +15,7 @@
         MinWidth="950"
         WindowStartupLocation="CenterScreen"
         Style="{StaticResource MainWindowStyle}"
-        DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowVM}"
-        d:DataContext="{d:DesignInstance {x:Type vm:MainWindowViewModel}, IsDesignTimeCreatable=True}">
+        DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowVM}">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolVisibleConverter"/>
         <Style TargetType="ToolTip" BasedOn="{StaticResource ToolTipMainMenuStyle}">
@@ -67,7 +65,7 @@
             <ListBox Margin="2,5" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       ScrollViewer.VerticalScrollBarVisibility="Disabled"
                       SelectionMode="Single" Width="280" BorderThickness="0"
-                      Background="Transparent">
+                      Background="Transparent" PreviewMouseLeftButtonDown="ListBox_PreviewMouseLeftButtonDown">
                 <ListBoxItem IsSelected="{Binding ShowHomeView}">
                     <ListBoxItem.Style>
                         <Style TargetType="ListBoxItem" BasedOn="{StaticResource lbItem_menu}">

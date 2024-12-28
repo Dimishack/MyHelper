@@ -7,7 +7,7 @@ namespace MyHelper.Views.UserControls
     {
         public TasksUserControl() => InitializeComponent();
 
-        private void ListBox_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) 
+        private void ListBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) 
             => e.Handled = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
     }
 }

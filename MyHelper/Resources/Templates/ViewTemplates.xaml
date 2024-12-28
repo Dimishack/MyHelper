@@ -14,8 +14,8 @@
     <DataTemplate DataType="{x:Type vm:ChallengesUCViewModel}">
         <uc:ChallengesUserControl DataContext="{Binding}"/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type vm:ListBooksUCViewModel}">
-        <uc:ListBooksUserControl DataContext="{Binding}"/>
+    <DataTemplate DataType="{x:Type vm:BooksUCViewModel}">
+        <uc:BooksUserControl DataContext="{Binding}"/>
     </DataTemplate>
     <DataTemplate DataType="{x:Type vm:CinemaUCViewModel}">
         <uc:CinemaUserControl DataContext="{Binding}"/>

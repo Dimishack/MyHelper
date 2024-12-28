@@ -7,18 +7,14 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    class MainWindowViewModel(IOpenWindows openWindows,
-                                  IUserDialog userDialog,
-                                  IWorkWithJSONFile workWithJSONFile,
+    class MainWindowViewModel(IUserDialog userDialog,
                                   IRepository<Target> targetRepository,
                                   IRepository<TargetsGroup> targetsGroupRepository,
                                   IRepository<MyTask> tasksRepository,
                                   IRepository<Challenge> challengeRepository,
                                   IRepository<Check> checkRepostiory) : ViewModel
     {
-        private readonly IOpenWindows _openWindows = openWindows;
         private readonly IUserDialog _userDialog = userDialog;
-        private readonly IWorkWithJSONFile _workWithJSONFile = workWithJSONFile;
         private readonly IRepository<Target> _targetRepository = targetRepository;
         private readonly IRepository<TargetsGroup> _targetsRepository = targetsGroupRepository;
         private readonly IRepository<Challenge> _challengeRepository = challengeRepository;
@@ -72,8 +68,8 @@ namespace MyHelper.ViewModels
             get => _showHomeView;
             set
             {
-                if (!Set(ref _showHomeView, value)) return;
-                ChangeCurrentView(value, () => CurrentViewModel = new HomeViewModel());
+                if (!Set(ref _showHomeView, value) || !value) return;
+                ChangeCurrentView(() => CurrentViewModel = new HomeViewModel());
             }
         }
 
@@ -90,8 +86,8 @@ namespace MyHelper.ViewModels
             get => _showTargetsView;
             set
             {
-                if (!Set(ref _showTargetsView, value)) return;
-                ChangeCurrentView(value, () => CurrentViewModel = new TargetsUCViewModel(_targetRepository, _targetsRepository));
+                if (!Set(ref _showTargetsView, value) || !value) return;
+                ChangeCurrentView(() => CurrentViewModel = new TargetsUCViewModel(_targetRepository, _targetsRepository));
             }
         }
 
@@ -108,8 +104,8 @@ namespace MyHelper.ViewModels
             get => _showTasksView;
             set
             {
-                if (!Set(ref _showTasksView, value)) return;
-                ChangeCurrentView(value, () => CurrentViewModel = new TasksUCViewModel(tasksRepository));
+                if (!Set(ref _showTasksView, value) || !value) return;
+                ChangeCurrentView(() => CurrentViewModel = new TasksUCViewModel(tasksRepository));
             }
         }
 
@@ -126,8 +122,8 @@ namespace MyHelper.ViewModels
             get => _showChallengesView;
             set
             {
-                if (!Set(ref _showChallengesView, value)) return;
-                ChangeCurrentView(value, () => CurrentViewModel = new ChallengesUCViewModel(_challengeRepository, _checkRepostiory));
+                if (!Set(ref _showChallengesView, value) || !value) return;
+                ChangeCurrentView(() => CurrentViewModel = new ChallengesUCViewModel(_challengeRepository, _checkRepostiory));
             }
         }
 
@@ -144,8 +140,8 @@ namespace MyHelper.ViewModels
             get => _showBooksView;
             set
             {
-                if (!Set(ref _showBooksView, value)) return;
-                ChangeCurrentView(value, () => CurrentViewModel = new ListBooksUCViewModel(_userDialog, _workWithJSONFile, _openWindows));
+                if (!Set(ref _showBooksView, value) || !value) return;
+                ChangeCurrentView(() => CurrentViewModel = new BooksUCViewModel());
             }
         }
 
@@ -162,8 +158,8 @@ namespace MyHelper.ViewModels
             get => _showCinemaView;
             set
             {
-                if (!Set(ref _showCinemaView, value)) return;
-                ChangeCurrentView(value, () => CurrentViewModel = new CinemaUCViewModel());
+                if (!Set(ref _showCinemaView, value) || !value) return;
+                ChangeCurrentView(() => CurrentViewModel = new CinemaUCViewModel());
             }
         }
 
@@ -180,8 +176,8 @@ namespace MyHelper.ViewModels
             get => _showSettingsView;
             set
             {
-                if(!Set(ref _showSettingsView, value)) return;
-                ChangeCurrentView(value, () => CurrentViewModel = new SettingsUCViewModel());
+                if (!Set(ref _showSettingsView, value) || !value) return;
+                ChangeCurrentView(() => CurrentViewModel = new SettingsUCViewModel());
             }
         }
 
@@ -210,13 +206,10 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        private void ChangeCurrentView(bool showView, Action currentViewAction)
+        private void ChangeCurrentView(Action currentViewAction)
         {
-            if (showView) currentViewAction();
-            else if (!(_showHomeView || _showTargetsView || _showTasksView
-                    || _showChallengesView || _showBooksView || _showCinemaView
-                    || _showSettingsView))
-                ShowHomeView = true;
+            currentViewAction();
+            ShowFullMenu = false;
         }
     }
 }

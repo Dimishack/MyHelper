@@ -57,14 +57,14 @@
                                                     </Border>
                                                     <ControlTemplate.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="Foreground" Value="White"/>
+                                                            <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_Vanilla}"/>
                                                         </Trigger>
                                                         <MultiTrigger>
                                                             <MultiTrigger.Conditions>
                                                                 <Condition Property="fa:IconImage.Icon" Value="PowerOff"/>
                                                                 <Condition Property="IsMouseOver" Value="True"/>
                                                             </MultiTrigger.Conditions>
-                                                            <Setter Property="Foreground" Value="LightCoral"/>
+                                                            <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_BrightOrange}"/>
                                                         </MultiTrigger>
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
