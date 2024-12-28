@@ -65,7 +65,7 @@
                          IsEnabled="{Binding EnableElemetns}"/>
             </Grid>
         </GroupBox>
-        <Grid DockPanel.Dock="Left" Width="135">
+        <Grid DockPanel.Dock="Left" Width="140">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -141,17 +141,8 @@
                 </UniformGrid>
                 <Grid>
                     <ListBox ItemsSource="{Binding SelectedTargetsView}"
-                         SelectedItem="{Binding SelectedTarget}"
+                             SelectedItem="{Binding SelectedTarget}"
                              IsEnabled="{Binding EnableElements}">
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemMainStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsComplete}" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource SolidColorBrush_MossyGreen}"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource BorderInListBoxStyle}">

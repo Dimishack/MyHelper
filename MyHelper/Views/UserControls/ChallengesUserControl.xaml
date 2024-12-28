@@ -202,7 +202,7 @@
                     <Grid>
                         <ListBox ItemsSource="{Binding ChallengesView}" 
                                  SelectedItem="{Binding SelectedChallenge}"
-                                 IsEnabled="{Binding EnableElements}">
+                                 IsEnabled="{Binding EnableFrameworkElements}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border Style="{StaticResource BorderInListBoxStyle}">

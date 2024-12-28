@@ -102,8 +102,8 @@ namespace MyHelper.ViewModels
         /// <summary> Сортировка </summary>
         public Dictionary<string, SortDescription> Sort { get; } = new()
         {
-            {"В порядке возрастания", new SortDescription("Id", ListSortDirection.Ascending)},
-            {"В порядке убывания", new SortDescription("Id", ListSortDirection.Descending)},
+            {"Сначала старые", new SortDescription("Id", ListSortDirection.Ascending)},
+            {"Сначала свежие", new SortDescription("Id", ListSortDirection.Descending)},
             {"По целям (Z->Я)", new SortDescription("Name", ListSortDirection.Ascending)},
             {"По целям (Я->Z)", new SortDescription("Name", ListSortDirection.Descending)},
         };
