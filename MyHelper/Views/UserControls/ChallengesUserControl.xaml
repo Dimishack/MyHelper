@@ -43,7 +43,8 @@
             </Grid.RowDefinitions>
             <GroupBox Header="Сортировка" Grid.Row="0">
                 <ComboBox ItemsSource="{Binding Sorts}"
-                          SelectedItem="{Binding SelectedSort}"/>
+                          SelectedItem="{Binding SelectedSort}"
+                          IsEditable="{Binding EnableFrameworkElements}"/>
             </GroupBox>
             <GroupBox Header="Фильтры" Grid.Row="1">
                 <StackPanel Orientation="Vertical">

@@ -31,6 +31,14 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region TargetsCount : int - Количество целей (в общем)
+
+        [DependencyOn(nameof(SelectedTargetsGroup))]
+        ///<summary>Количество целей (в общем)</summary>
+        public int TargetsCount => _selectedTargetsGroup?.Targets.Count ?? 0;
+
+        #endregion
+
         #region GroupsTargets : ObservableCollection<TargetsModel> - Список групп с целями
 
         ///<summary>Список групп с целями</summary>
@@ -259,8 +267,8 @@ namespace MyHelper.ViewModels
         [DependencyOn(nameof(CompletedTargetsCount))]
         [IsMoveToTree]
         ///<summary>Прогресс выполнения целей</summary>
-        public double Progress => (double)CompletedTargetsCount / (_selectedTargetsGroup is not null && _selectedTargetsGroup.Targets.Count > 0
-            ? _selectedTargetsGroup.Targets.Count
+        public double Progress => (double)CompletedTargetsCount / (TargetsCount > 0
+            ? TargetsCount
             : 1);
 
         #endregion
@@ -407,9 +415,9 @@ namespace MyHelper.ViewModels
             await _targetRepository.AddAsync(newTarget);
             var newTargetModel = new TargetModel(newTarget);
             if (_filter != "выполненные") Targets.Add(newTargetModel);
-            DepedencyProperites(this, nameof(Progress));
+            OnPropertyChanged(nameof(TargetsCount));
+            DepedencyProperites(this, nameof(CompletedTargetsCount));
             AddTarget = false;
-            //SelectedTargetsView.Refresh();
         }
 
         #endregion
@@ -465,7 +473,8 @@ namespace MyHelper.ViewModels
             await _targetRepository.RemoveAsync(_selectedTarget.Id);
             Targets.Remove(_selectedTarget);
             if (isComplete) CompletedTargetsCount--;
-            else DepedencyProperites(this, nameof(Progress));
+            else DepedencyProperites(this, nameof(CompletedTargetsCount));
+            OnPropertyChanged(nameof(TargetsCount));
         }
 
         #endregion
@@ -480,10 +489,7 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand<string>(OnFilterCommandExecuted, CanFilterCommandExecute);
 
         ///<summary>Проверка возможности выполнения - фильтровать список</summary>
-        private bool CanFilterCommandExecute(string p) => 
-            _selectedTargetsGroup is not null
-            && _selectedTargetsGroup.Targets.Count > 10
-            ;
+        private bool CanFilterCommandExecute(string p) => TargetsCount > 10;
 
         ///<summary>Логика выполнения - фильтровать список</summary>
         private void OnFilterCommandExecuted(string p)

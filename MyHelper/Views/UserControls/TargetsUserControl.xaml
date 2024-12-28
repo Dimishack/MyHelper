@@ -71,7 +71,8 @@
             <GroupBox Grid.Row="0" Header="Сортировка">
                 <ComboBox ItemsSource="{Binding Sort}"
                           SelectedItem="{Binding SelectedSort}"
-                          Style="{StaticResource ComboBoxMainStyle}"/>
+                          Style="{StaticResource ComboBoxMainStyle}"
+                          IsEditable="{Binding EnableFrameworkElements}"/>
             </GroupBox>
             <GroupBox Grid.Row="1" Header="Фильтры">
                 <StackPanel Orientation="Vertical">
@@ -103,7 +104,7 @@
                         <Run Text="{Binding CompletedTargetsCount
                                     ,StringFormat='{}{0:00}', Mode=OneWay}"/>
                         <Run Text="/"/>
-                        <Run Text="{Binding SelectedTargetsGroup.Targets.Count
+                        <Run Text="{Binding TargetsCount
                                     ,StringFormat='{}{0:00}', Mode=OneWay}"/>
                         </TextBlock>
                         <Border Grid.Column="1" Background="{StaticResource SolidColorBrush_DarkGreenishYellowGreen}" Margin="4,0"/>
