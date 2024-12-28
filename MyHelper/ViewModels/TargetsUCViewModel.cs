@@ -132,7 +132,8 @@ namespace MyHelper.ViewModels
                 if (!Set(ref _selectedSort, value)) return;
 
                 if (_selectedTargetsViewSource.SortDescriptions.Count > 0)
-                    _selectedTargetsViewSource.SortDescriptions.Insert(0, Sort[value.Key]);
+                    _selectedTargetsViewSource.SortDescriptions[0] = Sort[value.Key];
+                else _selectedTargetsViewSource.SortDescriptions.Add(Sort[value.Key]);
                 _selectedTargetsViewSource.View?.Refresh();
             }
         }

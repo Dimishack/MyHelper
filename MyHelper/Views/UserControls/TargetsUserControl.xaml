@@ -72,7 +72,7 @@
                 <ComboBox ItemsSource="{Binding Sort}"
                           SelectedItem="{Binding SelectedSort}"
                           Style="{StaticResource ComboBoxMainStyle}"
-                          IsEditable="{Binding EnableFrameworkElements}"/>
+                          IsEnabled="{Binding EnableFrameworkElements}"/>
             </GroupBox>
             <GroupBox Grid.Row="1" Header="Фильтры">
                 <StackPanel Orientation="Vertical">
