@@ -61,8 +61,8 @@ namespace MyHelper.ViewModels
             { "Сначала свежие", new SortDescription("Id", ListSortDirection.Descending) },
             { "По задачам (Z -> Я)", new SortDescription("Name", ListSortDirection.Ascending) },
             { "По задачам (Я -> Z)", new SortDescription("Name", ListSortDirection.Descending) },
-            { "По датам (ближние)", new SortDescription("DateEnd", ListSortDirection.Ascending) },
-            { "По датам (дальние)", new SortDescription("DateEnd", ListSortDirection.Descending) },
+            { "По датам (ближние)", new SortDescription("End", ListSortDirection.Ascending) },
+            { "По датам (дальние)", new SortDescription("End", ListSortDirection.Descending) },
         };
 
         #endregion
@@ -171,17 +171,9 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region ClosedCommand - Команда - закрыть окно
+        #region override ClosedCommand - Команда - закрыть окно
 
-        ///<summary>Команда - закрыть окно</summary>
-        private ICommand? _closedCommand;
-
-        ///<summary>Команда - закрыть окно</summary>
-        public ICommand ClosedCommand => _closedCommand
-            ??= new LambdaCommand(OnClosedCommandExecuted);
-
-        ///<summary>Логика выполнения - закрыть окно</summary>
-        private void OnClosedCommandExecuted(object? p) => Dispose();
+        protected override void OnClosedCommandExecuted(object? p) => Dispose();
 
         #endregion
 

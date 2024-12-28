@@ -23,6 +23,14 @@ namespace MyHelper.ViewModels
 
         #region Properties...
 
+        #region override EnableFrameworkElements - Включить визуальные элементы
+
+        [DependencyOn(nameof(ShowAdd_EditTargetUserControl))]
+        [IsMoveToTree]
+        public override bool EnableFrameworkElements => base.EnableFrameworkElements && !ShowAdd_EditTargetUserControl;
+
+        #endregion
+
         #region GroupsTargets : ObservableCollection<TargetsModel> - Список групп с целями
 
         ///<summary>Список групп с целями</summary>
@@ -46,21 +54,13 @@ namespace MyHelper.ViewModels
                 if (value is not null)
                 {
                     if (value.Targets.Count == 0)
-                    {
-                        var targets = _itemsRepository.Items.Include(g => g.Targets).FirstOrDefault(ts => ts.Id == value.Id)?.Targets;
-                        if (targets is not null)
-                        {
-                            foreach (var target in targets)
-                                value.Targets.Add(target);
-                        }
-                    }
-                }
-                Set(ref _selectedTargetsGroup, value);
-                if (value is not null)
+                        _ = _itemsRepository.Items.Include(g => g.Targets).FirstOrDefault(ts => ts.Id == value.Id);
                     foreach (var target in value.Targets)
                         Targets.Add(new TargetModel(target));
+                }
+                Set(ref _selectedTargetsGroup, value);
                 CompletedTargetsCount = _completedTargetsCount_Calculated;
-                PropertiesChanged(this);
+                DepedencyProperites(this);
 
             }
         }
@@ -86,7 +86,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _selectedTarget, value)) return;
-                PropertiesChanged(this);
+                DepedencyProperites(this);
             }
         }
 
@@ -149,30 +149,30 @@ namespace MyHelper.ViewModels
                     TargetForAdd_Edit.IsComplete = false;
                     OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
-                PropertiesChanged(this);
+                DepedencyProperites(this);
             }
         }
 
         #endregion
 
-        #region ChangeTarget : bool - Изменить цель
+        #region EditTarget : bool - Изменить цель
 
         ///<summary>Изменить цель</summary>
-        private bool _changeTarget;
+        private bool _editTarget;
         ///<summary>Изменить цель</summary>
-        public bool ChangeTarget
+        public bool EditTarget
         {
-            get => _changeTarget;
+            get => _editTarget;
             set
             {
-                if (!Set(ref _changeTarget, value)) return;
+                if (!Set(ref _editTarget, value)) return;
                 if (value && _selectedTarget is not null)
                 {
                     TargetForAdd_Edit.Name = _selectedTarget.Name;
                     TargetForAdd_Edit.Note = _selectedTarget.Note;
                     OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
-                PropertiesChanged(this);
+                DepedencyProperites(this);
             }
         }
 
@@ -180,24 +180,16 @@ namespace MyHelper.ViewModels
 
         #region ShowAdd_EditTargetUserControl : bool - Видимость окна создания или редактирования цели
 
-        [DependencyOn([nameof(AddTarget), nameof(ChangeTarget)])]
-        [ChangesWithProperties(nameof(EnableFrameworkElements), true)]
+        [DependencyOn([nameof(AddTarget), nameof(EditTarget)])]
+        [IsMoveToTree]
         ///<summary>Видимость окна создания или редактирования цели</summary>
-        public bool ShowAdd_EditTargetUserControl => _addTarget || _changeTarget;
+        public bool ShowAdd_EditTargetUserControl => _addTarget || _editTarget;
 
         #endregion
 
-        [ChangesWithProperties(
-            [
-            nameof(EnableToggleButtonEditTarget), 
-            nameof(EnableToggleButtonEditGroup),
-            nameof(EnableToggleButtonAddTarget),
-            ])]
-        public override bool EnableFrameworkElements => base.EnableFrameworkElements && !ShowAdd_EditTargetUserControl;
-
         #region EnableToggleButtonEditGroup : bool - Включить переключатель изменения группы целей
 
-        [DependencyOn(nameof(SelectedTargetsGroup))]
+        [DependencyOn([nameof(EnableFrameworkElements), nameof(SelectedTargetsGroup)])]
         ///<summary> Включить переключатель изменения группы целей </summary>
         public bool EnableToggleButtonEditGroup => EnableFrameworkElements &&
             _selectedTargetsGroup is not null
@@ -207,7 +199,7 @@ namespace MyHelper.ViewModels
 
         #region EnableToggleButtonEditTarget : bool - Включить переключатель изменения цели
 
-        [DependencyOn(nameof(SelectedTarget))]
+        [DependencyOn([nameof(EnableFrameworkElements), nameof(SelectedTarget)])]
         ///<summary>Включить переключатель изменения цели</summary>
         public bool EnableToggleButtonEditTarget => EnableFrameworkElements && _selectedTarget is not null;
 
@@ -215,7 +207,7 @@ namespace MyHelper.ViewModels
 
         #region EnableToggleButtonAddTarget : bool - Включить переключатель добавления цели
 
-        [DependencyOn(nameof(SelectedTargetsGroup))]
+        [DependencyOn([nameof(EnableFrameworkElements), nameof(SelectedTargetsGroup)])]
         ///<summary>Включить переключатель добавления цели</summary>
         public bool EnableToggleButtonAddTarget => EnableFrameworkElements && _selectedTargetsGroup is not null;
 
@@ -256,7 +248,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _completedTargetsCount, value)) return;
-                PropertiesChanged(this);
+                DepedencyProperites(this);
             }
         }
 
@@ -265,7 +257,7 @@ namespace MyHelper.ViewModels
         #region Progress : double - Прогресс выполнения целей
 
         [DependencyOn(nameof(CompletedTargetsCount))]
-        [ChangesWithProperties([nameof(OffsetCompleted), nameof(Procent)])]
+        [IsMoveToTree]
         ///<summary>Прогресс выполнения целей</summary>
         public double Progress => (double)CompletedTargetsCount / (_selectedTargetsGroup is not null && _selectedTargetsGroup.Targets.Count > 0
             ? _selectedTargetsGroup.Targets.Count
@@ -274,13 +266,14 @@ namespace MyHelper.ViewModels
         #endregion
 
         #region OffsetCompleted : double - Смещение выполненных целей
-
+        [DependencyOn(nameof(Progress))]
         ///<summary>Смещение выполненных целей</summary>
         public double OffsetCompleted => 2.0 - Progress;
 
         #endregion
 
         #region Procent : double - Процент выполненных целей
+        [DependencyOn(nameof(Progress))]
         ///<summary>Процент выполненных целей</summary>
         public double Procent => Math.Round(Progress * 100.0, 2);
 
@@ -300,7 +293,7 @@ namespace MyHelper.ViewModels
 
         #region Commands...
 
-        #region LoadedCommand - Загрузка окна
+        #region override LoadedCommand - Команда - Загрузка окна
 
         protected override void OnLoadedCommandExecuted(object? p)
         {
@@ -312,21 +305,13 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region ClosedCommand - Команда - закрытие пользовательского окна
+        #region override ClosedCommand - Команда - закрытие пользовательского окна
 
-        ///<summary>Команда - закрытие пользовательского окна</summary>
-        private ICommand? _closedCommand;
-
-        ///<summary>Команда - закрытие пользовательского окна</summary>
-        public ICommand ClosedCommand => _closedCommand
-            ??= new LambdaCommand(OnClosedCommandExecuted);
-
-        ///<summary>Логика выполнения - закрытие пользовательского окна</summary>
-        private void OnClosedCommandExecuted(object? p) => Dispose();
+        protected override void OnClosedCommandExecuted(object? p) => Dispose();
 
         #endregion
 
-        #region AddElementCommand - Команда - добавить группу целей
+        #region override AddElementCommand - Команда - добавить группу целей
 
         protected override bool CanAddElementCommandExecute(object? p) => ShowAdd_EditUserControl
             && !string.IsNullOrWhiteSpace(_targetsGroupForAdd_Edit.Name);
@@ -344,7 +329,7 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region EditElementCommand - Команда - редактировать группу целей
+        #region override EditElementCommand - Команда - редактировать группу целей
 
         protected override bool CanEditElementCommandExecute(object? p) => ShowAdd_EditUserControl
             && _selectedTargetsGroup is not null
@@ -362,23 +347,7 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region CancelCreateGroupCommand - Команда - отмены создания новой группы
-
-        ///<summary>Команда - отмены создания новой группы</summary>
-        private ICommand? _cancelCreateGroupCommand;
-
-        ///<summary>Команда - отмены создания новой группы</summary>
-        public ICommand CancelCreateGroupCommand => _cancelCreateGroupCommand
-            ??= new LambdaCommand(OnCancelCreateGroupCommandExecuted, CanCancelCreateGroupCommandExecute);
-
-        private bool CanCancelCreateGroupCommandExecute(object? p) => ShowAdd_EditUserControl;
-
-        ///<summary>Логика выполнения - отмены создания новой группы</summary>
-        private void OnCancelCreateGroupCommandExecuted(object? p) => AddElement = EditElement = false;
-
-        #endregion
-
-        #region DeleteElementCommand - Команда - удалить группу целей
+        #region override DeleteElementCommand - Команда - удалить группу целей
 
         protected override bool CanDeleteElementCommandExecute(object? p) => _selectedTargetsGroup is not null
             && _selectedTargetsGroup.Year != 0
@@ -392,6 +361,21 @@ namespace MyHelper.ViewModels
             await _itemsRepository.RemoveAsync(_selectedTargetsGroup!.Id);
             GroupsTargets.Remove(_selectedTargetsGroup);
             SelectedTargetsGroup = GroupsTargets.Count > 0 ? GroupsTargets.Last() : null;
+        }
+
+        #endregion
+
+        #region override CancelOperationCommand - Команда - отменить операцию
+
+        protected override bool CanCancelOperationCommandExecute(object? p) =>
+            base.CanCancelOperationCommandExecute(p)
+            || ShowAdd_EditTargetUserControl
+            ;
+
+        protected override void OnCancelOperationCommandExecuted(object? p)
+        {
+            base.OnCancelOperationCommandExecuted(p);
+            AddTarget = EditTarget = false;
         }
 
         #endregion
@@ -420,14 +404,12 @@ namespace MyHelper.ViewModels
                 IsComplete = _targetForAdd_Edit.IsComplete,
                 TargetsGroupId = _selectedTargetsGroup.Id,
             };
+            await _targetRepository.AddAsync(newTarget);
             var newTargetModel = new TargetModel(newTarget);
             if (_filter != "выполненные") Targets.Add(newTargetModel);
-            OnPropertyChanged(nameof(Progress));
-            OnPropertyChanged(nameof(OffsetCompleted));
-            OnPropertyChanged(nameof(Procent));
-            await _targetRepository.AddAsync(newTarget);
+            DepedencyProperites(this, nameof(Progress));
             AddTarget = false;
-            SelectedTargetsView.Refresh();
+            //SelectedTargetsView.Refresh();
         }
 
         #endregion
@@ -455,27 +437,9 @@ namespace MyHelper.ViewModels
             _selectedTarget!.Name = _targetForAdd_Edit.Name;
             _selectedTarget.Note = _targetForAdd_Edit.Note;
             await _targetRepository.UpdateAsync(await _targetRepository.GetAsync(_selectedTarget.Id));
-            ChangeTarget = false;
+            EditTarget = false;
             SelectedTargetsView.Refresh();
         }
-
-        #endregion
-
-        #region CancelCreate_EditTargetCommand - Команда - отмены создания и редактирования цели
-
-        ///<summary>Команда - отмены создания и редактирования цели</summary>
-        private ICommand? _cancelCreate_EditCommandCommand;
-
-        ///<summary>Команда - отмены создания и редактирования цели</summary>
-        public ICommand CancelCreate_EditTargetCommand => _cancelCreate_EditCommandCommand
-            ??= new LambdaCommand(OnCancelCreate_EditTargetCommandExecuted, CanCancelCreate_EditTargetCommandExecute);
-
-        ///<summary>Проверка возможности выполнения - отмены создания и редактирования цели</summary>
-        private bool CanCancelCreate_EditTargetCommandExecute(object? p) => ShowAdd_EditTargetUserControl;
-
-        ///<summary>Логика выполнения - отмены создания и редактирования цели</summary>
-        private void OnCancelCreate_EditTargetCommandExecuted(object? p)
-            => AddTarget = ChangeTarget = false;
 
         #endregion
 
@@ -489,7 +453,8 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommandAsync(OnRemoveTargetCommandExecuted, CanRemoveTargetCommandExecute);
 
         ///<summary>Проверка возможности выполнения - удалить цель</summary>
-        private bool CanRemoveTargetCommandExecute(object? p) => !ShowAdd_EditTargetUserControl
+        private bool CanRemoveTargetCommandExecute(object? p) => !ShowAdd_EditUserControl
+            && !ShowAdd_EditTargetUserControl
             && _selectedTarget is not null
             ;
 
@@ -500,32 +465,8 @@ namespace MyHelper.ViewModels
             await _targetRepository.RemoveAsync(_selectedTarget.Id);
             Targets.Remove(_selectedTarget);
             if (isComplete) CompletedTargetsCount--;
-            else
-            {
-                OnPropertyChanged(nameof(Progress));
-                OnPropertyChanged(nameof(OffsetCompleted));
-                OnPropertyChanged(nameof(Procent));
-            }
+            else DepedencyProperites(this, nameof(Progress));
         }
-
-        #endregion
-
-        #region SaveRepositoryCommand - Команда - Сохранить весь репозиторий
-
-        ///<summary>Команда - Сохранить весь репозиторий</summary>
-        private ICommand? _saveRepositoryCommand;
-
-        ///<summary>Команда - Сохранить весь репозиторий</summary>
-        public ICommand SaveRepositoryCommand => _saveRepositoryCommand
-            ??= new LambdaCommandAsync(OnSaveRepositoryCommandExecuted, CanSaveRepositoryCommandExecute);
-
-        ///<summary>Проверка возможности выполнения - Сохранить весь репозиторий</summary>
-        private bool CanSaveRepositoryCommandExecute(object? p) =>
-            _itemsRepository is not null
-            && !_itemsRepository.AutoSaveChanges;
-
-        ///<summary>Логика выполнения - Сохранить весь репозиторий</summary>
-        private async Task OnSaveRepositoryCommandExecuted(object? p) => await _itemsRepository.SaveChangedAsync();
 
         #endregion
 
@@ -539,7 +480,10 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommand<string>(OnFilterCommandExecuted, CanFilterCommandExecute);
 
         ///<summary>Проверка возможности выполнения - фильтровать список</summary>
-        private bool CanFilterCommandExecute(string p) => _selectedTargetsGroup is not null;
+        private bool CanFilterCommandExecute(string p) => 
+            _selectedTargetsGroup is not null
+            && _selectedTargetsGroup.Targets.Count > 10
+            ;
 
         ///<summary>Логика выполнения - фильтровать список</summary>
         private void OnFilterCommandExecuted(string p)
@@ -554,8 +498,8 @@ namespace MyHelper.ViewModels
                     break;
                 case "выполненные":
                 case "невыполненные":
-                    var isNotComplete = p.StartsWith("не");
-                    foreach (var target in _selectedTargetsGroup.Targets.Where(t => t.IsComplete == isNotComplete))
+                    var isComplete = !_filter.StartsWith("не");
+                    foreach (var target in _selectedTargetsGroup.Targets.Where(t => t.IsComplete == isComplete))
                         Targets.Add(new TargetModel(target));
                     break;
                 default:
@@ -568,6 +512,8 @@ namespace MyHelper.ViewModels
         #endregion
 
         #region Methods...
+
+        #region Dispose
 
         public void Dispose()
         {
@@ -582,14 +528,16 @@ namespace MyHelper.ViewModels
                 CleanUpBehaviors = true;
                 Targets.CollectionChanged -= Targets_CollectionChanged;
                 ClearTargets();
-                GroupsTargets.Clear();
 
                 if (disposing)
                 {
+                    GroupsTargets.Clear();
                 }
                 _disposed = true;
             }
         }
+
+        #endregion
 
         private void ClearTargets(int callCount = 0)
         {
@@ -603,6 +551,28 @@ namespace MyHelper.ViewModels
                 Targets[i].PropertyChanged -= Target_PropertyChanged;
 
             Targets.Clear();
+        }
+
+        protected override void MethodBeforeAddElement()
+        {
+            if (AddElement)
+            {
+                TargetsGroupForAdd_Edit.Year = GroupsTargets.Last().Year == 0 ? (uint)DateTime.Now.Year : GroupsTargets.Last().Year + 1;
+                TargetsGroupForAdd_Edit.Name = string.Empty;
+                OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
+            }
+            DepedencyProperites(this, nameof(EnableFrameworkElements));
+        }
+
+        protected override void MethodBeforeEditElement()
+        {
+            if (EditElement)
+            {
+                TargetsGroupForAdd_Edit.Year = _selectedTargetsGroup.Year;
+                TargetsGroupForAdd_Edit.Name = _selectedTargetsGroup.Name;
+                OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
+            }
+            DepedencyProperites(this, nameof(EnableFrameworkElements));
         }
 
         #endregion
@@ -644,29 +614,6 @@ namespace MyHelper.ViewModels
             }
         }
 
-
-
         #endregion
-
-
-        protected override void MethodBeforeAddElement()
-        {
-            if (AddElement)
-            {
-                TargetsGroupForAdd_Edit.Year = GroupsTargets.Last().Year == 0 ? (uint)DateTime.Now.Year : GroupsTargets.Last().Year + 1;
-                TargetsGroupForAdd_Edit.Name = string.Empty;
-                OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
-            }
-        }
-
-        protected override void MethodBeforeEditElement()
-        {
-            if (EditElement)
-            {
-                TargetsGroupForAdd_Edit.Year = _selectedTargetsGroup.Year;
-                TargetsGroupForAdd_Edit.Name = _selectedTargetsGroup.Name;
-                OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
-            }
-        }
     }
 }

@@ -16,11 +16,11 @@ namespace MyHelper.ViewModels.Base
         {
             if (Equals(field, value)) return false;
             field = value;
-            OnPropertyChanged(PropertyName); 
+            OnPropertyChanged(PropertyName);
             return true;
         }
 
-        protected virtual void PropertiesChanged(ViewModel viewModel,[CallerMemberName] string? propertyName = null)
+        protected virtual void DepedencyProperites(ViewModel viewModel, [CallerMemberName] string? propertyName = null)
         {
             var viewModelType = viewModel.GetType();
             foreach (PropertyInfo property in viewModelType.GetProperties())
@@ -30,31 +30,15 @@ namespace MyHelper.ViewModels.Base
                 {
                     foreach (string prop in depedencyAttribute.PropertiesName)
                     {
-                        if(!string.IsNullOrWhiteSpace(prop) && prop == propertyName)
+                        if (!string.IsNullOrWhiteSpace(prop) && prop == propertyName)
                         {
                             OnPropertyChanged(property.Name);
-                            LinkPropertiesChanged(viewModelType, property.Name);
+                            var depenciedProperty = viewModelType.GetProperty(property.Name);
+                            var isMoveToTreeAttribute = depenciedProperty.GetCustomAttribute<IsMoveToTreeAttribute>();
+                            if (isMoveToTreeAttribute is not null)
+                                DepedencyProperites(viewModel, property.Name);
                             break;
                         }
-                    } 
-                }
-            }
-        }
-
-        private void LinkPropertiesChanged(Type viewModelType, string propertyName)
-        {
-            var propertyWithChanged = viewModelType.GetProperty(propertyName);
-            if (propertyWithChanged is not null)
-            {
-                var changedPropertiesWithAttribute = propertyWithChanged.GetCustomAttribute<ChangesWithPropertiesAttribute>();
-                if (changedPropertiesWithAttribute != null)
-                {
-                    foreach (var changedProp in changedPropertiesWithAttribute.PropertiesName)
-                    {
-                        if (!string.IsNullOrWhiteSpace(changedProp.Key))
-                            OnPropertyChanged(changedProp.Key);
-                        if(changedProp.Value)
-                            LinkPropertiesChanged(viewModelType, changedProp.Key);
                     }
                 }
             }

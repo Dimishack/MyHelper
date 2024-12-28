@@ -29,7 +29,7 @@
     </UserControl.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
         </i:EventTrigger>
         <i:EventTrigger EventName="Unloaded">
             <i:InvokeCommandAction Command="{Binding ClosedCommand}"/>
@@ -101,6 +101,8 @@
                                   IsEnabled="{Binding EnableToggleButtonEditElement}"/>
                     <Button Style="{StaticResource DeleteElementStyle}"
                             Command="{Binding DeleteElementCommand}"/>
+                    <Button Style="{StaticResource ButtonSaveStyle}"
+                            Command="{Binding SaveRepositoryCommand}"/>
                 </UniformGrid>
                 <Grid>
                     <ListBox ItemsSource="{Binding TasksView}"

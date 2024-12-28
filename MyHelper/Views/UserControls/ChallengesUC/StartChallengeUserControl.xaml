@@ -138,7 +138,7 @@
                     <Button IsDefault="True"
                             Command="{Binding StartChallengeCommand}"/>
                     <Button IsCancel="True"
-                            Command="{Binding HideAdditiionalCustomControl}"/>
+                            Command="{Binding CancelOperationCommand}"/>
                 </UniformGrid>
             </Grid>
         </Border>

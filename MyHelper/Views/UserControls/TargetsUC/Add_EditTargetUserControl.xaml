@@ -52,7 +52,7 @@
                     </Button.Style>
                 </Button>
                 <Button IsCancel="True" Style="{StaticResource CheckOrCancelElementStyle}"
-                        Command="{Binding CancelCreate_EditTargetCommand}"/>
+                        Command="{Binding CancelOperationCommand}"/>
             </UniformGrid>
         </Grid>
     </Grid>

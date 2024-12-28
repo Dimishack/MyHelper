@@ -45,7 +45,7 @@ namespace MyHelper.ViewModels
             {
                 if (!Set(ref _selectedChallenge, value)) return;
 
-                PropertiesChanged(this);
+                DepedencyProperites(this);
             }
         }
 
@@ -82,7 +82,7 @@ namespace MyHelper.ViewModels
                     }
                 }
                 Set(ref _selectedProgressingChallenge, value);
-                PropertiesChanged(this);
+                DepedencyProperites(this);
             }
         }
 
@@ -152,11 +152,15 @@ namespace MyHelper.ViewModels
                 if (!Set(ref _startChallenge, value)) return;
                 if (value)
                     ChallengeForStart.ReturnToMainValues();
-                PropertiesChanged(this);
+                DepedencyProperites(this);
             }
         }
 
         #endregion
+
+        [DependencyOn(nameof(StartChallenge))]
+        [IsMoveToTree]
+        public override bool EnableFrameworkElements => base.EnableFrameworkElements && !_startChallenge;
 
         #region ShowChecklist : bool - Показать чек-лист
 
@@ -204,7 +208,7 @@ namespace MyHelper.ViewModels
 
         #region EnableToggleButtonsProgressAndEdit : bool - Включить переключатели для выполнения и редактирования челленджей
 
-        [DependencyOn(nameof(SelectedChallenge))]
+        [DependencyOn([nameof(EnableFrameworkElements), nameof(SelectedChallenge)])]
         ///<summary>Включить переключатели для выполнения и редактирования челленджей</summary>
         public bool EnableToggleButtonsProgressAndEdit => EnableFrameworkElements && _selectedChallenge is not null && !_selectedChallenge.InProgress;
 
@@ -263,7 +267,7 @@ namespace MyHelper.ViewModels
 
         #region Commands...
 
-        #region LoadedCommand - Команда - загрузка окна
+        #region override LoadedCommand - Команда - загрузка окна
 
         protected override void OnLoadedCommandExecuted(object? p)
         {
@@ -294,21 +298,13 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region ClosedCommand - Команда - закрытие пользовательского окна
+        #region override ClosedCommand - Команда - закрытие окна
 
-        ///<summary>Команда - закрытие пользовательского окна</summary>
-        private ICommand? _closedCommand;
-
-        ///<summary>Команда - закрытие пользовательского окна</summary>
-        public ICommand ClosedCommand => _closedCommand
-            ??= new LambdaCommand(OnClosedCommandExecuted);
-
-        ///<summary>Логика выполнения - закрытие пользовательского окна</summary>
-        private void OnClosedCommandExecuted(object? p) => Dispose();
+        protected override void OnClosedCommandExecuted(object? p) => Dispose();
 
         #endregion
 
-        #region AddElementCommand - Команда - добавить челлендж
+        #region override AddElementCommand - Команда - добавить челлендж
 
         protected override bool CanAddElementCommandExecute(object? p) => ShowAdd_EditUserControl
             && !string.IsNullOrWhiteSpace(_challengeForAdd_Edit.Name);
@@ -329,7 +325,7 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region EditElementCommand - Команда - редактировать челлендж
+        #region override EditElementCommand - Команда - редактировать челлендж
 
         protected override bool CanEditElementCommandExecute(object? p) => ShowAdd_EditUserControl
             && _selectedChallenge is not null
@@ -349,9 +345,10 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region DeleteElementCommand - Команда - удалить челлендж
+        #region override DeleteElementCommand - Команда - удалить челлендж
 
         protected override bool CanDeleteElementCommandExecute(object? p) => !ShowAdd_EditUserControl
+            && !_startChallenge
             && _selectedChallenge is not null
             && !_selectedChallenge.InProgress
             ;
@@ -365,6 +362,18 @@ namespace MyHelper.ViewModels
                 CheckedProgressFilterAll = true;
                 OnProgressFilterCommandExecuted("Все");
             }
+        }
+
+        #endregion
+
+        #region override CancelOperationCommand - Команда - отменить операцию
+
+        protected override bool CanCancelOperationCommandExecute(object? p) => ShowAdd_EditUserControl || StartChallenge;
+
+        protected override void OnCancelOperationCommandExecuted(object? p)
+        {
+            base.OnCancelOperationCommandExecuted(p);
+            StartChallenge = false;
         }
 
         #endregion
@@ -456,40 +465,6 @@ namespace MyHelper.ViewModels
             }
             OnPropertyChanged(nameof(EnableToggleButtonsProgressAndEdit));
         }
-
-        #endregion
-
-        #region HideAdditiionalCustomControl - Команда - скрыть дополнительное окно
-
-        ///<summary>Команда - скрыть дополнительное окно</summary>
-        private ICommand? _hideAdditionalCustomControl;
-
-        ///<summary>Команда - скрыть дополнительное окно</summary>
-        public ICommand HideAdditiionalCustomControl => _hideAdditionalCustomControl
-            ??= new LambdaCommand(OnHideAdditiionalCustomControlExecuted, CanHideAdditiionalCustomControlExecute);
-
-        ///<summary>Проверка возможности выполнения - скрыть дополнительное окно</summary>
-        private bool CanHideAdditiionalCustomControlExecute(object? p) => ShowAdd_EditUserControl || StartChallenge;
-
-        ///<summary>Логика выполнения - скрыть дополнительное окно</summary>
-        private void OnHideAdditiionalCustomControlExecuted(object? p) => StartChallenge = AddElement = EditElement = false;
-
-        #endregion
-
-        #region SaveRepositoryCommand - Команда - сохранить репозиторий челленджей
-
-        ///<summary>Команда - сохранить репозиторий челленджей</summary>
-        private ICommand? _saveRepositoryCommand;
-
-        ///<summary>Команда - сохранить репозиторий челленджей</summary>
-        public ICommand SaveRepositoryCommand => _saveRepositoryCommand
-            ??= new LambdaCommandAsync(OnSaveRepositoryCommandExecuted, CanSaveRepositoryCommandExecute);
-
-        ///<summary>Проверка возможности выполнения - сохранить репозиторий челленджей</summary>
-        private bool CanSaveRepositoryCommandExecute(object? p) => _itemsRepository is not null && !_itemsRepository.AutoSaveChanges;
-
-        ///<summary>Логика выполнения - сохранить репозиторий челленджей</summary>
-        private async Task OnSaveRepositoryCommandExecuted(object? p) => await _itemsRepository.SaveChangedAsync();
 
         #endregion
 
@@ -631,6 +606,8 @@ namespace MyHelper.ViewModels
 
         #region Methods...
 
+        #region Dispose
+
         public void Dispose()
         {
             Dispose(true);
@@ -654,6 +631,8 @@ namespace MyHelper.ViewModels
                 _disposed = true;
             }
         }
+
+        #endregion
 
         protected override void MethodBeforeAddElement()
         {

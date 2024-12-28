@@ -71,7 +71,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <GroupBox Grid.Row="0" Header="Сортировка">
-                <ComboBox ItemsSource="{Binding Sorts}"
+                <ComboBox ItemsSource="{Binding Sort}"
                           SelectedItem="{Binding SelectedSort}"
                           Style="{StaticResource ComboBoxMainStyle}"/>
             </GroupBox>
@@ -133,7 +133,7 @@
                     <ToggleButton IsChecked="{Binding AddTarget}"
                                   IsEnabled="{Binding EnableToggleButtonAddTarget}"
                                   Style="{StaticResource AddElementStyle}"/>
-                    <ToggleButton IsChecked="{Binding ChangeTarget}"
+                    <ToggleButton IsChecked="{Binding EditTarget}"
                                   IsEnabled="{Binding EnableToggleButtonEditTarget}"
                                   Style="{StaticResource EditElementStyle}"/>
                     <Button Command="{Binding RemoveTargetCommand}"

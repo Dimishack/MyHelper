@@ -47,7 +47,7 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button IsCancel="True" Command="{Binding HideAdditiionalCustomControl}"
+                <Button IsCancel="True" Command="{Binding CancelOperationCommand}"
                         Style="{StaticResource CheckOrCancelElementStyle}"/>
             </UniformGrid>
         </Grid>

@@ -83,6 +83,23 @@ namespace MyHelper.ViewModels.Base
 
         #endregion
 
+        #region ClosedCommand - Команда - зыкрытие окна
+
+        ///<summary>Команда - зыкрытие окна</summary>
+        private ICommand? _closedCommand;
+
+        ///<summary>Команда - зыкрытие окна</summary>
+        public ICommand ClosedCommand => _closedCommand
+            ??= new LambdaCommand(OnClosedCommandExecuted, CanClosedCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - зыкрытие окна</summary>
+        protected virtual bool CanClosedCommandExecute(object? p) => true;
+
+        ///<summary>Логика выполнения - зыкрытие окна</summary>
+        protected abstract void OnClosedCommandExecuted(object? p);
+
+        #endregion
+
         #region AddElementCommand - Команда - добавить элемент
 
         ///<summary>Команда - добавить элемент</summary>
@@ -144,10 +161,27 @@ namespace MyHelper.ViewModels.Base
             ??= new LambdaCommand(OnCancelOperationCommandExecuted, CanCancelOperationCommandExecute);
 
         ///<summary>Проверка возможности выполнения - отменить операцию</summary>
-        protected virtual bool CanCancelOperationCommandExecute(object? p) => true;
+        protected virtual bool CanCancelOperationCommandExecute(object? p) => ShowAdd_EditUserControl;
 
         ///<summary>Логика выполнения - отменить операцию</summary>
         protected virtual void OnCancelOperationCommandExecuted(object? p) => AddElement = EditElement = false;
+
+        #endregion
+
+        #region SaveRepositoryCommand - Команда - сохранить репозиторий
+
+        ///<summary>Команда - сохранить репозиторий</summary>
+        private ICommand? _saveRepositoryCommand;
+
+        ///<summary>Команда - сохранить репозиторий</summary>
+        public ICommand SaveRepositoryCommand => _saveRepositoryCommand
+            ??= new LambdaCommandAsync(OnSaveRepositoryCommandExecuted, CanSaveRepositoryCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - сохранить репозиторий</summary>
+        private bool CanSaveRepositoryCommandExecute(object? p) => !_itemsRepository.AutoSaveChanges;
+
+        ///<summary>Логика выполнения - сохранить репозиторий</summary>
+        private async Task OnSaveRepositoryCommandExecuted(object? p) => await _itemsRepository.SaveChangedAsync();
 
         #endregion
     }
