@@ -5,25 +5,47 @@
     <c:DateUntilFollowingYearConverter x:Key="EndDisplayConverter"/>
 
     <Style TargetType="DatePickerTextBox" x:Key="MyDatePickerTextBox">
+        <Setter Property="SelectionBrush" Value="{StaticResource SolidColorBrush_LightBrownishGray}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource SolidColorBrush_DarkGreenishYellowGreen}"/>
+        <Setter Property="IsReadOnlyCaretVisible" Value="True"/>
+        <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+        <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+        <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_DarkGreenishYellowGreen}"/>
+        <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="DatePickerTextBox">
                     <Grid Background="{StaticResource SolidColorBrush_Transparent}">
-                        <Grid.Resources>
-                            <c:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter"/>
-                        </Grid.Resources>
-                        <TextBox x:Name="PART_TextBox" Style="{StaticResource TextBox_DatePickerTextBox}"
-                                         Text="{TemplateBinding Text}"/>
-                        <TextBlock Text="Введите дату" 
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="WatermarkStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition GeneratedDuration="0"/>
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="Unwatermarked"/>
+                                <VisualState x:Name="Watermarked">
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0" Storyboard.TargetName="PART_Watermark" To="1" Storyboard.TargetProperty="Opacity"/>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border Background="{StaticResource SolidColorBrush_LightSandy}"
+                                Padding="3,3,5,3" CornerRadius="{StaticResource CornerRadius5}">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="Center"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      Effect="{TemplateBinding Effect}">
+                            </ScrollViewer>
+                        </Border>
+                        <ContentControl x:Name="PART_Watermark" 
                                    Foreground="{StaticResource SolidColorBrush_DarkGreenishYellowGreen}"
                                    IsHitTestVisible="False"
                                    HorizontalAlignment="Stretch"
                                    VerticalAlignment="Center"
-                                   Padding="6,2"
+                                   Padding="6,2" Margin="3"
                                    Background="{StaticResource SolidColorBrush_Transparent}"
-                                   Visibility="{Binding Text, 
-                                    ElementName=PART_TextBox, 
-                                           Converter={StaticResource EmptyTextToVisibilityConverter}}" />
+                                   Opacity="0"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

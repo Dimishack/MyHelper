@@ -27,7 +27,7 @@ namespace MyHelper.Models
             {
                 var findedItem = FindItem(key);
                 return findedItem == null
-                    ? throw new KeyNotFoundException(nameof(key))
+                    ? throw new KeyNotFoundException($"Ключ {key} не найден!")
                     : findedItem.Value;
             }
             set => Insert(new ObservableKeyValuePair<TKey, TValue>(key, value), false);

@@ -33,6 +33,16 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region NewGroup : string? - Новая группа
+
+        ///<summary>Новая группа</summary>
+        private string? _newGroup;
+
+        ///<summary>Новая группа</summary>
+        public string? NewGroup { get => _newGroup; set => Set(ref _newGroup, value); }
+
+        #endregion
+
         #region SelectedTask : MyTask? - Выбранная задача
 
         ///<summary>Выбранная задача</summary>
@@ -119,7 +129,7 @@ namespace MyHelper.ViewModels
         #region TaskForAdd_Edit : MyTask - задача для добавления (редактирования)
 
         ///<summary>задача для добавления (редактирования)</summary>
-        private MyTask _taskForAdd_Edit = new();
+        private MyTask _taskForAdd_Edit = new() { End = DateTime.Today };
 
         ///<summary>задача для добавления (редактирования)</summary>
         public MyTask TaskForAdd_Edit { get => _taskForAdd_Edit; set => Set(ref _taskForAdd_Edit, value); }
@@ -258,6 +268,8 @@ namespace MyHelper.ViewModels
                 || Equals(_selectedGroup.Key, _taskForAdd_Edit.Group))
                 _tasks.Add(addTask);
             Groups["Все"]++;
+            if(!Groups.ContainsKey(_taskForAdd_Edit.Group))
+                Groups.Add(_taskForAdd_Edit.Group, 0);
             Groups[_taskForAdd_Edit.Group]++;
             _count++;
             AddElement = false;
@@ -320,6 +332,29 @@ namespace MyHelper.ViewModels
 
         #endregion
 
+        #region AddGroupCommand - Команда - добавить группу
+
+        ///<summary>Команда - добавить группу</summary>
+        private ICommand? _addGroupCommand;
+
+        ///<summary>Команда - добавить группу</summary>
+        public ICommand AddGroupCommand => _addGroupCommand
+            ??= new LambdaCommand(OnAddGroupCommandExecuted, CanAddGroupCommandExecute);
+
+        ///<summary>Проверка возможности выполнения - добавить группу</summary>
+        private bool CanAddGroupCommandExecute(object? p) => !string.IsNullOrWhiteSpace(_newGroup);
+
+        ///<summary>Логика выполнения - добавить группу</summary>
+        private void OnAddGroupCommandExecuted(object? p)
+        {
+            Keys?.Add(_newGroup);
+            TaskForAdd_Edit.Group = _newGroup;
+            OnPropertyChanged(nameof(TaskForAdd_Edit));
+            NewGroup = null;
+        }
+
+        #endregion
+
         #endregion
 
         private Func<MyTask, bool>? CreateFunc(bool filterGroup, bool filterProiority)
@@ -343,15 +378,14 @@ namespace MyHelper.ViewModels
             {
                 var keys = Groups.Keys;
                 keys.RemoveAt(0);
-                if (Keys is null || Keys.SequenceEqual(keys))
+                if (Keys is null || !Keys.SequenceEqual(keys))
                     Keys = new ObservableCollection<string>(keys);
                 TaskForAdd_Edit.Name = string.Empty;
                 TaskForAdd_Edit.Note = null;
                 TaskForAdd_Edit.Prompt = false;
                 TaskForAdd_Edit.Important = false;
-                TaskForAdd_Edit.Group = Equals(_selectedGroup.Key, "Все")
-                    ? string.Empty
-                    : _selectedGroup.Key;
+                TaskForAdd_Edit.End = DateTime.Today;
+                if (!Equals(_selectedGroup.Key, "Все")) TaskForAdd_Edit.Group = _selectedGroup.Key;
                 TaskForAdd_Edit.End = DateTime.Today;
                 OnPropertyChanged(nameof(TaskForAdd_Edit));
             }

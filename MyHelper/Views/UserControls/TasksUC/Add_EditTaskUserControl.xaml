@@ -75,7 +75,8 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <Button Grid.Column="1">
+                <Button Grid.Column="1"
+                        Command="{Binding AddGroupCommand}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource CheckOrCancelElementStyle}">
                             <Setter Property="fa:IconImage.Icon" Value="Add"/>
@@ -84,12 +85,17 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <TextBox Grid.Column="2" Margin="1,3,2,3"/>
+                <TextBox Grid.Column="2" Margin="1,3,2,3"
+                         Text="{Binding NewGroup, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             <DatePicker Grid.Row="3" Grid.Column="1"
                         Margin="5,3,9,3"
                         Style="{StaticResource DatePickerMainStyle}"
-                        SelectedDate="{Binding TaskForAdd_Edit.End}"/>
+                        SelectedDate="{Binding TaskForAdd_Edit.End}">
+                <i:Interaction.Behaviors>
+                    <cusB:BlackoutDatesForStartChallengeBehavior/>
+                </i:Interaction.Behaviors>
+            </DatePicker>
             <TextBox Grid.Row="4" Grid.Column="1"
                      Text="{Binding TaskForAdd_Edit.Note, UpdateSourceTrigger=PropertyChanged}"/>
             <UniformGrid Rows="1" Grid.Row="5" Grid.ColumnSpan="2">
