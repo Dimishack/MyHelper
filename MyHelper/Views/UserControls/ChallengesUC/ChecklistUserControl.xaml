@@ -67,7 +67,8 @@
                           SelectedItem="{Binding SelectedCheck}"
                           Style="{StaticResource DataGridStyle_AdditionalUserControl}"
                           IsEnabled="{Binding ShowChecklist}"
-                          IsEnabledChanged="DataGrid_IsEnabledChanged">
+                          IsEnabledChanged="DataGrid_IsEnabledChanged"
+                          SelectionChanged="DataGrid_SelectionChanged">
                     <DataGrid.RowHeaderStyle>
                         <Style TargetType="DataGridRowHeader" BasedOn="{StaticResource DataGridRowHeaderStyle_AdditionalUsrControl}">
                             <Setter Property="Content" Value="{Binding NumberDay}"/>

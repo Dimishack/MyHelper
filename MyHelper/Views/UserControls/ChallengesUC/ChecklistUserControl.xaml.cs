@@ -8,12 +8,14 @@ namespace MyHelper.Views.UserControls.ChallengesUC
 
         private void DataGrid_IsEnabledChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
         {
-            if((bool)e.NewValue)
-            {
+            if ((bool)e.NewValue)
                 dataGrid.Focus();
-                if(dataGrid.SelectedItem is not null)
-                    dataGrid.ScrollIntoView(dataGrid.SelectedItem);
-            }
+        }
+
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dataGrid.SelectedItem is not null)
+                dataGrid.ScrollIntoView(dataGrid.SelectedItem);
         }
     }
 }
