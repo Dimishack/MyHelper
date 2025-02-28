@@ -10,10 +10,9 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    internal sealed class TasksUCViewModel(IRepository<MyTask> tasksRepository) : MainFunctionsViewModel<MyTask>(tasksRepository), IDisposable
+    internal sealed class TasksUCViewModel(IRepository<MyTask> tasksRepository) : MainFunctionsViewModel<MyTask>(tasksRepository)
     {
         private readonly ObservableCollection<MyTask> _tasks = [];
-        private bool _disposed = false;
         private bool _promptFilter = false;
         private bool _importantFilter = false;
         private int _count = 0;
@@ -157,7 +156,7 @@ namespace MyHelper.ViewModels
 
         #region Commands...
 
-        #region LoadedCommand - Команда - загрузка окна
+        #region override LoadedCommand - Команда - загрузка окна
 
         protected override void OnLoadedCommandExecuted(object? p)
         {
@@ -181,9 +180,90 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region override ClosedCommand - Команда - закрыть окно
+        #region override AddElementCommand - Команда - добавить задачу
 
-        protected override void OnClosedCommandExecuted(object? p) => Dispose();
+        protected override bool CanAddElementCommandExecute(object? p) => ShowAdd_EditUserControl
+            && !string.IsNullOrWhiteSpace(_taskForAdd_Edit.Name)
+            && !string.IsNullOrWhiteSpace(_taskForAdd_Edit.Group)
+            ;
+
+        protected override async Task OnAddElementCommandExecuted(object? p)
+        {
+            var addTask = new MyTask()
+            {
+                Name = _taskForAdd_Edit.Name,
+                Important = _taskForAdd_Edit.Important,
+                Prompt = _taskForAdd_Edit.Prompt,
+                Group = _taskForAdd_Edit.Group,
+                End = _taskForAdd_Edit.End,
+                Note = _taskForAdd_Edit.Note
+            };
+            await _itemsRepository.AddAsync(addTask);
+            if (Equals(_selectedGroup.Key, "Все")
+                || Equals(_selectedGroup.Key, _taskForAdd_Edit.Group))
+                _tasks.Add(addTask);
+            Groups["Все"]++;
+            if (!Groups.ContainsKey(_taskForAdd_Edit.Group))
+                Groups.Add(_taskForAdd_Edit.Group, 0);
+            Groups[_taskForAdd_Edit.Group]++;
+            _count++;
+            AddElement = false;
+        }
+
+        #endregion
+
+        #region override EditElementCommand - Команда - редактировать задачу
+
+        protected override bool CanEditElementCommandExecute(object? p) => ShowAdd_EditUserControl
+            && _selectedTask is not null
+            && !string.IsNullOrWhiteSpace(_taskForAdd_Edit.Name)
+            &&
+            (!Equals(_taskForAdd_Edit.Name, _selectedTask.Name)
+            || !Equals(_taskForAdd_Edit.Group, _selectedTask.Group)
+            || !Equals(_taskForAdd_Edit.End, _selectedTask.End)
+            || !Equals(_taskForAdd_Edit.Important, _selectedTask.Important)
+            || !Equals(_taskForAdd_Edit.Prompt, _selectedTask.Prompt)
+            || !Equals(_taskForAdd_Edit.Note, _selectedTask.Note))
+            ;
+
+        protected override async Task OnEditElementCommandExecuted(object? p)
+        {
+            if (!Equals(_taskForAdd_Edit.Group, _selectedTask.Group))
+            {
+                Groups[_selectedTask.Group]--;
+                Groups[_taskForAdd_Edit.Group]++;
+            }
+            SelectedTask.Name = _taskForAdd_Edit.Name;
+            SelectedTask.Important = _taskForAdd_Edit.Important;
+            SelectedTask.Prompt = _taskForAdd_Edit.Prompt;
+            SelectedTask.Group = _taskForAdd_Edit.Group;
+            SelectedTask.Note = _taskForAdd_Edit.Note;
+            await _itemsRepository.UpdateAsync(_selectedTask);
+            TasksView.Refresh();
+            EditElement = false;
+        }
+
+        #endregion
+
+        #region override DeleteElementCommand - Команда - удалить задачу
+
+        protected override bool CanDeleteElementCommandExecute(object? p) => _selectedTask is not null
+            && !ShowAdd_EditUserControl;
+
+        protected override async Task OnDeleteElementCommandExecuted(object? p)
+        {
+            var removedTask = _selectedTask;
+            if (_tasks.Remove(removedTask))
+            {
+                Groups["Все"]--;
+                var group = _selectedGroup;
+                if (Equals(group.Key, "Все"))
+                    group = Groups.GetKeyValuePair(removedTask.Group);
+                if (--group.Value == 0)
+                    Groups.Remove(group.Key);
+                await _itemsRepository.RemoveAsync(removedTask.Id);
+            }
+        }
 
         #endregion
 
@@ -245,93 +325,6 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region AddElementCommand - Команда - добавить элемент
-
-        protected override bool CanAddElementCommandExecute(object? p) => ShowAdd_EditUserControl
-            && !string.IsNullOrWhiteSpace(_taskForAdd_Edit.Name)
-            && !string.IsNullOrWhiteSpace(_taskForAdd_Edit.Group)
-            ;
-
-        protected override async Task OnAddElementCommandExecuted(object? p)
-        {
-            var addTask = new MyTask()
-            {
-                Name = _taskForAdd_Edit.Name,
-                Important = _taskForAdd_Edit.Important,
-                Prompt = _taskForAdd_Edit.Prompt,
-                Group = _taskForAdd_Edit.Group,
-                End = _taskForAdd_Edit.End,
-                Note = _taskForAdd_Edit.Note
-            };
-            await _itemsRepository.AddAsync(addTask);
-            if (Equals(_selectedGroup.Key, "Все")
-                || Equals(_selectedGroup.Key, _taskForAdd_Edit.Group))
-                _tasks.Add(addTask);
-            Groups["Все"]++;
-            if(!Groups.ContainsKey(_taskForAdd_Edit.Group))
-                Groups.Add(_taskForAdd_Edit.Group, 0);
-            Groups[_taskForAdd_Edit.Group]++;
-            _count++;
-            AddElement = false;
-        }
-
-        #endregion
-
-        #region EditElementCommand - Команда - редактировать элемент
-
-        protected override bool CanEditElementCommandExecute(object? p) => ShowAdd_EditUserControl
-            && _selectedTask is not null
-            && !string.IsNullOrWhiteSpace(_taskForAdd_Edit.Name)
-            &&
-            (!Equals(_taskForAdd_Edit.Name, _selectedTask.Name)
-            || !Equals(_taskForAdd_Edit.Group, _selectedTask.Group)
-            || !Equals(_taskForAdd_Edit.End, _selectedTask.End)
-            || !Equals(_taskForAdd_Edit.Important, _selectedTask.Important)
-            || !Equals(_taskForAdd_Edit.Prompt, _selectedTask.Prompt)
-            || !Equals(_taskForAdd_Edit.Note, _selectedTask.Note))
-            ;
-
-        protected override async Task OnEditElementCommandExecuted(object? p)
-        {
-            if (!Equals(_taskForAdd_Edit.Group, _selectedTask.Group))
-            {
-                Groups[_selectedTask.Group]--;
-                Groups[_taskForAdd_Edit.Group]++;
-            }
-            SelectedTask.Name = _taskForAdd_Edit.Name;
-            SelectedTask.Important = _taskForAdd_Edit.Important;
-            SelectedTask.Prompt = _taskForAdd_Edit.Prompt;
-            SelectedTask.Group = _taskForAdd_Edit.Group;
-            SelectedTask.Note = _taskForAdd_Edit.Note;
-            await _itemsRepository.UpdateAsync(_selectedTask);
-            TasksView.Refresh();
-            EditElement = false;
-        }
-
-        #endregion
-
-        #region DeleteElementCommand - Команда - удалить элемент
-
-        protected override bool CanDeleteElementCommandExecute(object? p) => _selectedTask is not null
-            && !ShowAdd_EditUserControl;
-
-        protected override async Task OnDeleteElementCommandExecuted(object? p)
-        {
-            var removedTask = _selectedTask;
-            if (_tasks.Remove(removedTask))
-            {
-                Groups["Все"]--;
-                var group = _selectedGroup;
-                if (Equals(group.Key, "Все"))
-                    group = Groups.GetKeyValuePair(removedTask.Group);
-                if (--group.Value == 0)
-                    Groups.Remove(group.Key);
-                await _itemsRepository.RemoveAsync(removedTask.Id);
-            }
-        }
-
-        #endregion
-
         #region AddGroupCommand - Команда - добавить группу
 
         ///<summary>Команда - добавить группу</summary>
@@ -357,20 +350,29 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        private Func<MyTask, bool>? CreateFunc(bool filterGroup, bool filterProiority)
+        #region Methods...
+
+        #region override Dispose
+
+        protected override void Dispose(bool disposing)
         {
-            Func<MyTask, bool>? func = null;
-            if (filterGroup && filterProiority)
-                func = t => Equals(_selectedGroup.Key, t.Group)
-                && t.Prompt == _promptFilter
-                && t.Important == _importantFilter;
-            else if (filterGroup)
-                func = t => Equals(_selectedGroup.Key, t.Group);
-            else if (filterProiority)
-                func = t => t.Prompt == _promptFilter
-                && t.Important == _importantFilter;
-            return func;
+            if (!Disposed)
+            {
+                if (disposing)
+                {
+                    _tasks.Clear();
+                    Groups.Clear();
+                    Sort.Clear();
+                    Keys?.Clear();
+                    Keys = null;
+                }
+                Disposed = true;
+            }
         }
+
+        #endregion
+
+        #region override MethodBeforeAddElement
 
         protected override void MethodBeforeAddElement()
         {
@@ -392,6 +394,10 @@ namespace MyHelper.ViewModels
             OnPropertyChanged(nameof(EnableToggleButtonEditElement));
         }
 
+        #endregion
+
+        #region override MethodBeforeEditElement
+
         protected override void MethodBeforeEditElement()
         {
             if (EditElement)
@@ -411,26 +417,23 @@ namespace MyHelper.ViewModels
             OnPropertyChanged(nameof(EnableToggleButtonEditElement));
         }
 
-        public void Dispose()
+        #endregion
+
+        private Func<MyTask, bool>? CreateFunc(bool filterGroup, bool filterProiority)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            Func<MyTask, bool>? func = null;
+            if (filterGroup && filterProiority)
+                func = t => Equals(_selectedGroup.Key, t.Group)
+                && t.Prompt == _promptFilter
+                && t.Important == _importantFilter;
+            else if (filterGroup)
+                func = t => Equals(_selectedGroup.Key, t.Group);
+            else if (filterProiority)
+                func = t => t.Prompt == _promptFilter
+                && t.Important == _importantFilter;
+            return func;
         }
 
-        private void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    _tasks.Clear();
-                    Groups.Clear();
-                    Sort.Clear();
-                    Keys?.Clear();
-                    Keys = null;
-                }
-                _disposed = true;
-            }
-        }
+        #endregion
     }
 }

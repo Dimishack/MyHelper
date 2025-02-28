@@ -13,11 +13,11 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    internal sealed class ChallengesUCViewModel(IRepository<Challenge> challengeRepository, IRepository<Check> checkRepository) : MainFunctionsViewModel<Challenge>(challengeRepository), IDisposable
+    internal sealed class ChallengesUCViewModel(IRepository<Challenge> challengeRepository, IRepository<Check> checkRepository)
+        : MainFunctionsViewModel<Challenge>(challengeRepository), IDisposable
     {
         private readonly IRepository<Check> _checkRepository = checkRepository;
         private readonly ChallengesOnProgressingCache _challengesOnProgressingCache = new();
-        private bool _disposed = false;
         private int _challengesCount = 0;
         private Func<ChallengeOnProgressingModel, bool>? _statusFilter = null;
         private Func<ChallengeOnProgressingModel, bool>? _durationFilter = null;
@@ -45,7 +45,7 @@ namespace MyHelper.ViewModels
             {
                 if (!Set(ref _selectedChallenge, value)) return;
 
-                DepedencyProperites(this);
+                DepedencyProperites();
             }
         }
 
@@ -82,7 +82,7 @@ namespace MyHelper.ViewModels
                     }
                 }
                 Set(ref _selectedProgressingChallenge, value);
-                DepedencyProperites(this);
+                DepedencyProperites();
             }
         }
 
@@ -152,7 +152,7 @@ namespace MyHelper.ViewModels
                 if (!Set(ref _startChallenge, value)) return;
                 if (value)
                     ChallengeForStart.ReturnToMainValues();
-                DepedencyProperites(this);
+                DepedencyProperites();
             }
         }
 
@@ -606,17 +606,11 @@ namespace MyHelper.ViewModels
 
         #region Methods...
 
-        #region Dispose
+        #region override Dispose
 
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (!_disposed)
+            if (!Disposed)
             {
                 if (disposing)
                 {
@@ -628,11 +622,13 @@ namespace MyHelper.ViewModels
                 foreach (var challengeOnProgress in ChallengesOnProgress)
                     challengeOnProgress.Dispose();
                 ChallengesOnProgress.Clear();
-                _disposed = true;
+                Disposed = true;
             }
         }
 
         #endregion
+
+        #region override MethodBeforeAddElement
 
         protected override void MethodBeforeAddElement()
         {
@@ -645,6 +641,10 @@ namespace MyHelper.ViewModels
             OnPropertyChanged(nameof(EnableToggleButtonsProgressAndEdit));
         }
 
+        #endregion
+
+        #region override MethodBeforeEditElement
+
         protected override void MethodBeforeEditElement()
         {
             if (EditElement)
@@ -655,6 +655,8 @@ namespace MyHelper.ViewModels
             }
             OnPropertyChanged(nameof(EnableToggleButtonsProgressAndEdit));
         }
+
+        #endregion
 
         #endregion
     }

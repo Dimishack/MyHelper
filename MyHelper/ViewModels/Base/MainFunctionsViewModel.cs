@@ -4,8 +4,10 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels.Base
 {
-    internal abstract class MainFunctionsViewModel<T>(IRepository<T> itemsRepository) : ViewModel where T : class, IEntity, new()
+    internal abstract class MainFunctionsViewModel<T>(IRepository<T> itemsRepository) : ViewModel, IDisposable where T : class, IEntity, new()
     {
+        public bool Disposed { get; set; } = false;
+
         protected readonly IRepository<T> _itemsRepository = itemsRepository;
 
         #region ShowAdd_EditUserControl : bool - Отобразить окно добавления (редактирования) элемента
@@ -96,7 +98,7 @@ namespace MyHelper.ViewModels.Base
         protected virtual bool CanClosedCommandExecute(object? p) => true;
 
         ///<summary>Логика выполнения - зыкрытие окна</summary>
-        protected abstract void OnClosedCommandExecuted(object? p);
+        protected virtual void OnClosedCommandExecuted(object? p) => Dispose();
 
         #endregion
 
@@ -183,6 +185,15 @@ namespace MyHelper.ViewModels.Base
         ///<summary>Логика выполнения - сохранить репозиторий</summary>
         private async Task OnSaveRepositoryCommandExecuted(object? p) => await _itemsRepository.SaveChangedAsync();
 
+
         #endregion
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) { }
     }
 }

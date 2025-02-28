@@ -17,7 +17,6 @@ namespace MyHelper.ViewModels
                              IRepository<TargetsGroup> targetsGroupRepository) : MainFunctionsViewModel<TargetsGroup>(targetsGroupRepository), IDisposable
     {
         private readonly IRepository<Target> _targetRepository = targetRepository;
-        private bool _disposed = false;
         private string _filter = "все";
         private int _completedTargetsCount_Calculated = 0;
 
@@ -68,7 +67,7 @@ namespace MyHelper.ViewModels
                 }
                 Set(ref _selectedTargetsGroup, value);
                 CompletedTargetsCount = _completedTargetsCount_Calculated;
-                DepedencyProperites(this);
+                DepedencyProperites();
 
             }
         }
@@ -94,7 +93,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _selectedTarget, value)) return;
-                DepedencyProperites(this);
+                DepedencyProperites();
             }
         }
 
@@ -158,7 +157,7 @@ namespace MyHelper.ViewModels
                     TargetForAdd_Edit.IsComplete = false;
                     OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
-                DepedencyProperites(this);
+                DepedencyProperites();
             }
         }
 
@@ -181,7 +180,7 @@ namespace MyHelper.ViewModels
                     TargetForAdd_Edit.Note = _selectedTarget.Note;
                     OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
-                DepedencyProperites(this);
+                DepedencyProperites();
             }
         }
 
@@ -257,7 +256,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _completedTargetsCount, value)) return;
-                DepedencyProperites(this);
+                DepedencyProperites();
             }
         }
 
@@ -417,7 +416,7 @@ namespace MyHelper.ViewModels
             var newTargetModel = new TargetModel(newTarget);
             if (_filter != "выполненные") Targets.Add(newTargetModel);
             OnPropertyChanged(nameof(TargetsCount));
-            DepedencyProperites(this, nameof(CompletedTargetsCount));
+            DepedencyProperites(nameof(CompletedTargetsCount));
             AddTarget = false;
         }
 
@@ -474,7 +473,7 @@ namespace MyHelper.ViewModels
             await _targetRepository.RemoveAsync(_selectedTarget.Id);
             Targets.Remove(_selectedTarget);
             if (isComplete) CompletedTargetsCount--;
-            else DepedencyProperites(this, nameof(CompletedTargetsCount));
+            else DepedencyProperites(nameof(CompletedTargetsCount));
             OnPropertyChanged(nameof(TargetsCount));
         }
 
@@ -520,17 +519,11 @@ namespace MyHelper.ViewModels
 
         #region Methods...
 
-        #region Dispose
+        #region override Dispose
 
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (!_disposed)
+            if (!Disposed)
             {
                 CleanUpBehaviors = true;
                 Targets.CollectionChanged -= Targets_CollectionChanged;
@@ -540,8 +533,38 @@ namespace MyHelper.ViewModels
                 {
                     GroupsTargets.Clear();
                 }
-                _disposed = true;
+                Disposed = true;
             }
+        }
+
+        #endregion
+
+        #region override MethodBeforeAddElement
+
+        protected override void MethodBeforeAddElement()
+        {
+            if (AddElement)
+            {
+                TargetsGroupForAdd_Edit.Year = GroupsTargets.Last().Year == 0 ? (uint)DateTime.Now.Year : GroupsTargets.Last().Year + 1;
+                TargetsGroupForAdd_Edit.Name = string.Empty;
+                OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
+            }
+            DepedencyProperites(nameof(EnableFrameworkElements));
+        }
+
+        #endregion
+
+        #region override MethodBeforeEditElement
+
+        protected override void MethodBeforeEditElement()
+        {
+            if (EditElement)
+            {
+                TargetsGroupForAdd_Edit.Year = _selectedTargetsGroup.Year;
+                TargetsGroupForAdd_Edit.Name = _selectedTargetsGroup.Name;
+                OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
+            }
+            DepedencyProperites(nameof(EnableFrameworkElements));
         }
 
         #endregion
@@ -560,27 +583,6 @@ namespace MyHelper.ViewModels
             Targets.Clear();
         }
 
-        protected override void MethodBeforeAddElement()
-        {
-            if (AddElement)
-            {
-                TargetsGroupForAdd_Edit.Year = GroupsTargets.Last().Year == 0 ? (uint)DateTime.Now.Year : GroupsTargets.Last().Year + 1;
-                TargetsGroupForAdd_Edit.Name = string.Empty;
-                OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
-            }
-            DepedencyProperites(this, nameof(EnableFrameworkElements));
-        }
-
-        protected override void MethodBeforeEditElement()
-        {
-            if (EditElement)
-            {
-                TargetsGroupForAdd_Edit.Year = _selectedTargetsGroup.Year;
-                TargetsGroupForAdd_Edit.Name = _selectedTargetsGroup.Name;
-                OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
-            }
-            DepedencyProperites(this, nameof(EnableFrameworkElements));
-        }
 
         #endregion
 
