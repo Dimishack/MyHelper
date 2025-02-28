@@ -73,11 +73,8 @@ namespace MyHelper.ViewModels
         public bool ShowHomeView
         {
             get => _showHomeView;
-            set
-            {
-                if (!Set(ref _showHomeView, value) || !value) return;
-                ChangeCurrentView(() => CurrentViewModel = new HomeViewModel());
-            }
+            set => ChangeCurrentView(ref _showHomeView, value,
+                    () => CurrentViewModel = new HomeViewModel());
         }
 
         #endregion
@@ -91,11 +88,8 @@ namespace MyHelper.ViewModels
         public bool ShowTargetsView
         {
             get => _showTargetsView;
-            set
-            {
-                if (!Set(ref _showTargetsView, value) || !value) return;
-                ChangeCurrentView(() => CurrentViewModel = new TargetsUCViewModel(_targetRepository, _targetsRepository));
-            }
+            set => ChangeCurrentView(ref _showTargetsView, value,
+                    () => CurrentViewModel = new TargetsUCViewModel(_targetRepository, _targetsRepository));
         }
 
         #endregion
@@ -109,11 +103,8 @@ namespace MyHelper.ViewModels
         public bool ShowTasksView
         {
             get => _showTasksView;
-            set
-            {
-                if (!Set(ref _showTasksView, value) || !value) return;
-                ChangeCurrentView(() => CurrentViewModel = new TasksUCViewModel(tasksRepository));
-            }
+            set => ChangeCurrentView(ref _showTasksView, value,
+                    () => CurrentViewModel = new TasksUCViewModel(tasksRepository));
         }
 
         #endregion
@@ -127,11 +118,8 @@ namespace MyHelper.ViewModels
         public bool ShowChallengesView
         {
             get => _showChallengesView;
-            set
-            {
-                if (!Set(ref _showChallengesView, value) || !value) return;
-                ChangeCurrentView(() => CurrentViewModel = new ChallengesUCViewModel(_challengeRepository, _checkRepostiory));
-            }
+            set => ChangeCurrentView(ref _showChallengesView, value,
+                    () => CurrentViewModel = new ChallengesUCViewModel(_challengeRepository, _checkRepostiory));
         }
 
         #endregion
@@ -145,11 +133,8 @@ namespace MyHelper.ViewModels
         public bool ShowBooksView
         {
             get => _showBooksView;
-            set
-            {
-                if (!Set(ref _showBooksView, value) || !value) return;
-                ChangeCurrentView(() => CurrentViewModel = new BooksUCViewModel());
-            }
+            set => ChangeCurrentView(ref _showBooksView, value,
+                    () => CurrentViewModel = new BooksUCViewModel());
         }
 
         #endregion
@@ -163,11 +148,8 @@ namespace MyHelper.ViewModels
         public bool ShowMovieView
         {
             get => _showMovieView;
-            set
-            {
-                if (!Set(ref _showMovieView, value) || !value) return;
-                ChangeCurrentView(() => CurrentViewModel = new MovieUCViewModel(_movieRepository, _genreRepository, _movieGenreRepository));
-            }
+            set => ChangeCurrentView(ref _showMovieView, value,
+                    () => CurrentViewModel = new MovieUCViewModel(_movieRepository, _genreRepository, _movieGenreRepository));
         }
 
         #endregion
@@ -181,11 +163,8 @@ namespace MyHelper.ViewModels
         public bool ShowSettingsView
         {
             get => _showSettingsView;
-            set
-            {
-                if (!Set(ref _showSettingsView, value) || !value) return;
-                ChangeCurrentView(() => CurrentViewModel = new SettingsUCViewModel());
-            }
+            set => ChangeCurrentView(ref _showSettingsView, value,
+                    () => CurrentViewModel = new SettingsUCViewModel());
         }
 
         #endregion
@@ -213,8 +192,9 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        private void ChangeCurrentView(Action currentViewAction)
+        private void ChangeCurrentView(ref bool field, bool value, Action currentViewAction)
         {
+            if (!Set(ref field, value) || !value) return;
             currentViewAction();
             ShowFullMenu = false;
         }
