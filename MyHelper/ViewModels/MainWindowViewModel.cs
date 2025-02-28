@@ -12,13 +12,20 @@ namespace MyHelper.ViewModels
                                   IRepository<TargetsGroup> targetsGroupRepository,
                                   IRepository<MyTask> tasksRepository,
                                   IRepository<Challenge> challengeRepository,
-                                  IRepository<Check> checkRepostiory) : ViewModel
+                                  IRepository<Check> checkRepostiory,
+                                  IRepository<Genre> genreRepository,
+                                  IRepository<Movie> movieRepository,
+                                  IRepository<MovieGenre> movieGenreRepository
+        ) : ViewModel
     {
         private readonly IUserDialog _userDialog = userDialog;
         private readonly IRepository<Target> _targetRepository = targetRepository;
         private readonly IRepository<TargetsGroup> _targetsRepository = targetsGroupRepository;
         private readonly IRepository<Challenge> _challengeRepository = challengeRepository;
         private readonly IRepository<Check> _checkRepostiory = checkRepostiory;
+        private readonly IRepository<Genre> _genreRepository = genreRepository;
+        private readonly IRepository<Movie> _movieRepository = movieRepository;
+        private readonly IRepository<MovieGenre> _movieGenreRepository = movieGenreRepository;
 
         #region Properties...
 
@@ -147,19 +154,19 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region ShowCinemaView : bool - Отобразить представление кино
+        #region ShowMovieView : bool - Отобразить представление кино
 
         ///<summary>Отобразить представление кино</summary>
-        private bool _showCinemaView;
+        private bool _showMovieView;
 
         ///<summary>Отобразить представление кино</summary>
-        public bool ShowCinemaView
+        public bool ShowMovieView
         {
-            get => _showCinemaView;
+            get => _showMovieView;
             set
             {
-                if (!Set(ref _showCinemaView, value) || !value) return;
-                ChangeCurrentView(() => CurrentViewModel = new CinemaUCViewModel());
+                if (!Set(ref _showMovieView, value) || !value) return;
+                ChangeCurrentView(() => CurrentViewModel = new MovieUCViewModel(_movieRepository, _genreRepository, _movieGenreRepository));
             }
         }
 

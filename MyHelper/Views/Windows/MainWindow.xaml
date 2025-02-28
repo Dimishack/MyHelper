@@ -121,7 +121,7 @@
                         <ToolTip Content="Books"/>
                     </ListBoxItem.ToolTip>
                 </ListBoxItem>
-                <ListBoxItem IsSelected="{Binding ShowCinemaView}">
+                <ListBoxItem IsSelected="{Binding ShowMovieView}">
                     <ListBoxItem.Style>
                         <Style TargetType="ListBoxItem" BasedOn="{StaticResource lbItem_menu}">
                             <Setter Property="Image.Source" Value="/Resources/Images/Cinema.png"/>

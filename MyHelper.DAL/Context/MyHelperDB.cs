@@ -8,6 +8,9 @@ namespace MyHelper.DAL.Context
         public DbSet<TargetsGroup> TargetsGroups { get; set; }
         public DbSet<Challenge> Challenges { get; set; }
         public DbSet<MyTask> Tasks { get; set; }
+        public DbSet<Movie> Movies { get; set; }
+        public DbSet<Genre> Genres { get; set; }
+        public DbSet<MovieGenre> MovieGenres { get; set; }
 
         public MyHelperDB(DbContextOptions<MyHelperDB> options) : base(options) { }
 

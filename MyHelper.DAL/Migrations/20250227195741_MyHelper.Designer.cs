@@ -9,8 +9,8 @@ using MyHelper.DAL.Context;
 namespace MyHelper.DAL.Migrations
 {
     [DbContext(typeof(MyHelperDB))]
-    [Migration("20241219155235_Imitialize")]
-    partial class Imitialize
+    [Migration("20250227195741_MyHelper")]
+    partial class MyHelper
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -77,6 +77,76 @@ namespace MyHelper.DAL.Migrations
                     b.HasIndex("ChallengeId");
 
                     b.ToTable("Check");
+                });
+
+            modelBuilder.Entity("MyHelper.DAL.Entyties.Genre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(300)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Genres");
+                });
+
+            modelBuilder.Entity("MyHelper.DAL.Entyties.Movie", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Format")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(300)");
+
+                    b.Property<string>("Producer")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Raiting")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ReleaseYear")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ViewingDate")
+                        .HasColumnType("date");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Movies");
+                });
+
+            modelBuilder.Entity("MyHelper.DAL.Entyties.MovieGenre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GenreId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GenreId");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("MovieGenres");
                 });
 
             modelBuilder.Entity("MyHelper.DAL.Entyties.MyTask", b =>
@@ -159,6 +229,21 @@ namespace MyHelper.DAL.Migrations
                     b.HasOne("MyHelper.DAL.Entyties.Challenge", "Challenge")
                         .WithMany("CheckList")
                         .HasForeignKey("ChallengeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MyHelper.DAL.Entyties.MovieGenre", b =>
+                {
+                    b.HasOne("MyHelper.DAL.Entyties.Genre", "Genre")
+                        .WithMany("MovieGenres")
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyHelper.DAL.Entyties.Movie", "Movie")
+                        .WithMany("MovieGenres")
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

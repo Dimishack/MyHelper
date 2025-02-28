@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MyHelper.DAL.Migrations
 {
-    public partial class Imitialize : Migration
+    public partial class MyHelper : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -25,6 +25,38 @@ namespace MyHelper.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Challenges", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Genres",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "varchar(300)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Genres", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Movies",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "varchar(300)", nullable: false),
+                    Producer = table.Column<string>(nullable: false),
+                    ReleaseYear = table.Column<int>(nullable: false),
+                    Format = table.Column<int>(nullable: false),
+                    Status = table.Column<int>(nullable: false),
+                    Raiting = table.Column<int>(nullable: true),
+                    ViewingDate = table.Column<DateTime>(type: "date", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Movies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -82,6 +114,32 @@ namespace MyHelper.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MovieGenres",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    MovieId = table.Column<int>(nullable: false),
+                    GenreId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MovieGenres", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MovieGenres_Genres_GenreId",
+                        column: x => x.GenreId,
+                        principalTable: "Genres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MovieGenres_Movies_MovieId",
+                        column: x => x.MovieId,
+                        principalTable: "Movies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Target",
                 columns: table => new
                 {
@@ -109,6 +167,16 @@ namespace MyHelper.DAL.Migrations
                 column: "ChallengeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MovieGenres_GenreId",
+                table: "MovieGenres",
+                column: "GenreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MovieGenres_MovieId",
+                table: "MovieGenres",
+                column: "MovieId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Target_TargetsGroupId",
                 table: "Target",
                 column: "TargetsGroupId");
@@ -120,6 +188,9 @@ namespace MyHelper.DAL.Migrations
                 name: "Check");
 
             migrationBuilder.DropTable(
+                name: "MovieGenres");
+
+            migrationBuilder.DropTable(
                 name: "Target");
 
             migrationBuilder.DropTable(
@@ -127,6 +198,12 @@ namespace MyHelper.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Challenges");
+
+            migrationBuilder.DropTable(
+                name: "Genres");
+
+            migrationBuilder.DropTable(
+                name: "Movies");
 
             migrationBuilder.DropTable(
                 name: "TargetsGroups");
