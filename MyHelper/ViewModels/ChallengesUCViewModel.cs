@@ -4,7 +4,7 @@ using MyHelper.Infrastructure.Attributes;
 using MyHelper.Infrastructure.Commands;
 using MyHelper.Interfaces;
 using MyHelper.Models.Challenges;
-using MyHelper.Models.Challenges.Enums;
+using MyHelper.Models.Enums;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;

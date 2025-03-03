@@ -1,5 +1,5 @@
 ﻿using MyHelper.Models.Base;
-using MyHelper.Models.Challenges.Enums;
+using MyHelper.Models.Enums;
 using System.Collections.ObjectModel;
 
 namespace MyHelper.Models.Challenges

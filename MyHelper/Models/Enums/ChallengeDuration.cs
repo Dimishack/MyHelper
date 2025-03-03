@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyHelper.Models.Challenges.Enums
+namespace MyHelper.Models.Enums
 {
     internal enum ChallengeDuration
     {
