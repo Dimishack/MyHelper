@@ -12,9 +12,9 @@ namespace MyHelper.DAL
             .AddTransient<IRepository<Check>, DbRepository<Check>>()
             .AddTransient<IRepository<Challenge>, DbRepository<Challenge>>()
             .AddTransient<IRepository<MyTask>, DbRepository<MyTask>>()
-            .AddTransient<IRepository<Movie>, MovieRepository>()
+            .AddTransient<IRepository<Film>, FilmRepository>()
             .AddTransient<IRepository<Genre>, DbRepository<Genre>>()
-            .AddTransient<IRepository<MovieGenre>, DbRepository<MovieGenre>>()
+            .AddTransient<IRepository<FilmGenre>, DbRepository<FilmGenre>>()
             ;
     }
 }

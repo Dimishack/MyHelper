@@ -13,7 +13,6 @@
   <ItemGroup>
     <None Remove="Resources\Images\Books.png" />
     <None Remove="Resources\Images\Challenges.png" />
-    <None Remove="Resources\Images\Cinema.png" />
     <None Remove="Resources\Images\Home.png" />
     <None Remove="Resources\Images\icon.ico" />
     <None Remove="Resources\Images\icon.png" />
@@ -31,7 +30,7 @@
     <Resource Include="Resources\Images\Challenges.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\Images\Cinema.png">
+    <Resource Include="Resources\Images\Film.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Images\Home.png">

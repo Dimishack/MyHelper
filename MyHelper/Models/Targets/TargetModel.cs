@@ -11,7 +11,7 @@ namespace MyHelper.Models.Targets
         {
             get => _target.IsComplete;
             set
-            { 
+            {
                 if (_target.IsComplete == value) return;
                 _target.IsComplete = value;
                 OnPropertyChanged(nameof(IsComplete));

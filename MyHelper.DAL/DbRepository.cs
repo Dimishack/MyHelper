@@ -117,9 +117,9 @@ namespace MyHelper.DAL
         public async Task SaveChangedAsync() => await _db.SaveChangesAsync();
     }
 
-    internal class MovieRepository : DbRepository<Movie>
+    internal class FilmRepository : DbRepository<Film>
     {
-        public override IQueryable<Movie> Items => base.Items.Include(item => item.MovieGenres).ThenInclude(mg => mg.Genre);
-        public MovieRepository(MyHelperDB db) : base(db) { }
+        public override IQueryable<Film> Items => base.Items.Include(item => item.FilmGenres).ThenInclude(mg => mg.Genre);
+        public FilmRepository(MyHelperDB db) : base(db) { }
     }
 }

@@ -9,7 +9,7 @@ using MyHelper.DAL.Context;
 namespace MyHelper.DAL.Migrations
 {
     [DbContext(typeof(MyHelperDB))]
-    [Migration("20250227195741_MyHelper")]
+    [Migration("20250303150321_MyHelper")]
     partial class MyHelper
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,22 +79,7 @@ namespace MyHelper.DAL.Migrations
                     b.ToTable("Check");
                 });
 
-            modelBuilder.Entity("MyHelper.DAL.Entyties.Genre", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("varchar(300)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Genres");
-                });
-
-            modelBuilder.Entity("MyHelper.DAL.Entyties.Movie", b =>
+            modelBuilder.Entity("MyHelper.DAL.Entyties.Film", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -111,7 +96,7 @@ namespace MyHelper.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("Raiting")
+                    b.Property<int>("Raiting")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ReleaseYear")
@@ -125,28 +110,43 @@ namespace MyHelper.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Movies");
+                    b.ToTable("Films");
                 });
 
-            modelBuilder.Entity("MyHelper.DAL.Entyties.MovieGenre", b =>
+            modelBuilder.Entity("MyHelper.DAL.Entyties.FilmGenre", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("GenreId")
+                    b.Property<int>("FilmId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("MovieId")
+                    b.Property<int>("GenreId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FilmId");
+
                     b.HasIndex("GenreId");
 
-                    b.HasIndex("MovieId");
+                    b.ToTable("FilmGenres");
+                });
 
-                    b.ToTable("MovieGenres");
+            modelBuilder.Entity("MyHelper.DAL.Entyties.Genre", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(300)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Genres");
                 });
 
             modelBuilder.Entity("MyHelper.DAL.Entyties.MyTask", b =>
@@ -233,17 +233,17 @@ namespace MyHelper.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MyHelper.DAL.Entyties.MovieGenre", b =>
+            modelBuilder.Entity("MyHelper.DAL.Entyties.FilmGenre", b =>
                 {
-                    b.HasOne("MyHelper.DAL.Entyties.Genre", "Genre")
-                        .WithMany("MovieGenres")
-                        .HasForeignKey("GenreId")
+                    b.HasOne("MyHelper.DAL.Entyties.Film", "Film")
+                        .WithMany("FilmGenres")
+                        .HasForeignKey("FilmId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MyHelper.DAL.Entyties.Movie", "Movie")
-                        .WithMany("MovieGenres")
-                        .HasForeignKey("MovieId")
+                    b.HasOne("MyHelper.DAL.Entyties.Genre", "Genre")
+                        .WithMany("FilmGenres")
+                        .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

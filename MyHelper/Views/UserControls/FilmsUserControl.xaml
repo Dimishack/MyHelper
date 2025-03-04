@@ -1,0 +1,82 @@
+﻿<UserControl x:Class="MyHelper.Views.UserControls.FilmsUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MyHelper.Views.UserControls"
+             
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters.ValueConverters"
+             xmlns:vm="clr-namespace:MyHelper.ViewModels"
+             
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance {x:Type vm:FilmsUCViewModel}, IsDesignTimeCreatable=True}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.RenderTransform>
+        <TranslateTransform/>
+    </UserControl.RenderTransform>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard Storyboard="{StaticResource ShowMainUserControlAnimation}"/>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <UserControl.Resources>
+        <c:FilmFormatConverter x:Key="FilmFormatConverterToString"/>
+
+        <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}"/>
+        <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxMainStyle}"/>
+    </UserControl.Resources>
+    <DockPanel>
+        <Grid DockPanel.Dock="Left" Width="185">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <GroupBox Header="Сортировка:" Grid.Row="0">
+                <ComboBox ItemsSource="{Binding Sorts}" SelectedItem="{Binding SelectedSort}"
+                          DisplayMemberPath="Key"/>
+            </GroupBox>
+        </Grid>
+        <DockPanel>
+            <ListView ItemsSource="{Binding PagesCollectionView}"
+                     SelectedItem="{Binding SelectedPage}"
+                     SelectedIndex="0"
+                     DockPanel.Dock="Bottom"
+                      HorizontalAlignment="Center">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Padding="3"
+                                   Width="20"
+                                   TextAlignment="Center"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <ListBox ItemsSource="{Binding FilmsCollectionView}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource BorderInListBoxStyle}">
+                            <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
+                                <TextBlock Text="{Binding Name, StringFormat='Название: {0}'}"/>
+                                <TextBlock Text="{Binding Producer, StringFormat='Режиссер: {0}'}"/>
+                                <TextBlock Text="{Binding ReleaseYear, StringFormat='Год релиза: {0}'}"/>
+                                <TextBlock Text="{Binding Raiting, StringFormat='Рейтинг: {0}'}"/>
+                                <TextBlock Text="{Binding Status, StringFormat='Статус: {0}'}"/>
+                                <TextBlock Text="{Binding Format, StringFormat='Формат: {0}',
+                                                Converter={StaticResource FilmFormatConverterToString}}"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </DockPanel>
+</UserControl>

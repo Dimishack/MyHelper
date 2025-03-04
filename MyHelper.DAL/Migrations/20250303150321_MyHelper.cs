@@ -28,6 +28,25 @@ namespace MyHelper.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Films",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "varchar(300)", nullable: false),
+                    Producer = table.Column<string>(nullable: false),
+                    ReleaseYear = table.Column<int>(nullable: false),
+                    Format = table.Column<int>(nullable: false),
+                    Status = table.Column<int>(nullable: false),
+                    Raiting = table.Column<int>(nullable: false),
+                    ViewingDate = table.Column<DateTime>(type: "date", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Films", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Genres",
                 columns: table => new
                 {
@@ -38,25 +57,6 @@ namespace MyHelper.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Genres", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Movies",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "varchar(300)", nullable: false),
-                    Producer = table.Column<string>(nullable: false),
-                    ReleaseYear = table.Column<int>(nullable: false),
-                    Format = table.Column<int>(nullable: false),
-                    Status = table.Column<int>(nullable: false),
-                    Raiting = table.Column<int>(nullable: true),
-                    ViewingDate = table.Column<DateTime>(type: "date", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Movies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -114,27 +114,27 @@ namespace MyHelper.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MovieGenres",
+                name: "FilmGenres",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    MovieId = table.Column<int>(nullable: false),
+                    FilmId = table.Column<int>(nullable: false),
                     GenreId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MovieGenres", x => x.Id);
+                    table.PrimaryKey("PK_FilmGenres", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MovieGenres_Genres_GenreId",
-                        column: x => x.GenreId,
-                        principalTable: "Genres",
+                        name: "FK_FilmGenres_Films_FilmId",
+                        column: x => x.FilmId,
+                        principalTable: "Films",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MovieGenres_Movies_MovieId",
-                        column: x => x.MovieId,
-                        principalTable: "Movies",
+                        name: "FK_FilmGenres_Genres_GenreId",
+                        column: x => x.GenreId,
+                        principalTable: "Genres",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -167,14 +167,14 @@ namespace MyHelper.DAL.Migrations
                 column: "ChallengeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MovieGenres_GenreId",
-                table: "MovieGenres",
-                column: "GenreId");
+                name: "IX_FilmGenres_FilmId",
+                table: "FilmGenres",
+                column: "FilmId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MovieGenres_MovieId",
-                table: "MovieGenres",
-                column: "MovieId");
+                name: "IX_FilmGenres_GenreId",
+                table: "FilmGenres",
+                column: "GenreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Target_TargetsGroupId",
@@ -188,7 +188,7 @@ namespace MyHelper.DAL.Migrations
                 name: "Check");
 
             migrationBuilder.DropTable(
-                name: "MovieGenres");
+                name: "FilmGenres");
 
             migrationBuilder.DropTable(
                 name: "Target");
@@ -200,10 +200,10 @@ namespace MyHelper.DAL.Migrations
                 name: "Challenges");
 
             migrationBuilder.DropTable(
-                name: "Genres");
+                name: "Films");
 
             migrationBuilder.DropTable(
-                name: "Movies");
+                name: "Genres");
 
             migrationBuilder.DropTable(
                 name: "TargetsGroups");

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyHelper.DAL.Entyties
 {
-    public class Movie : NamedEntity
+    public class Film : NamedEntity
     {
         public string Producer { get; set; }
 
@@ -15,11 +15,11 @@ namespace MyHelper.DAL.Entyties
 
         public int Status { get; set; }
 
-        public int? Raiting { get; set; }
+        public int Raiting { get; set; }
 
         [Column(TypeName = "date")]
         public DateTime? ViewingDate { get; set; }
 
-        public virtual ICollection<MovieGenre> MovieGenres { get; set; }
+        public virtual ICollection<FilmGenre> FilmGenres { get; set; }
     }
 }

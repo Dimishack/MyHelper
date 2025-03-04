@@ -5,6 +5,6 @@ namespace MyHelper.DAL.Entyties
 {
     public class Genre : NamedEntity
     {
-        public virtual ICollection<MovieGenre> MovieGenres { get; set; }
+        public virtual ICollection<FilmGenre> FilmGenres { get; set; }
     }
 }

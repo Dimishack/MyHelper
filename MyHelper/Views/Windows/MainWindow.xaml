@@ -121,15 +121,15 @@
                         <ToolTip Content="Books"/>
                     </ListBoxItem.ToolTip>
                 </ListBoxItem>
-                <ListBoxItem IsSelected="{Binding ShowMovieView}">
+                <ListBoxItem IsSelected="{Binding ShowFilmsView}">
                     <ListBoxItem.Style>
                         <Style TargetType="ListBoxItem" BasedOn="{StaticResource lbItem_menu}">
-                            <Setter Property="Image.Source" Value="/Resources/Images/Cinema.png"/>
-                            <Setter Property="TextBlock.Text" Value="C I N E M A"/>
+                            <Setter Property="Image.Source" Value="/Resources/Images/Film.png"/>
+                            <Setter Property="TextBlock.Text" Value="F I L M S"/>
                         </Style>
                     </ListBoxItem.Style>
                     <ListBoxItem.ToolTip>
-                        <ToolTip Content="Cinema"/>
+                        <ToolTip Content="Films"/>
                     </ListBoxItem.ToolTip>
                 </ListBoxItem>
                 <ListBoxItem IsSelected="{Binding ShowSettingsView}">

@@ -14,8 +14,8 @@ namespace MyHelper.ViewModels
                                   IRepository<Challenge> challengeRepository,
                                   IRepository<Check> checkRepostiory,
                                   IRepository<Genre> genreRepository,
-                                  IRepository<Movie> movieRepository,
-                                  IRepository<MovieGenre> movieGenreRepository
+                                  IRepository<Film> filmRepository,
+                                  IRepository<FilmGenre> filmGenreRepository
         ) : ViewModel
     {
         private readonly IUserDialog _userDialog = userDialog;
@@ -24,8 +24,8 @@ namespace MyHelper.ViewModels
         private readonly IRepository<Challenge> _challengeRepository = challengeRepository;
         private readonly IRepository<Check> _checkRepostiory = checkRepostiory;
         private readonly IRepository<Genre> _genreRepository = genreRepository;
-        private readonly IRepository<Movie> _movieRepository = movieRepository;
-        private readonly IRepository<MovieGenre> _movieGenreRepository = movieGenreRepository;
+        private readonly IRepository<Film> _filmRepository = filmRepository;
+        private readonly IRepository<FilmGenre> _filmGenreRepository = filmGenreRepository;
 
         #region Properties...
 
@@ -139,17 +139,17 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region ShowMovieView : bool - Отобразить представление кино
+        #region ShowFilmsView : bool - Отобразить представление фильмов
 
         ///<summary>Отобразить представление кино</summary>
-        private bool _showMovieView;
+        private bool _showFilmsView;
 
         ///<summary>Отобразить представление кино</summary>
-        public bool ShowMovieView
+        public bool ShowFilmsView
         {
-            get => _showMovieView;
-            set => ChangeCurrentView(ref _showMovieView, value,
-                    () => CurrentViewModel = new MovieUCViewModel(_movieRepository, _genreRepository, _movieGenreRepository));
+            get => _showFilmsView;
+            set => ChangeCurrentView(ref _showFilmsView, value,
+                    () => CurrentViewModel = new FilmsUCViewModel(_filmRepository, _genreRepository, _filmGenreRepository));
         }
 
         #endregion
