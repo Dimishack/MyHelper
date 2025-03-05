@@ -84,6 +84,11 @@
         <Setter Property="fa:IconImage.Icon" Value="Xmark"/>
     </Style>
 
+    <Style TargetType="Button" x:Key="SearchStyle"
+           BasedOn="{StaticResource ButtonMainStyle}">
+        <Setter Property="fa:IconImage.Icon" Value="Search"/>
+    </Style>
+
 
     <Style TargetType="Button" x:Key="CheckOrCancelElementStyle"
            BasedOn="{StaticResource ButtonMainStyle}">

@@ -26,57 +26,113 @@
         </EventTrigger>
     </UserControl.Triggers>
     <UserControl.Resources>
-        <c:FilmFormatConverter x:Key="FilmFormatConverterToString"/>
+        <c:FilmFormatConverter x:Key="FilmFormatToStringConverter"/>
+        <c:FilmStatusConverter x:Key="FilmStatusToStringConverter"/>
 
         <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}"/>
         <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxMainStyle}"/>
+        <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxMainStyle}"/>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}"/>
+        <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}"/>
     </UserControl.Resources>
     <DockPanel>
-        <Grid DockPanel.Dock="Left" Width="185">
+        <Grid DockPanel.Dock="Left" Width="200">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <GroupBox Header="Сортировка:" Grid.Row="0">
                 <ComboBox ItemsSource="{Binding Sorts}" SelectedItem="{Binding SelectedSort}"
                           DisplayMemberPath="Key"/>
             </GroupBox>
+            <GroupBox Header="Фильтры:" Grid.Row="1">
+                <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
+                    <GroupBox Header="Формат:">
+                        <ItemsControl ItemsSource="{Binding FilterFormat}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <RadioButton Content="{Binding Name}" 
+                                         IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                         GroupName="FilterFormat"
+                                         Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl},
+                                                    Path=DataContext.FilterByFormatCommand}"
+                                         CommandParameter="{Binding Name}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </GroupBox>
+                    <GroupBox Header="Статус:">
+                        <ItemsControl ItemsSource="{Binding FilterStatus}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <RadioButton Content="{Binding Name}"
+                                                 IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                 GroupName="FilterStatus"
+                                                 Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl},
+                                                            Path=DataContext.FilterByStatusCommand}"
+                                                 CommandParameter="{Binding Name}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </GroupBox>
+                </StackPanel>
+            </GroupBox>
         </Grid>
-        <DockPanel>
-            <ListView ItemsSource="{Binding PagesCollectionView}"
+        <GroupBox Header="Фильмы">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Margin="4,4">
+                    <TextBlock DockPanel.Dock="Left"
+                               Text="Поиск:"
+                               VerticalAlignment="Center"
+                               Margin="0,0,7,0"/>
+                    <Button DockPanel.Dock="Right"
+                            Style="{StaticResource DeleteElementStyle}"
+                            Margin="1"/>
+                    <Button DockPanel.Dock="Right"
+                            Style="{StaticResource SearchStyle}"
+                            Margin="1"/>
+                    <ComboBox DockPanel.Dock="Right"
+                              Margin="3,1"
+                              Width="100"/>
+                    <TextBox Margin="0,0.5"/>
+                </DockPanel>
+                <ListView ItemsSource="{Binding PagesCollectionView}"
                      SelectedItem="{Binding SelectedPage}"
                      SelectedIndex="0"
                      DockPanel.Dock="Bottom"
                       HorizontalAlignment="Center">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" Padding="3"
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Padding="3"
                                    Width="20"
                                    TextAlignment="Center"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            <ListBox ItemsSource="{Binding FilmsCollectionView}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border Style="{StaticResource BorderInListBoxStyle}">
-                            <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
-                                <TextBlock Text="{Binding Name, StringFormat='Название: {0}'}"/>
-                                <TextBlock Text="{Binding Producer, StringFormat='Режиссер: {0}'}"/>
-                                <TextBlock Text="{Binding ReleaseYear, StringFormat='Год релиза: {0}'}"/>
-                                <TextBlock Text="{Binding Raiting, StringFormat='Рейтинг: {0}'}"/>
-                                <TextBlock Text="{Binding Status, StringFormat='Статус: {0}'}"/>
-                                <TextBlock Text="{Binding Format, StringFormat='Формат: {0}',
-                                                Converter={StaticResource FilmFormatConverterToString}}"/>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </DockPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <ListBox ItemsSource="{Binding FilmsCollectionView}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource BorderInListBoxStyle}">
+                                <StackPanel Style="{StaticResource StackPanelVerticalOrientationStyle}">
+                                    <TextBlock Text="{Binding Name, StringFormat='Название: {0}'}"/>
+                                    <TextBlock Text="{Binding Producer, StringFormat='Режиссер: {0}'}"/>
+                                    <TextBlock Text="{Binding ReleaseYear, StringFormat='Год релиза: {0}'}"/>
+                                    <TextBlock Text="{Binding Raiting, StringFormat='Рейтинг: {0}'}"/>
+                                    <TextBlock Text="{Binding Status, StringFormat='Статус: {0}',
+                                                Converter={StaticResource FilmStatusToStringConverter}}"/>
+                                    <TextBlock Text="{Binding Format, StringFormat='Формат: {0}',
+                                                Converter={StaticResource FilmFormatToStringConverter}}"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </GroupBox>
     </DockPanel>
 </UserControl>

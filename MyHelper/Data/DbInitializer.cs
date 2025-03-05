@@ -77,7 +77,8 @@ namespace MyHelper.Data
                     Producer = $"Producer {index}",
                     Format = Random.Shared.Next(0, 10),
                     Raiting = Random.Shared.Next(1, 11),
-                    ReleaseYear = 2000 + Random.Shared.Next(1, 24)
+                    ReleaseYear = 2000 + Random.Shared.Next(1, 24),
+                    Status = Random.Shared.Next(0, 3),
                 });
         }
 

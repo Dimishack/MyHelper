@@ -11,7 +11,7 @@ namespace MyHelper.Infrastructure.Converters.ValueConverters
                                 "Веб-сериал", "Реалити-шоу", "Ток-шоу", "Концерт", "Музыкльное видео"];
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
             value is not int format ? string.Empty
-            : format >= _formats.Length ? "Неизвестный формат!"
+            : format >= _formats.Length || format < 0 ? "Неизвестный формат!"
             : _formats[format];
     }
 }

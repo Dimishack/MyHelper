@@ -1,6 +1,7 @@
-﻿using System.Windows.Media;
+﻿using System.Windows;
+using System.Windows.Media;
 
-namespace System.Windows
+namespace MyHelper.Infrastructure.Extensions
 {
     static class DepedencyObjectExtension
     {
@@ -8,10 +9,10 @@ namespace System.Windows
         {
             var root = VisualTreeHelper.GetParent(element);
             if (root is null) return element;
-            return FindVisualRoot(root);
+            return root.FindVisualRoot();
         }
-        
-        public static T? FindVisualParent<T>(this DependencyObject obj) 
+
+        public static T? FindVisualParent<T>(this DependencyObject obj)
             where T : DependencyObject
         {
             if (obj is null) return default;
