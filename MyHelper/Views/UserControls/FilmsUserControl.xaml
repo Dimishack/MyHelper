@@ -7,6 +7,7 @@
              
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters.ValueConverters"
+             xmlns:mconv="clr-namespace:MyHelper.Infrastructure.Converters.MultiValueConverters"
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
              
              mc:Ignorable="d" 
@@ -17,7 +18,10 @@
     </UserControl.RenderTransform>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+            <i:InvokeCommandAction Command="{Binding LoadedAsyncCommand}"/>
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Unloaded">
+            <i:InvokeCommandAction Command="{Binding ClosedCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <UserControl.Triggers>
@@ -28,6 +32,7 @@
     <UserControl.Resources>
         <c:FilmFormatConverter x:Key="FilmFormatToStringConverter"/>
         <c:FilmStatusConverter x:Key="FilmStatusToStringConverter"/>
+        <mconv:FilterWithCountConverter x:Key="FilterWithCountConverter"/>
 
         <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}"/>
         <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxMainStyle}"/>
@@ -36,7 +41,7 @@
         <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}"/>
     </UserControl.Resources>
     <DockPanel>
-        <Grid DockPanel.Dock="Left" Width="200">
+        <Grid DockPanel.Dock="Left" Width="230">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -51,12 +56,23 @@
                         <ItemsControl ItemsSource="{Binding FilterFormat}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <RadioButton Content="{Binding Name}" 
-                                         IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                         GroupName="FilterFormat"
-                                         Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl},
+                                    <RadioButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                 GroupName="FilterFormat"
+                                                 IsEnabled="{Binding IsEnabled, Mode=OneWay}"
+                                                 Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl},
                                                     Path=DataContext.FilterByFormatCommand}"
-                                         CommandParameter="{Binding Name}"/>
+                                                 CommandParameter="{Binding Name}">
+                                        <RadioButton.Content>
+                                            <TextBlock TextWrapping="Wrap">
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource FilterWithCountConverter}">
+                                                        <Binding Path="Name"/>
+                                                        <Binding Path="Count"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </RadioButton.Content>
+                                    </RadioButton>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -65,12 +81,19 @@
                         <ItemsControl ItemsSource="{Binding FilterStatus}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <RadioButton Content="{Binding Name}"
-                                                 IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                    <RadioButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                                  GroupName="FilterStatus"
+                                                 IsEnabled="{Binding IsEnabled, Mode=OneWay}"
                                                  Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl},
                                                             Path=DataContext.FilterByStatusCommand}"
-                                                 CommandParameter="{Binding Name}"/>
+                                                 CommandParameter="{Binding Name}">
+                                        <RadioButton.Content>
+                                            <MultiBinding Converter="{StaticResource FilterWithCountConverter}">
+                                                <Binding Path="Name"/>
+                                                <Binding Path="Count"/>
+                                            </MultiBinding>
+                                        </RadioButton.Content>
+                                    </RadioButton>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -87,20 +110,32 @@
                                Margin="0,0,7,0"/>
                     <Button DockPanel.Dock="Right"
                             Style="{StaticResource DeleteElementStyle}"
+                            Command="{Binding CancelSearchCommand}"
                             Margin="1"/>
                     <Button DockPanel.Dock="Right"
                             Style="{StaticResource SearchStyle}"
+                            Command="{Binding SearchCommand}"
                             Margin="1"/>
                     <ComboBox DockPanel.Dock="Right"
                               Margin="3,1"
-                              Width="100"/>
-                    <TextBox Margin="0,0.5"/>
+                              Width="100"
+                              ItemsSource="{Binding Searches}"
+                              SelectedItem="{Binding SelectedSearch}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBox Margin="0,0.5"
+                             Text="{Binding FieldSearch}"/>
                 </DockPanel>
                 <ListView ItemsSource="{Binding PagesCollectionView}"
-                     SelectedItem="{Binding SelectedPage}"
-                     SelectedIndex="0"
-                     DockPanel.Dock="Bottom"
-                      HorizontalAlignment="Center">
+                          SelectedItem="{Binding SelectedPage}"
+                          SelectedIndex="0"
+                          DockPanel.Dock="Bottom"
+                          HorizontalAlignment="Center"
+                          SelectionChanged="ListView_SelectionChanged">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel Orientation="Horizontal"/>
@@ -114,7 +149,7 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <ListBox ItemsSource="{Binding FilmsCollectionView}">
+                <ListBox x:Name="listFilms" ItemsSource="{Binding FilmsCollectionView}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Style="{StaticResource BorderInListBoxStyle}">

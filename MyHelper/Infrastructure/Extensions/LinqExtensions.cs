@@ -2,7 +2,10 @@
 {
     internal static class LinqExtensions
     {
-        public static IEnumerable<T> Sort<T, TKey>(this IEnumerable<T> source, Func<T, TKey> func, bool ascending)
-            => ascending ? source.OrderBy(func) : source.OrderByDescending(func);
+        public static IOrderedQueryable<T> Sort<T>(this IQueryable<T> source, 
+                                                    System.Linq.Expressions.Expression<Func<T, object>> func, bool ascending)
+            => ascending
+                ? source.OrderBy(func)
+                : source.OrderByDescending(func);
     }
 }
