@@ -7,15 +7,22 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
-                    <Border x:Name="border" CornerRadius="1" 
-                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" 
-                            Background="{TemplateBinding Background}"
-                            HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <Grid>
-                            <Path x:Name="Dot" Stroke="{TemplateBinding BorderBrush}" Margin="1" StrokeThickness="2"
+                    <DockPanel>
+                        <Border x:Name="border" CornerRadius="1" 
+                                DockPanel.Dock="Left"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2" 
+                                Background="{TemplateBinding Background}"
+                                HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <Grid>
+                                <Path x:Name="Dot" Stroke="{TemplateBinding BorderBrush}" Margin="1" StrokeThickness="2"
                                   Data="{StaticResource XMark}"/>
-                        </Grid>
-                    </Border>
+                            </Grid>
+                        </Border>
+                        <ContentPresenter ContentSource="Content"
+                                          VerticalAlignment="Center"
+                                          Margin="3,1"
+                                          TextElement.Foreground="{StaticResource SolidColorBrush_DarkGreenishYellowGreen}"/>
+                    </DockPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter Property="Data"
@@ -50,5 +57,5 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    
+
 </ResourceDictionary>

@@ -1,6 +1,6 @@
 ﻿namespace MyHelper.Models
 {
-    class Filter(string name, bool isSelected = false) : Base.BaseModel
+    class Filter(string name, bool isSelected = false, int count = 0) : Base.BaseModel
     {
         public string Name { get; set; } = name;
 
@@ -12,7 +12,7 @@
             set => Set(ref _isSelected, value);
         }
 
-        private int _count = 0;
+        private int _count = count;
         public int Count
         {
             get => _count;

@@ -23,6 +23,10 @@ namespace MyHelper.ViewModels
         private readonly IRepository<FilmGenre> _filmGenreRepository = filmGenreRepository;
         private readonly ObservableCollection<Film> _films = [];
         private readonly ObservableCollection<int> _pages = [];
+        private readonly ObservableCollection<Filter> _genres =
+        [
+            new("Все", true),
+        ];
         private readonly Filter[] _filterFormat = [new ("Все", true), new("Полнометражный фильм"), new("Короткометражный фильм"), new("Сериал"), new("Мини-сериал"),
                                                    new("Телевизионный фильм"), new("Веб-сериал"), new("Реалити-шоу"), new("Ток-шоу"), new("Концерт"), new("Музыкальное видео")];
         private readonly Filter[] _filterStatus = [new("Все", true), new("Запланирован"), new("Смотрю"), new("Посмотрен")];
@@ -43,7 +47,10 @@ namespace MyHelper.ViewModels
         private int _filmCount = 0;
         private int _selectedFilterFormat = -1;
         private int _selectedFilterStatus = -1;
+        private int _selectedFilterGenre = 0;
+        private bool _isSearch = false;
         private bool _changePages = false;
+        private bool _changeCountInGenres = false;
         private bool _changeCountInFormats = false;
         private bool _changeCountInStatuses = false;
 
@@ -55,6 +62,7 @@ namespace MyHelper.ViewModels
         public IReadOnlyList<Filter> FilterFormat => _filterFormat;
         public IReadOnlyList<Filter> FilterStatus => _filterStatus;
         public IReadOnlyList<string> Searches => _searches;
+        public IReadOnlyCollection<Filter> Genres => _genres;
 
         #region SelectedPage : int - Выбранная страница
 
@@ -135,9 +143,7 @@ namespace MyHelper.ViewModels
 
         #region Commands...
 
-        protected override void OnLoadedCommandExecuted(object? p)
-        {
-        }
+        protected override void OnLoadedCommandExecuted(object? p) { }
 
         #region LoadedAsyncCommand - Команда - асихронная загрузка окна
 
@@ -154,17 +160,20 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - асихронная загрузка окна</summary>
         private async Task OnLoadedAsyncCommandExecuted(object? p)
         {
+            var test = await _genreRepository.Items.AsNoTracking().Select(j => new { Name = j.Name, Count = j.FilmGenres.Count }).ToListAsync();
+            foreach (var genre in test)
+                _genres.Add(new(genre.Name, count: genre.Count));
             SelectedFilmsChanged += FilmsUCViewModel_SelectedFilmsChanged;
             var films = _itemsRepository.Items.AsNoTracking();
-            var test = await films.GroupBy(f => f.Format).Select(g => new { Format = g.Key, Count = g.Count() }).ToListAsync();
-            var test2 = await films.GroupBy(f => f.Status).Select(g => new { Status = g.Key, Count = g.Count() }).ToListAsync();
+            var formats = await films.GroupBy(f => f.Format).Select(g => new { Format = g.Key, Count = g.Count() }).ToListAsync();
+            var statuses = await films.GroupBy(f => f.Status).Select(g => new { Status = g.Key, Count = g.Count() }).ToListAsync();
             var changeCountTasks = new List<Task>()
             {
-                Task.Run(() => ChangeCountInFilters(_filterFormat, test.Select(i => i.Format).ToList(), test.Select(i => i.Count).ToList())),
-                Task.Run(() => ChangeCountInFilters(_filterStatus, test2.Select(i => i.Status).ToList(), test2.Select(i => i.Count).ToList()))
+                Task.Run(() => ChangeCountInFilters(_filterFormat, formats.Select(i => i.Format).ToList(), formats.Select(i => i.Count).ToList())),
+                Task.Run(() => ChangeCountInFilters(_filterStatus, statuses.Select(i => i.Status).ToList(), statuses.Select(i => i.Count).ToList()))
             };
             await Task.WhenAll(changeCountTasks);
-            _filmCount = _filterStatus[0].Count;
+            _genres[0].Count = _filmCount = _filterStatus[0].Count;
             _films.ClearAndAddElements(await films.Take(MAXCOUNT).ToListAsync());
             int countPage = GetPageCount();
             _pages.ClearAndAddElements(Enumerable.Range(1, countPage < 10 ? countPage : 10).ToList());
@@ -202,6 +211,7 @@ namespace MyHelper.ViewModels
             _selectedFilterFormat = Array.FindIndex(_filterFormat, f => f.Name == p) - 1;
             _changePages = true;
             _changeCountInStatuses = true;
+            _changeCountInGenres = true;
             if (_selectedPage > 1) SelectedPage = 1;
             else await SetFilmsAsync();
         }
@@ -223,6 +233,29 @@ namespace MyHelper.ViewModels
             _selectedFilterStatus = Array.FindIndex(_filterStatus, f => f.Name == p) - 1;
             _changePages = true;
             _changeCountInFormats = true;
+            _changeCountInGenres = true;
+            if (_selectedPage > 1) SelectedPage = 1;
+            else await SetFilmsAsync();
+        }
+
+        #endregion
+
+        #region FilterByGenreAsyncCommand - Команда - фильтровать по жанру
+
+        ///<summary>Команда - фильтровать по жанру</summary>
+        private ICommand? _filterByGenreAsyncCommand;
+
+        ///<summary>Команда - фильтровать по жанру</summary>
+        public ICommand FilterByGenreAsyncCommand => _filterByGenreAsyncCommand
+            ??= new LambdaCommandAsync<string>(OnFilterByGenreAsyncCommandExecuted);
+
+        ///<summary>Логика выполнения - фильтровать по жанру</summary>
+        private async Task OnFilterByGenreAsyncCommandExecuted(string p)
+        {
+            _selectedFilterGenre = Array.FindIndex(_genres.ToArray(), f => f.Name.Equals(p));
+            _changeCountInFormats = true;
+            _changeCountInStatuses = true;
+            _changePages = true;
             if (_selectedPage > 1) SelectedPage = 1;
             else await SetFilmsAsync();
         }
@@ -240,12 +273,16 @@ namespace MyHelper.ViewModels
 
         ///<summary>Проверка возможности выполнения - поиск</summary>
         private bool CanSearchCommandExecute(object? p) =>
-            !string.IsNullOrWhiteSpace(_fieldSearch) && !string.IsNullOrEmpty(_selectedSearch);
+            !_isSearch
+            && !string.IsNullOrWhiteSpace(_fieldSearch)
+            && !string.IsNullOrEmpty(_selectedSearch)
+            ;
 
         ///<summary>Логика выполнения - поиск</summary>
         private async Task OnSearchCommandExecuted(object? p)
         {
             _funcForSearch = GetFuncBySearch(_selectedSearch);
+            _isSearch = true;
             _changePages = true;
             _changeCountInFormats = true;
             _changeCountInStatuses = true;
@@ -265,12 +302,13 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommandAsync(OnCancelSearchCommandExecuted, CanCancelSearchCommandExecute);
 
         ///<summary>Проверка возможности выполнения - отменить поиск</summary>
-        private bool CanCancelSearchCommandExecute(object? p) => _funcForSearch is not null;
+        private bool CanCancelSearchCommandExecute(object? p) => _isSearch;
 
         ///<summary>Логика выполнения - отменить поиск</summary>
         private async Task OnCancelSearchCommandExecuted(object? p)
         {
             _funcForSearch = f => true;
+            _isSearch = false;
             SelectedSearch = null;
             FieldSearch = string.Empty;
             _changePages = true;
@@ -303,7 +341,7 @@ namespace MyHelper.ViewModels
             }
         }
         #endregion
-        
+
         private void OnSelectedFilmsChanged()
             => SelectedFilmsChanged?.Invoke(this, EventArgs.Empty);
 
@@ -315,35 +353,66 @@ namespace MyHelper.ViewModels
             // Выносим проверки за пределы запроса
             bool applyFormatFilter = _selectedFilterFormat != -1;
             bool applyStatusFilter = _selectedFilterStatus != -1;
+            bool applyGenreFilter = _selectedFilterGenre != 0;
 
-            IQueryable<Film> films = _itemsRepository.Items.AsNoTracking().Where(_funcForSearch);
+            IQueryable<Film> films = _itemsRepository.Items
+                .AsNoTracking()
+                .Where(_funcForSearch);
             var changeCountTasks = new List<Task>();
+            if (_changeCountInGenres)
+            {
+                var genres = films
+                    .Where(i => (!applyStatusFilter || i.Status == _selectedFilterStatus)
+                           && (!applyFormatFilter || i.Format == _selectedFilterFormat))
+                    .Join(_filmGenreRepository.Items, film => film.Id, f => f.FilmId, (film, f) => new { film.Name, Genr = f.GenreId });
+                _genres[0].Count = await genres
+                    .Select(i => i.Name)
+                    .Distinct()
+                    .CountAsync();
+                var genresList = await genres
+                    .GroupBy(i => i.Genr)
+                    .Select(j => new { Genr = j.Key, Count = j.Count() })
+                    .ToListAsync();
+                changeCountTasks.Add(Task.Run(() => ChangeCountInFilters(_genres, genresList.Select(i => i.Genr).ToList(), genresList.Select(i => i.Count).ToList())));
+            }
             if (_changeCountInFormats)
             {
-                var test = await films
-                    .Where(i => !applyStatusFilter || i.Status == _selectedFilterStatus)
+                var formats = await films
+                    .Join(_filmGenreRepository.Items, film => film.Id, f => f.FilmId, (film, f) => new { Film = film, Genr = f.GenreId })
+                    .Where(i => (!applyGenreFilter || i.Genr == _selectedFilterGenre) && (!applyStatusFilter || i.Film.Status == _selectedFilterStatus))
+                    .Select(i => i.Film)
+                    .Distinct()
                     .GroupBy(f => f.Format)
                     .Select(g => new { Format = g.Key, Count = g.Count() })
                     .ToListAsync();
-                changeCountTasks.Add(Task.Run(() => ChangeCountInFilters(_filterFormat, test.Select(i => i.Format).ToList(), test.Select(i => i.Count).ToList())));
+                changeCountTasks.Add(Task.Run(() => ChangeCountInFilters(_filterFormat, formats.Select(i => i.Format).ToList(), formats.Select(i => i.Count).ToList())));
                 _changeCountInFormats = false;
             }
             if (_changeCountInStatuses)
             {
-                var test2 = await films
-                    .Where(i => !applyFormatFilter || i.Format == _selectedFilterFormat)
+                var statuses = await films
+                    .Join(_filmGenreRepository.Items, film => film.Id, f => f.FilmId, (film, f) => new { Film = film, Genr = f.GenreId })
+                    .Where(i => (!applyGenreFilter || i.Genr == _selectedFilterGenre) && (!applyFormatFilter || i.Film.Format == _selectedFilterFormat))
+                    .Select(i => i.Film)
+                    .Distinct()
                     .GroupBy(f => f.Status)
                     .Select(g => new { Status = g.Key, Count = g.Count() })
                     .ToListAsync();
-                changeCountTasks.Add(Task.Run(() => ChangeCountInFilters(_filterStatus, test2.Select(i => i.Status).ToList(), test2.Select(i => i.Count).ToList())));
+                changeCountTasks.Add(Task.Run(() => ChangeCountInFilters(_filterStatus, statuses.Select(i => i.Status).ToList(), statuses.Select(i => i.Count).ToList())));
                 _changeCountInStatuses = false;
             }
 
             await Task.WhenAll(changeCountTasks);
 
-            films = films.Where(f =>
-                (!applyFormatFilter || f.Format == _selectedFilterFormat)
-                && (!applyStatusFilter || f.Status == _selectedFilterStatus));
+            films = films
+                .Join(_filmGenreRepository.Items, film => film.Id, f => f.FilmId, (film, f) => new { Film = film, Genr = f.GenreId })
+                .Where(f =>
+                (!applyGenreFilter || f.Genr == _selectedFilterGenre)
+                && (!applyFormatFilter || f.Film.Format == _selectedFilterFormat)
+                && (!applyStatusFilter || f.Film.Status == _selectedFilterStatus))
+                .Select(i => i.Film)
+                .Distinct()
+                ;
             if (_changePages)
             {
                 _filmCount = await films.CountAsync();
@@ -370,7 +439,16 @@ namespace MyHelper.ViewModels
                 arrayFilter[i].Count = groupCounts[i];
             }
             arrayFilter[0].Count = count;
-
+        }
+        private void ChangeCountInFilters(ObservableCollection<Filter> collectionFilter, List<int> keys, List<int> counts)
+        {
+            List<int> groupCounts = new(Enumerable.Range(0, collectionFilter.Count - 1).Select(i => 0));
+            for (int i = 0; i < keys.Count; i++)
+                groupCounts[keys[i] - 1] = counts[i];
+            for (int i = 0; i < groupCounts.Count; i++)
+            {
+                collectionFilter[i + 1].Count = groupCounts[i];
+            }
         }
 
         private Expression<Func<Film, bool>> GetFuncBySearch(string selectedSearch)

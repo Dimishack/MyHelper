@@ -32,6 +32,7 @@
     <UserControl.Resources>
         <c:FilmFormatConverter x:Key="FilmFormatToStringConverter"/>
         <c:FilmStatusConverter x:Key="FilmStatusToStringConverter"/>
+        <c:FilmGenresConverter x:Key="FilmGenresToStringConverter"/>
         <mconv:FilterWithCountConverter x:Key="FilterWithCountConverter"/>
 
         <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}"/>
@@ -39,9 +40,10 @@
         <Style TargetType="TextBox" BasedOn="{StaticResource TextBoxMainStyle}"/>
         <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockMainStyle}"/>
         <Style TargetType="RadioButton" BasedOn="{StaticResource RadioButtonMainStyle}"/>
+        <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxMainStyle}"/>
     </UserControl.Resources>
     <DockPanel>
-        <Grid DockPanel.Dock="Left" Width="230">
+        <Grid DockPanel.Dock="Left" Width="200">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -101,6 +103,31 @@
                 </StackPanel>
             </GroupBox>
         </Grid>
+        <GroupBox Header="Жанры" DockPanel.Dock="Right" Width="200">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Genres}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <RadioButton IsChecked="{Binding IsSelected}"
+                                         IsEnabled="{Binding IsEnabled}"
+                                         GroupName="FilterGenres"
+                                         Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl},
+                                                    Path=DataContext.FilterByGenreAsyncCommand}"
+                                         CommandParameter="{Binding Name}">
+                                <TextBlock TextWrapping="Wrap">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource FilterWithCountConverter}">
+                                            <Binding Path="Name"/>
+                                            <Binding Path="Count"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </RadioButton>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </GroupBox>
         <GroupBox Header="Фильмы">
             <DockPanel>
                 <DockPanel DockPanel.Dock="Top" Margin="4,4">
@@ -157,11 +184,15 @@
                                     <TextBlock Text="{Binding Name, StringFormat='Название: {0}'}"/>
                                     <TextBlock Text="{Binding Producer, StringFormat='Режиссер: {0}'}"/>
                                     <TextBlock Text="{Binding ReleaseYear, StringFormat='Год релиза: {0}'}"/>
+                                    <TextBlock Text="{Binding Format, StringFormat='Формат: {0}',
+                                                Converter={StaticResource FilmFormatToStringConverter}}"/>
+                                    <TextBlock Text="{Binding FilmGenres, 
+                                                        Converter={StaticResource FilmGenresToStringConverter},
+                                                        StringFormat='Жанры: {0}'}"
+                                               TextWrapping="Wrap"/>
                                     <TextBlock Text="{Binding Raiting, StringFormat='Рейтинг: {0}'}"/>
                                     <TextBlock Text="{Binding Status, StringFormat='Статус: {0}',
                                                 Converter={StaticResource FilmStatusToStringConverter}}"/>
-                                    <TextBlock Text="{Binding Format, StringFormat='Формат: {0}',
-                                                Converter={StaticResource FilmFormatToStringConverter}}"/>
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
