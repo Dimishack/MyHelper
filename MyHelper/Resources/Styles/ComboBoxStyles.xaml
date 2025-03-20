@@ -112,6 +112,7 @@
     </Style>
 
     <Style TargetType="ComboBox" x:Key="ComboBoxForAdd_Edit" BasedOn="{StaticResource ComboBoxMainStyle}">
+        <Setter Property="Margin" Value="3.5,2"/>
         <Setter Property="Background" Value="{StaticResource SolidColorBrush_StrongBronzeShade}"/>
         <Setter Property="BorderBrush" Value="{StaticResource SolidColorBrush_PearlBeige}"/>
         <Setter Property="Tag" Value="{StaticResource ToggleButtonForComboBox_Add_EditUserControlStyle}"/>

@@ -7,6 +7,9 @@ namespace MyHelper.Views.UserControls
         public FilmsUserControl() => InitializeComponent();
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            => listFilms.ScrollIntoView(listFilms.Items[0]);
+        {
+            if (listFilms.Items.Count > 0)
+                listFilms.ScrollIntoView(listFilms.Items[0]);
+        }
     }
 }

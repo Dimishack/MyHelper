@@ -23,5 +23,7 @@
             }
         }
         public bool IsEnabled => _count > 0;
+
+        public override string ToString() => $"Фильтр: {Name}; Выбран: {_isSelected}; Кол-во: {_count}";
     }
 }

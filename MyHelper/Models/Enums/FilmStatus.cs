@@ -2,8 +2,8 @@
 {
     internal enum FilmStatus
     {
-        Watching = 0,
-        Planned = 1,
+        Planned = 0,
+        Watching = 1,
         Watched = 2,
     }
 }
