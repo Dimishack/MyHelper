@@ -326,11 +326,6 @@ namespace MyHelper.ViewModels
             }
         }
 
-        protected override Task OnDeleteElementCommandExecuted(object? p)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override async Task OnEditElementCommandExecuted(object? p)
         {
             static bool ChangeCountInFilters(Filter[] array, int oldFilter, int newFilter)
@@ -399,6 +394,29 @@ namespace MyHelper.ViewModels
 
             Films.Refresh();
             EditElement = false;
+        }
+
+        #endregion
+
+        #region override DeleteElementCommand - Удалить фильм
+
+        protected override bool CanDeleteElementCommandExecute(object? p) => _selectedFilm is not null;
+
+        protected override async Task OnDeleteElementCommandExecuted(object? p)
+        {
+
+            _filterFormat[0].Count--;
+            _filterFormat[_selectedFilm.Format + 1].Count--;
+
+            _filterStatus[0].Count--;
+            _filterStatus[_selectedFilm.Status + 1].Count--;
+
+            _filterGenre[0].Count--;
+            foreach (var filmGenreId in _selectedFilm.FilmGenres.Select(i => i.GenreId))
+                _filterGenre[filmGenreId].Count--;
+
+            await _itemsRepository.RemoveAsync(_selectedFilm.Id);
+            await SetFilmsAsync(true, false, false, false, false);
         }
 
         #endregion
@@ -580,10 +598,6 @@ namespace MyHelper.ViewModels
 
         private async Task RequestAsync(bool changeCountPages, bool changeCountInGenres, bool changeCountInFormats, bool changeCountInStatuses)
         {
-            bool applyFormatFilter = _selectedFilterFormat != -1;
-            bool applyStatusFilter = _selectedFilterStatus != -1;
-            bool applyGenreFilter = _selectedFilterGenre != 0;
-
             IQueryable<Film> films = _itemsRepository.Items
                 .AsNoTracking();
             if (_currentSearch)

@@ -17,20 +17,12 @@ namespace MyHelper.Data
             _logger.LogInformation("Инициализация БД...");
 
             _logger.LogInformation("Миграция БД...");
-            try
-            {
-                await _db.Database.MigrateAsync().ConfigureAwait(false);
-            }
-            catch (Exception)
-            {
-                await _db.Database.EnsureDeletedAsync().ConfigureAwait(false);
-                await _db.Database.MigrateAsync().ConfigureAwait(false);
-            }
+            await _db.Database.MigrateAsync().ConfigureAwait(false);
             _logger.LogInformation("Миграция БД выполнена за {0} мс", timer.ElapsedMilliseconds);
 
             if (!await _db.TargetsGroups.AnyAsync()) await InitializeAsync(InitializeTargetsAsync, "целей");
-            if (!await _db.Genres.AnyAsync()) await InitializeAsync(InitializeGenresAsync, "жанров");
             if (!await _db.Films.AnyAsync()) await InitializeAsync(InitializeMoviesAsync, "видео");
+            if (!await _db.Genres.AnyAsync()) await InitializeAsync(InitializeGenresAsync, "жанров");
             if (!await _db.FilmGenres.AnyAsync()) await InitializeAsync(InitializeFilmGenresAsync);
 
             _logger.LogInformation("Инициализация БД выполнена за {0} с", timer.Elapsed.TotalSeconds);
@@ -66,7 +58,7 @@ namespace MyHelper.Data
                 await _db.Genres.AddAsync(new Genre() { Name = genre });
         }
 
-        private const int MAXSIZEFILM = 1000;
+        private const int MAXSIZEFILM = 100;
 
         private async Task InitializeMoviesAsync()
         {
@@ -85,8 +77,10 @@ namespace MyHelper.Data
         private async Task InitializeFilmGenresAsync()
         {
             if (!await _db.Genres.AnyAsync() && !await _db.Films.AnyAsync()) return;
+            var filmsId = await _db.Films.Select(x => x.Id).OrderBy(x => x).ToListAsync();
+            var genresId = await _db.Genres.Select(x => x.Id).OrderBy(x => x).ToListAsync();
 
-            foreach (var index in Enumerable.Range(1, MAXSIZEFILM))
+            foreach (var index in Enumerable.Range(filmsId[0], filmsId[^1] + 1 - filmsId[0]))
             {
                 int genreCount = Random.Shared.Next(1, _genres.Length / 2);
                 int[] genreIds = new int[genreCount];
@@ -95,7 +89,7 @@ namespace MyHelper.Data
                     int genreId = -1;
                     do
                     {
-                        genreId = Random.Shared.Next(0, _genres.Length);
+                        genreId = Random.Shared.Next(genresId[0], genresId[^1] + 1);
                     } while (Array.IndexOf(genreIds, genreId) != -1);
                     genreIds[i] = genreId;
 

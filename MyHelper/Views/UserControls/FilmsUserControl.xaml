@@ -165,7 +165,8 @@
                     <ToggleButton Style="{StaticResource EditElementStyle}"
                                   IsEnabled="{Binding IsEditFilm}"
                                   IsChecked="{Binding EditElement}"/>
-                    <Button Style="{StaticResource DeleteElementStyle}"/>
+                    <Button Style="{StaticResource DeleteElementStyle}"
+                            Command="{Binding DeleteElementCommand}"/>
                 </UniformGrid>
                 <ListView ItemsSource="{Binding Pages}"
                           SelectedItem="{Binding SelectedPage}"
