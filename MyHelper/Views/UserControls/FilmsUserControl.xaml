@@ -10,6 +10,7 @@
              xmlns:mconv="clr-namespace:MyHelper.Infrastructure.Converters.MultiValueConverters"
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
              xmlns:filmsUC="clr-namespace:MyHelper.Views.UserControls.FilmsUC"
+             xmlns:cusFE="clr-namespace:MyHelper.Views.UserControls.CustomFrameworkElements"
              
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance {x:Type vm:FilmsUCViewModel}, IsDesignTimeCreatable=True}"
@@ -44,7 +45,8 @@
         <Style TargetType="CheckBox" BasedOn="{StaticResource CheckBoxMainStyle}"/>
     </UserControl.Resources>
     <DockPanel>
-        <Grid DockPanel.Dock="Left" Width="200">
+        <Grid DockPanel.Dock="Left" Width="200"
+              IsEnabled="{Binding EnableFrameworkElements}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -131,7 +133,8 @@
         </Grid>
         <GroupBox Header="Фильмы">
             <DockPanel>
-                <DockPanel DockPanel.Dock="Top" Margin="4,4">
+                <DockPanel DockPanel.Dock="Top" Margin="4,4"
+                           IsEnabled="{Binding EnableFrameworkElements}">
                     <TextBlock DockPanel.Dock="Left"
                                Text="Поиск:"
                                VerticalAlignment="Center"
@@ -167,29 +170,19 @@
                                   IsChecked="{Binding EditElement}"/>
                     <Button Style="{StaticResource DeleteElementStyle}"
                             Command="{Binding DeleteElementCommand}"/>
+                    <Button Style="{StaticResource ButtonSaveStyle}"
+                            Command="{Binding SaveRepositoryCommand}"/>
                 </UniformGrid>
-                <ListView ItemsSource="{Binding Pages}"
-                          SelectedItem="{Binding SelectedPage}"
-                          SelectedIndex="0"
-                          DockPanel.Dock="Bottom"
-                          HorizontalAlignment="Center"
-                          SelectionChanged="ListView_SelectionChanged">
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel Orientation="Horizontal"/>
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" Padding="3"
-                                   Width="20"
-                                   TextAlignment="Center"/>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <cusFE:PagesFE DockPanel.Dock="Bottom"
+                               Pages="{Binding Pages}"
+                               CurrentPage="{Binding SelectedPage}"
+                               LastPage="{Binding CountPages}"
+                               SourceMainListBox="{Binding ElementName=listFilms}"
+                               IsEnabled="{Binding EnableFrameworkElements}"/>
                 <Grid>
                     <ListBox x:Name="listFilms" ItemsSource="{Binding Films}"
-                             SelectedItem="{Binding SelectedFilm}">
+                             SelectedItem="{Binding SelectedFilm}"
+                             IsEnabled="{Binding EnableFrameworkElements}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource BorderInListBoxStyle}">

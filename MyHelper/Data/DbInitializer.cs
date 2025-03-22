@@ -21,9 +21,7 @@ namespace MyHelper.Data
             _logger.LogInformation("Миграция БД выполнена за {0} мс", timer.ElapsedMilliseconds);
 
             if (!await _db.TargetsGroups.AnyAsync()) await InitializeAsync(InitializeTargetsAsync, "целей");
-            if (!await _db.Films.AnyAsync()) await InitializeAsync(InitializeMoviesAsync, "видео");
             if (!await _db.Genres.AnyAsync()) await InitializeAsync(InitializeGenresAsync, "жанров");
-            if (!await _db.FilmGenres.AnyAsync()) await InitializeAsync(InitializeFilmGenresAsync);
 
             _logger.LogInformation("Инициализация БД выполнена за {0} с", timer.Elapsed.TotalSeconds);
         }
@@ -54,52 +52,9 @@ namespace MyHelper.Data
 
         private async Task InitializeGenresAsync()
         {
+            int index = 1;
             foreach (var genre in _genres)
-                await _db.Genres.AddAsync(new Genre() { Name = genre });
-        }
-
-        private const int MAXSIZEFILM = 100;
-
-        private async Task InitializeMoviesAsync()
-        {
-            foreach (var index in Enumerable.Range(1, MAXSIZEFILM))
-                await _db.Films.AddAsync(new Film()
-                {
-                    Name = $"Movie {index}",
-                    Producer = $"Producer {index}",
-                    Format = Random.Shared.Next(0, 10),
-                    Raiting = Random.Shared.Next(1, 11),
-                    ReleaseYear = 2000 + Random.Shared.Next(1, 24),
-                    Status = Random.Shared.Next(0, 3),
-                });
-        }
-
-        private async Task InitializeFilmGenresAsync()
-        {
-            if (!await _db.Genres.AnyAsync() && !await _db.Films.AnyAsync()) return;
-            var filmsId = await _db.Films.Select(x => x.Id).OrderBy(x => x).ToListAsync();
-            var genresId = await _db.Genres.Select(x => x.Id).OrderBy(x => x).ToListAsync();
-
-            foreach (var index in Enumerable.Range(filmsId[0], filmsId[^1] + 1 - filmsId[0]))
-            {
-                int genreCount = Random.Shared.Next(1, _genres.Length / 2);
-                int[] genreIds = new int[genreCount];
-                for (int i = 0; i < genreCount; i++)
-                {
-                    int genreId = -1;
-                    do
-                    {
-                        genreId = Random.Shared.Next(genresId[0], genresId[^1] + 1);
-                    } while (Array.IndexOf(genreIds, genreId) != -1);
-                    genreIds[i] = genreId;
-
-                    await _db.FilmGenres.AddAsync(new FilmGenre()
-                    {
-                        FilmId = index,
-                        GenreId = genreId,
-                    });
-                }
-            }
+                await _db.Genres.AddAsync(new Genre() { Id = index++, Name = genre });
         }
     }
 }

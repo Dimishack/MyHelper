@@ -15,17 +15,16 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ScrollBar_UpArrow" TargetType="RepeatButton">
+    <Style TargetType="RepeatButton" x:Key="ScrollBarArrow_MainStyle">
         <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_BrightOrange}"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Margin" Value="0,0,0,4"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
-                    <Border x:Name="border" CornerRadius="10" BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="0"
+                    <Border CornerRadius="10" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="0"
                         SnapsToDevicePixels="True">
-                        <Path x:Name="arrow" Data="{StaticResource ArrowUp_ScrollBar}" 
+                        <Path Data="{TemplateBinding Path.Data}" 
                               Fill="{TemplateBinding Foreground}"/>
                     </Border>
                 </ControlTemplate>
@@ -41,6 +40,25 @@
                         Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
             </Trigger>
         </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ScrollBar_UpArrow" TargetType="RepeatButton" BasedOn="{StaticResource ScrollBarArrow_MainStyle}">
+        <Setter Property="Margin" Value="0,0,0,4"/>
+        <Setter Property="Path.Data" Value="{StaticResource ArrowUp_ScrollBar}"/>
+    </Style>
+
+    <Style x:Key="ScrollBar_LeftArrow" TargetType="RepeatButton" BasedOn="{StaticResource ScrollBarArrow_MainStyle}">
+        <Setter Property="Margin" Value="0,0,4,0"/>
+        <Setter Property="Path.Data" Value="{StaticResource ArrowLeft_ScrollBar}"/>
+    </Style>
+
+    <Style x:Key="ScrollBar_RightArrow" TargetType="RepeatButton" BasedOn="{StaticResource ScrollBarArrow_MainStyle}">
+        <Setter Property="Margin" Value="4,0,0,0"/>
+        <Setter Property="Path.Data" Value="{StaticResource ArrowRight_ScrollBar}"/>
+    </Style>
+
+    <Style x:Key="ScrollBar_DownArrow" TargetType="RepeatButton" BasedOn="{StaticResource ScrollBarArrow_MainStyle}">
+        <Setter Property="Path.Data" Value="{StaticResource ArrowDown_ScrollBar}"/>
     </Style>
 
     <Style x:Key="ScrollBar_UpArrow_AdditionalUserControl" TargetType="RepeatButton"
@@ -52,33 +70,6 @@
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_DarkSandy}"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="ScrollBar_DownArrow" TargetType="RepeatButton">
-        <Setter Property="Foreground" Value="{StaticResource SolidColorBrush_BrightOrange}"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="RepeatButton">
-                    <Border x:Name="border" CornerRadius="10" BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="0"
-                        SnapsToDevicePixels="True">
-                        <Path x:Name="arrow" Data="{StaticResource ArrowDown_ScrollBar}" 
-                              Fill="{TemplateBinding Foreground}"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground"
-                        Value="{StaticResource SolidColorBrush_MangoTango}"/>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground"
-                        Value="{StaticResource SolidColorBrush_GoldenTainoi}"/>
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -58,12 +58,15 @@
     <Style TargetType="ListBoxItem" x:Key="ListBoxItemMainStyle">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="Background" Value="{StaticResource SolidColorBrush_YellowIvory}"/>
+        <Setter Property="Margin" Value="0,0.5"/>
+        <Setter Property="Padding" Value="3,1,6,1"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
                     <Grid>
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="{StaticResource CornerRadius5}"/>
-                        <ContentPresenter Margin="3,1,6,1"/>
+                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                CornerRadius="{StaticResource CornerRadius5}"/>
+                        <ContentPresenter Margin="{TemplateBinding Padding}"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -82,7 +85,15 @@
         </Setter>
     </Style>
 
+    <Style TargetType="ListBoxItem" x:Key="ListBoxItemStyle_Pages"
+           BasedOn="{StaticResource ListBoxItemMainStyle}">
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_LightGold}"/>
+        <Setter Property="Margin" Value="2,1"/>
+        <Setter Property="Padding" Value="4"/>
+    </Style>
+
     <Style TargetType="ListBox" x:Key="ListBoxMainStyle">
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_LightGold}"/>
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Visible"/>
         <Setter Property="BorderThickness" Value="0"/>
@@ -95,7 +106,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBox">
-                    <Border Background="{StaticResource SolidColorBrush_LightGold}" BorderThickness="0"
+                    <Border Background="{TemplateBinding Background}" BorderThickness="0"
                                         BorderBrush="Transparent">
                         <ScrollViewer Focusable="False" Padding="2">
                             <ItemsPresenter SnapsToDevicePixels="True"/>
@@ -118,6 +129,20 @@
             <Setter.Value>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ListBox" x:Key="ListBoxStyle_Pages"
+           BasedOn="{StaticResource ListBoxMainStyle}">
+        <Setter Property="Background" Value="{StaticResource SolidColorBrush_Transparent}"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItemStyle_Pages}"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>

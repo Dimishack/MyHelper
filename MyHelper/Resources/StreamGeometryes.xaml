@@ -7,6 +7,12 @@
     <StreamGeometry x:Key="ArrowDown_ScrollBar" ice:Freeze="True">
         M11.5,16 C10.5,16 -2,4 2,2 L21,2 C25,4 12.5,16 11.5,16
     </StreamGeometry>
+    <StreamGeometry x:Key="ArrowLeft_ScrollBar" ice:Freeze="True">
+        M2,12 C1,12 15,-2 17,2 L17,22 C15,26 1,12 2,12
+    </StreamGeometry>
+    <StreamGeometry x:Key="ArrowRight_ScrollBar" ice:Freeze="True">
+        M15,12 C16,12 2,-2 0,2 L0,22 C2,26 16,12 15,12
+    </StreamGeometry>
     <StreamGeometry x:Key="ArrowUp_ScrollBar" ice:Freeze="True">
         M11.5,2 C10.5,2 -2,14 2,16 L21,16 C25,14 12.5,2 11.5,2
     </StreamGeometry>

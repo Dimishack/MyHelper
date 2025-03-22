@@ -33,21 +33,28 @@ namespace MyHelper.ViewModels
         }
 
         const int MAXCOUNT = 50;
-
         private Search _currentSearch = new(string.Empty, string.Empty);
-
         private event EventHandler? SelectedFilmsChanged;
-
         private readonly IRepository<Genre> _genreRepository = genreRepository;
         private readonly IRepository<FilmGenre> _filmGenreRepository = filmGenreRepository;
-
         private Expression<Func<Film, bool>> _funcForSearch = f => true;
         private int _filmCount = 0;
         private int _selectedFilterFormat = -1;
         private int _selectedFilterStatus = -1;
         private int _selectedFilterGenre = 0;
+        private bool _inFirstPage = false;
 
         #region Properties...
+
+        #region CountPages : int - Количество страниц
+
+        ///<summary>Количество страниц</summary>
+        private int _countPages;
+
+        ///<summary>Количество страниц</summary>
+        public int CountPages { get => _countPages; set => Set(ref _countPages, value); }
+
+        #endregion
 
         #region Films : ObservableCollection<Film> - Список фильмов
 
@@ -144,17 +151,13 @@ namespace MyHelper.ViewModels
                     _pages.Insert(0, _pages[0] - 1);
                     _pages.RemoveAt(_pages.Count - 1);
                 }
-                else if (value == _pages[^1] && value < GetPageCount())
+                else if (value == _pages[^1] && value < _countPages)
                 {
                     _pages.Add(_pages[^1] + 1);
                     _pages.RemoveAt(0);
                 }
-                else if (value == 1 && _pages[0] != 1)
-                {
-                    _pages.ClearAndAddElements(Enumerable.Range(1, 10).ToList());
-                    OnPropertyChanged(nameof(SelectedPage));
-                }
-                OnSelectedFilmsChanged();
+                if (!_inFirstPage)
+                    OnSelectedFilmsChanged();
             }
         }
 
@@ -173,9 +176,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _selectedSort, value)) return;
-
-                if (_selectedPage > 1) SelectedPage = 1;
-                else OnSelectedFilmsChanged();
+                OnSelectedFilmsChanged();
             }
         }
 
@@ -270,8 +271,8 @@ namespace MyHelper.ViewModels
             ChangeCountInFilters(_filterStatus, statuses.Select(i => i.Status).ToList(), statuses.Select(i => i.Count).ToList());
             _filterGenre[0].Count = _filmCount = _filterStatus[0].Count;
             _films.ClearAndAddElements(await films.Take(MAXCOUNT).ToListAsync());
-            int countPage = GetPageCount();
-            _pages.ClearAndAddElements(Enumerable.Range(1, countPage < 10 ? countPage : 10).ToList());
+            CountPages = GetPageCount();
+            _pages.ClearAndAddElements(Enumerable.Range(1, _countPages < 10 ? _countPages : 10).ToList());
         }
 
         #endregion
@@ -308,7 +309,13 @@ namespace MyHelper.ViewModels
             foreach (var filmGenreId in newFilm.FilmGenres.Select(i => i.GenreId))
                 _filterGenre[filmGenreId].Count++;
 
-            await SetFilmsAsync(true, false, false, false, false);
+            await RequestAsync(true, false, false, false);
+            if(_selectedPage == _pages[^1] && _countPages - _pages[^1] == 1)
+            {
+                _pages.Add(_countPages);
+                if (_countPages > 10)
+                    _pages.RemoveAt(0);
+            }
 
             AddElement = false;
         }
@@ -386,7 +393,7 @@ namespace MyHelper.ViewModels
                 var film = await _itemsRepository.GetAsync(_selectedFilm.Id);
                 FilmForEdit.CopyTo(film);
                 await _itemsRepository.UpdateAsync(film);
-                await SetFilmsAsync(true, false, false, false, false);
+                await RequestAsync(true, false, false, false);
 
             }
             else
@@ -414,9 +421,17 @@ namespace MyHelper.ViewModels
             _filterGenre[0].Count--;
             foreach (var filmGenreId in _selectedFilm.FilmGenres.Select(i => i.GenreId))
                 _filterGenre[filmGenreId].Count--;
-
             await _itemsRepository.RemoveAsync(_selectedFilm.Id);
-            await SetFilmsAsync(true, false, false, false, false);
+            await RequestAsync(true, false, false, false);
+
+            if (_countPages < _pages[^1])
+            {
+                _pages.RemoveAt(_pages.Count - 1);
+                if (_pages[0] > 1)
+                    _pages.Insert(0, _pages[0] - 1);
+            }
+            if (_selectedPage - _countPages == 1 && _selectedPage > 1)
+                SelectedPage--;
         }
 
         #endregion
@@ -434,7 +449,8 @@ namespace MyHelper.ViewModels
         private async Task OnFilterByFormatCommandExecuted(string p)
         {
             _selectedFilterFormat = Array.FindIndex(_filterFormat, f => f.Name == p) - 1;
-            await SetFilmsAsync(true, true, false, true);
+            _inFirstPage = true;
+            await RequestAsync(true, true, false, true);
         }
 
         #endregion
@@ -452,7 +468,8 @@ namespace MyHelper.ViewModels
         private async Task OnFilterByStatusCommandExecuted(string p)
         {
             _selectedFilterStatus = Array.FindIndex(_filterStatus, f => f.Name == p) - 1;
-            await SetFilmsAsync(true, true, true, false);
+            _inFirstPage = true;
+            await RequestAsync(true, true, true, false);
         }
 
         #endregion
@@ -470,7 +487,8 @@ namespace MyHelper.ViewModels
         private async Task OnFilterByGenreAsyncCommandExecuted(string p)
         {
             _selectedFilterGenre = Array.FindIndex(_filterGenre.ToArray(), f => f.Name.Equals(p));
-            await SetFilmsAsync(true, false, true, true);
+            _inFirstPage = true;
+            await RequestAsync(true, false, true, true);
         }
 
         #endregion
@@ -487,16 +505,20 @@ namespace MyHelper.ViewModels
         ///<summary>Проверка возможности выполнения - поиск</summary>
         private bool CanSearchCommandExecute(object? p) =>
             !_currentSearch
+            && _filmCount > 20
             && !string.IsNullOrWhiteSpace(_fieldSearch)
             && !string.IsNullOrEmpty(_selectedSearch)
+            && (!_currentSearch.Value.Contains(_fieldSearch)
+            || !_currentSearch.Additional.Contains(_selectedSearch))
             ;
 
         ///<summary>Логика выполнения - поиск</summary>
         private async Task OnSearchCommandExecuted(object? p)
         {
-            _funcForSearch = GetFuncBySearch();
             _currentSearch.Set(true, _fieldSearch, _selectedSearch);
-            await SetFilmsAsync(true, true, true, true);
+            _funcForSearch = GetFuncBySearch();
+            _inFirstPage = true;
+            await RequestAsync(true, true, true, true);
         }
 
         #endregion
@@ -520,7 +542,8 @@ namespace MyHelper.ViewModels
             _currentSearch.Set(false, string.Empty, string.Empty);
             SelectedSearch = null;
             FieldSearch = string.Empty;
-            await SetFilmsAsync(true, true, true, true);
+            _inFirstPage = true;
+            await RequestAsync(true, true, true, true);
         }
 
         #endregion
@@ -552,13 +575,9 @@ namespace MyHelper.ViewModels
             => SelectedFilmsChanged?.Invoke(this, EventArgs.Empty);
 
         private int GetPageCount()
-            => _filmCount / MAXCOUNT + (_filmCount % MAXCOUNT == 0 ? 0 : 1);
-
-        private async Task SetFilmsAsync(bool changeCountPages, bool changeCountInGenres, bool changeCountInFormats, bool changeCountInStatuses, bool inStartPage = true)
         {
-            if (inStartPage && _selectedPage > 1)
-                SelectedPage = 1;
-            else await RequestAsync(changeCountPages, changeCountInGenres, changeCountInFormats, changeCountInStatuses);
+            int result = _filmCount / MAXCOUNT + (_filmCount % MAXCOUNT == 0 ? 0 : 1);
+            return result == 0 ? 1 : result;
         }
 
         private IQueryable<FilmWithGenreDto> GetFilteredFilms(IQueryable<Film> films,
@@ -596,7 +615,7 @@ namespace MyHelper.ViewModels
                     .ToListAsync();
         }
 
-        private async Task RequestAsync(bool changeCountPages, bool changeCountInGenres, bool changeCountInFormats, bool changeCountInStatuses)
+        private async Task RequestAsync(bool changeCountInPages, bool changeCountInGenres, bool changeCountInFormats, bool changeCountInStatuses)
         {
             IQueryable<Film> films = _itemsRepository.Items
                 .AsNoTracking();
@@ -629,11 +648,16 @@ namespace MyHelper.ViewModels
             films = GetFilteredFilms(films, true, true, true)
                 .Select(i => i.Film)
                 .Distinct();
-            if (changeCountPages)
+            if (changeCountInPages)
             {
                 _filmCount = await films.CountAsync();
-                int countPage = GetPageCount();
-                _pages.ClearAndAddElements(Enumerable.Range(1, countPage < 10 ? countPage : 10).ToList());
+                CountPages = GetPageCount();
+                if (_inFirstPage)
+                {
+                    _pages.ClearAndAddElements(Enumerable.Range(1, _countPages < 10 ? _countPages : 10).ToList());
+                    SelectedPage = 1;
+                    _inFirstPage = false;
+                }
                 OnPropertyChanged(nameof(SelectedPage));
             }
             _films.ClearAndAddElements(await films
