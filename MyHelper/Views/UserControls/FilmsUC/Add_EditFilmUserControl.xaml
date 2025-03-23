@@ -14,7 +14,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Height="0" VerticalAlignment="Bottom">
         <i:Interaction.Behaviors>
-            <cusB:ShowAdditionalUserControl MaxHeight="340" ManagementShow="{Binding ShowAdd_EditUserControl}"/>
+            <cusB:ShowAdditionalUserControl MaxHeight="310" ManagementShow="{Binding ShowAdd_EditUserControl}"/>
         </i:Interaction.Behaviors>
         <Border Style="{StaticResource BorderStyle_AdditionalUserControl}"/>
         <Grid Margin="5">
@@ -47,20 +47,68 @@
                      Text="{Binding FilmForEdit.Name, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBox Grid.Row="2" Grid.Column="1"
                      Text="{Binding FilmForEdit.ReleaseYear, UpdateSourceTrigger=PropertyChanged}"/>
-            <ComboBox Grid.Row="3" Grid.Column="1"
-                      ItemsSource="{Binding FilmForEdit.Formats}"
-                      SelectedIndex="{Binding FilmForEdit.Format}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}"/>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+            <DockPanel Grid.Row="3" Grid.Column="1">
+                <Grid DockPanel.Dock="Right"
+                      Visibility="{Binding EditElement, Converter={StaticResource bool2VisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" 
+                           Text="Статус: "
+                           VerticalAlignment="Center"
+                           FontWeight="{StaticResource FontWeightMedium}"/>
+                    <ComboBox Grid.Column="1"
+                              Width="120"
+                          ItemsSource="{Binding FilmForEdit.Statuses}"
+                          SelectedIndex="{Binding FilmForEdit.Status}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock Grid.Column="2" 
+                           Text="Рэйтинг: "
+                           VerticalAlignment="Center"
+                           FontWeight="{StaticResource FontWeightMedium}"/>
+                    <ComboBox Grid.Column="3"
+                              Width="45"
+                          ItemsSource="{Binding FilmForEdit.Raitings}"
+                          SelectedItem="{Binding FilmForEdit.Raiting}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        <ComboBox.Style>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource ComboBoxForAdd_Edit}">
+                                <Setter Property="IsEnabled" Value="False"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding FilmForEdit.Status}" Value="2">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                </Grid>
+                <ComboBox ItemsSource="{Binding FilmForEdit.Formats}" 
+                          SelectedIndex="{Binding FilmForEdit.Format}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </DockPanel>
             <ItemsControl Grid.Row="4" Grid.Column="1"
                           ItemsSource="{Binding FilmForEdit.Genres}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Columns="3"/>
+                        <UniformGrid Columns="4"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>

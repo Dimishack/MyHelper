@@ -15,7 +15,7 @@ namespace MyHelper.DAL.Entyties
 
         public int Status { get; set; }
 
-        public int Raiting { get; set; }
+        public int Raiting { get; set; } = 1;
 
         [Column(TypeName = "date")]
         public DateTime? ViewingDate { get; set; }

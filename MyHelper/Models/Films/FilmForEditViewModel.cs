@@ -1,5 +1,7 @@
 ﻿using MyHelper.DAL.Entyties;
 using MyHelper.Models.Enums;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace MyHelper.Models.Films
 {
@@ -7,23 +9,13 @@ namespace MyHelper.Models.Films
     {
 
         private readonly Film _film;
-        private readonly string[] _formats = Enum.GetNames(typeof(FilmFormat));
-        private readonly string[] _formats_ru = ["Полнометражный фильм", "Короткометражный фильм", "Сериал", "Мини-сериал", "Телевизионный фильм",
-                                "Веб-сериал", "Реалити-шоу", "Ток-шоу", "Концерт", "Музыкальное видео"];
+        private readonly string[] _formats = new string[Enum.GetNames(typeof(FilmFormat)).Length];
+        private readonly string[] _statuses = new string[Enum.GetNames(typeof(FilmStatus)).Length];
+        private readonly int[] _raitings = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-        public IReadOnlyList<string> Formats
-        {
-            get
-            {
-                List<string> formats = new(Enumerable.Range(0, _formats_ru.Length).Select(i => _formats_ru[i]));
-                if (formats.Count < _formats.Length)
-                {
-                    for (int i = formats.Count - 1; i < _formats.Length; i++)
-                        formats.Add(_formats[i]);
-                }
-                return formats;
-            }
-        }
+        public IReadOnlyList<string> Formats => _formats;
+        public IReadOnlyList<string> Statuses => _statuses;
+        public IReadOnlyList<int> Raitings => _raitings;
 
         private readonly List<ObservableKeyValuePair<Tuple<int, string>, bool>> _genres = [];
         public IReadOnlyCollection<ObservableKeyValuePair<Tuple<int, string>, bool>> Genres => _genres;
@@ -69,10 +61,25 @@ namespace MyHelper.Models.Films
         {
             _film = film;
             foreach (var genre in genres)
-                _genres.Add(new(Tuple.Create(genre.Id,genre.Name), false));
+                _genres.Add(new(Tuple.Create(genre.Id, genre.Name), false));
             if (film.FilmGenres is not null)
                 foreach (var filmGenre in film.FilmGenres)
                     _genres[filmGenre.GenreId - 1].Value = true;
+
+            int index = 0;
+            foreach (var field in typeof(FilmFormat).GetFields())
+            {
+                var attribute = field.GetCustomAttribute<DescriptionAttribute>();
+                if (attribute != null)
+                    _formats[index++] = attribute.Description;
+            }
+            index = 0;
+            foreach (var field in typeof(FilmStatus).GetFields())
+            {
+                var attribute = field.GetCustomAttribute<DescriptionAttribute>();
+                if (attribute != null)
+                    _statuses[index++] = attribute.Description;
+            }
         }
 
         public void CopyTo(Film film)
@@ -96,7 +103,6 @@ namespace MyHelper.Models.Films
                         GenreId = genre.Key.Item1
                     });
                 }
-
             }
             else
             {
@@ -105,7 +111,7 @@ namespace MyHelper.Models.Films
                 foreach (var genre in genres)
                 {
                     var ttt = test.FirstOrDefault(i => i.GenreId == genre.Key.Item1);
-                    film.FilmGenres.Add(ttt is not null 
+                    film.FilmGenres.Add(ttt is not null
                         ? ttt
                         : new FilmGenre()
                         {
@@ -114,6 +120,11 @@ namespace MyHelper.Models.Films
                         });
                 }
             }
+            if (_film.ViewingDate is null && _film.Status == 2)
+                film.ViewingDate = DateTime.Now;
+            else if (_film.ViewingDate is not null && _film.Status != 2)
+                film.ViewingDate = null;
+            else film.ViewingDate = _film.ViewingDate;
         }
 
         public void CopyFrom(Film film)
@@ -128,10 +139,9 @@ namespace MyHelper.Models.Films
             _film.FilmGenres = film.FilmGenres;
             for (int i = 0; i < _genres.Count; i++)
                 _genres[i].Value = false;
-            if(film.FilmGenres is not null)
+            if (film.FilmGenres is not null)
                 foreach (var filmGenre in film.FilmGenres)
                     _genres[filmGenre.GenreId - 1].Value = true;
         }
-
     }
 }

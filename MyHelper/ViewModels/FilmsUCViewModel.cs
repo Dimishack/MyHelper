@@ -333,6 +333,19 @@ namespace MyHelper.ViewModels
             }
         }
 
+        protected override bool CanEditElementCommandExecute(object? p) =>
+            !string.IsNullOrWhiteSpace(_filmForEdit.Name)
+            && !string.IsNullOrWhiteSpace(_filmForEdit.Producer)
+            && _filmForEdit.ReleaseYear >= 1895
+            && _filmForEdit.Genres.FirstOrDefault(i => i.Value) is not null
+            && (string.Compare(_selectedFilm.Name, _filmForEdit.Name) != 0
+            || string.Compare(_filmForEdit.Producer, _filmForEdit.Producer) != 0
+            || _selectedFilm.Format != _filmForEdit.Format
+            || _selectedFilm.Status != _filmForEdit.Status
+            || _selectedFilm.Raiting != _filmForEdit.Raiting
+            || !_filmForEdit.Genres.Where(i => i.Value).Select(i => i.Key.Item1).SequenceEqual(_selectedFilm.FilmGenres.Select(i => i.GenreId)))
+            ;
+
         protected override async Task OnEditElementCommandExecuted(object? p)
         {
             static bool ChangeCountInFilters(Filter[] array, int oldFilter, int newFilter)
