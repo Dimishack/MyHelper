@@ -339,7 +339,7 @@ namespace MyHelper.ViewModels
             && _filmForEdit.ReleaseYear >= 1895
             && _filmForEdit.Genres.FirstOrDefault(i => i.Value) is not null
             && (string.Compare(_selectedFilm.Name, _filmForEdit.Name) != 0
-            || string.Compare(_filmForEdit.Producer, _filmForEdit.Producer) != 0
+            || string.Compare(_selectedFilm.Producer, _filmForEdit.Producer) != 0
             || _selectedFilm.Format != _filmForEdit.Format
             || _selectedFilm.Status != _filmForEdit.Status
             || _selectedFilm.Raiting != _filmForEdit.Raiting
@@ -517,12 +517,10 @@ namespace MyHelper.ViewModels
 
         ///<summary>Проверка возможности выполнения - поиск</summary>
         private bool CanSearchCommandExecute(object? p) =>
-            !_currentSearch
-            && _filmCount > 20
-            && !string.IsNullOrWhiteSpace(_fieldSearch)
+            !string.IsNullOrWhiteSpace(_fieldSearch)
             && !string.IsNullOrEmpty(_selectedSearch)
-            && (!_currentSearch.Value.Contains(_fieldSearch)
-            || !_currentSearch.Additional.Contains(_selectedSearch))
+            && (string.Compare(_currentSearch.Value, _fieldSearch) != 0
+            || string.Compare(_currentSearch.Additional, _selectedSearch) != 0)
             ;
 
         ///<summary>Логика выполнения - поиск</summary>

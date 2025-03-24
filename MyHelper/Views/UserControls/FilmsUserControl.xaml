@@ -133,34 +133,12 @@
         </Grid>
         <GroupBox Header="Фильмы">
             <DockPanel>
-                <DockPanel DockPanel.Dock="Top" Margin="4,4"
-                           IsEnabled="{Binding EnableFrameworkElements}">
-                    <TextBlock DockPanel.Dock="Left"
-                               Text="Поиск:"
-                               VerticalAlignment="Center"
-                               Margin="0,0,7,0"/>
-                    <Button DockPanel.Dock="Right"
-                            Style="{StaticResource DeleteElementStyle}"
-                            Command="{Binding CancelSearchCommand}"
-                            Margin="1"/>
-                    <Button DockPanel.Dock="Right"
-                            Style="{StaticResource SearchStyle}"
-                            Command="{Binding SearchCommand}"
-                            Margin="1"/>
-                    <ComboBox DockPanel.Dock="Right"
-                              Margin="3,1"
-                              Width="150"
-                              ItemsSource="{Binding Searches}"
-                              SelectedItem="{Binding SelectedSearch}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}"/>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <TextBox Margin="0,0.5"
-                             Text="{Binding FieldSearch, UpdateSourceTrigger=PropertyChanged}"/>
-                </DockPanel>
+                <cusFE:SearchFE DockPanel.Dock="Top"
+                                SearchField="{Binding FieldSearch, UpdateSourceTrigger=PropertyChanged}"
+                                ListProperties="{Binding Searches}"
+                                SelectedProperty="{Binding SelectedSearch}"
+                                SearchCommand="{Binding SearchCommand}"
+                                CancelSearchCommand="{Binding CancelSearchCommand}"/>
                 <UniformGrid DockPanel.Dock="Bottom" Rows="1">
                     <ToggleButton Style="{StaticResource AddElementStyle}"
                                   IsEnabled="{Binding EnableFrameworkElements}"

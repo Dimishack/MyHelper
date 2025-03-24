@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="MyHelper.Views.UserControls.CustomFrameworkElements.SearchFE"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MyHelper.Views.UserControls.CustomFrameworkElements"
+             mc:Ignorable="d" 
+             d:DesignHeight="35" d:DesignWidth="800"
+             Name="userControl">
+    <DockPanel DockPanel.Dock="Top" Margin="4,4">
+        <TextBlock DockPanel.Dock="Left"
+                   Text="Поиск:"
+                   VerticalAlignment="Center"
+                   Margin="0,0,7,0"
+                   Style="{StaticResource TextBlockMainStyle}"/>
+        <Button DockPanel.Dock="Right"
+                Style="{StaticResource DeleteElementStyle}"
+                Command="{Binding CancelSearchCommand, ElementName=userControl}"
+                CommandParameter="{Binding CancelSearchCommandParameter, ElementName=userControl}"
+                Margin="1"/>
+        <Button DockPanel.Dock="Right"
+                Style="{StaticResource SearchStyle}"
+                Command="{Binding SearchCommand, ElementName=userControl}"
+                CommandParameter="{Binding SearchCommandParameter, ElementName=userControl}"
+                Margin="1"/>
+        <ComboBox DockPanel.Dock="Right"
+                  Margin="3,1"
+                  Width="150"
+                  ItemsSource="{Binding Searches}"
+                  SelectedItem="{Binding SelectedSearch}"
+                  Style="{StaticResource ComboBoxMainStyle}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <TextBox Margin="0,0.5"
+                 Text="{Binding FieldSearch, UpdateSourceTrigger=PropertyChanged}"
+                 Style="{StaticResource TextBoxMainStyle}"/>
+    </DockPanel>
+</UserControl>
