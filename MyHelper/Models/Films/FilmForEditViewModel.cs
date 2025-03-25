@@ -106,13 +106,13 @@ namespace MyHelper.Models.Films
             }
             else
             {
-                var test = film.FilmGenres.ToList();
+                var filmGenres = film.FilmGenres.ToList();
                 film.FilmGenres.Clear();
                 foreach (var genre in genres)
                 {
-                    var ttt = test.FirstOrDefault(i => i.GenreId == genre.Key.Item1);
-                    film.FilmGenres.Add(ttt is not null
-                        ? ttt
+                    var findedGenre = filmGenres.FirstOrDefault(i => i.GenreId == genre.Key.Item1);
+                    film.FilmGenres.Add(findedGenre is not null
+                        ? findedGenre
                         : new FilmGenre()
                         {
                             FilmId = _film.Id,

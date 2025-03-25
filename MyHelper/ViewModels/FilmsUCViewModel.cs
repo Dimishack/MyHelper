@@ -37,7 +37,6 @@ namespace MyHelper.ViewModels
         private event EventHandler? SelectedFilmsChanged;
         private readonly IRepository<Genre> _genreRepository = genreRepository;
         private readonly IRepository<FilmGenre> _filmGenreRepository = filmGenreRepository;
-        private Expression<Func<Film, bool>> _funcForSearch = f => true;
         private int _filmCount = 0;
         private int _selectedFilterFormat = -1;
         private int _selectedFilterStatus = -1;
@@ -113,12 +112,22 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region Searches : string[] - Список с фильтром по поиску
+        #region ArrayProperties : string[] - Список свойств для поиска
 
-        /// <summary> Список с фильтром по поиску </summary>
-        private readonly string[] _searches = ["Автор", "Название фильма"];
-        /// <summary> Список с фильтром по поиску </summary>
-        public IReadOnlyList<string> Searches => _searches;
+        /// <summary> Список свойств для поиска </summary>
+        private readonly string[] _arrayProperties = ["Автор", "Название фильма"];
+        /// <summary> Список свойств для поиска </summary>
+        public IReadOnlyList<string> ArrayProperties => _arrayProperties;
+
+        #endregion
+
+        #region SelectedProperty : string? - выбранное свойство для поиска
+
+        ///<summary>выбранное свойство для поиска</summary>
+        private string? _selectedProperty;
+
+        ///<summary>выбранное свойство для поиска</summary>
+        public string? SelectedProperty { get => _selectedProperty; set => Set(ref _selectedProperty, value); }
 
         #endregion
 
@@ -211,16 +220,6 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region SelectedSearch : string? - выбранный поиск
-
-        ///<summary>выбранный поиск</summary>
-        private string? _selectedSearch;
-
-        ///<summary>выбранный поиск</summary>
-        public string? SelectedSearch { get => _selectedSearch; set => Set(ref _selectedSearch, value); }
-
-        #endregion
-
         #region FilmForEdit : FilmForEditViewModel - свойство для редактирования фильма
 
         ///<summary>свойство для редактирования фильма</summary>
@@ -310,7 +309,7 @@ namespace MyHelper.ViewModels
                 _filterGenre[filmGenreId].Count++;
 
             await RequestAsync(true, false, false, false);
-            if(_selectedPage == _pages[^1] && _countPages - _pages[^1] == 1)
+            if (_selectedPage == _pages[^1] && _countPages - _pages[^1] == 1)
             {
                 _pages.Add(_countPages);
                 if (_countPages > 10)
@@ -370,8 +369,8 @@ namespace MyHelper.ViewModels
             var genresOnDelete = genreIds.ExceptBy(_selectedFilm.FilmGenres.Select(j => j.GenreId), i => i.GenreId).ToList();
             var genresOnAdd = _selectedFilm.FilmGenres.ExceptBy(genreIds.Select(j => j.GenreId), i => i.GenreId).ToList();
 
-            if (_currentSearch && !(_currentSearch.Additional.Contains("Автор") && _selectedFilm.Producer.Contains(_currentSearch.Value)
-                || _currentSearch.Additional.Contains("Название фильма") && _selectedFilm.Name.Contains(_currentSearch.Value)))
+            if (_currentSearch && !(_currentSearch.Property.Contains("Автор") && _selectedFilm.Producer.Contains(_currentSearch.Value)
+                || _currentSearch.Property.Contains("Название фильма") && _selectedFilm.Name.Contains(_currentSearch.Value)))
             {
                 _filterFormat[0].Count--;
                 _filterFormat[oldFormat + 1].Count--;
@@ -518,16 +517,15 @@ namespace MyHelper.ViewModels
         ///<summary>Проверка возможности выполнения - поиск</summary>
         private bool CanSearchCommandExecute(object? p) =>
             !string.IsNullOrWhiteSpace(_fieldSearch)
-            && !string.IsNullOrEmpty(_selectedSearch)
+            && !string.IsNullOrEmpty(_selectedProperty)
             && (string.Compare(_currentSearch.Value, _fieldSearch) != 0
-            || string.Compare(_currentSearch.Additional, _selectedSearch) != 0)
+            || string.Compare(_currentSearch.Property, _selectedProperty) != 0)
             ;
 
         ///<summary>Логика выполнения - поиск</summary>
         private async Task OnSearchCommandExecuted(object? p)
         {
-            _currentSearch.Set(true, _fieldSearch, _selectedSearch);
-            _funcForSearch = GetFuncBySearch();
+            _currentSearch.Set(true, _fieldSearch, _selectedProperty);
             _inFirstPage = true;
             await RequestAsync(true, true, true, true);
         }
@@ -549,9 +547,8 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - отменить поиск</summary>
         private async Task OnCancelSearchCommandExecuted(object? p)
         {
-            _funcForSearch = f => true;
             _currentSearch.Set(false, string.Empty, string.Empty);
-            SelectedSearch = null;
+            SelectedProperty = null;
             FieldSearch = string.Empty;
             _inFirstPage = true;
             await RequestAsync(true, true, true, true);
@@ -631,7 +628,15 @@ namespace MyHelper.ViewModels
             IQueryable<Film> films = _itemsRepository.Items
                 .AsNoTracking();
             if (_currentSearch)
-                films = films.Where(_funcForSearch);
+            {
+                string property = _currentSearch.Property == "Автор"
+                ? "Producer"
+                : "Name";
+                films = _itemsRepository.CustomFromSQLRaw(
+                    string.Format("Select * FROM Films WHERE {0} COLLATE RUSSIAN_NOCASE ", property) + "LIKE {0}", $"%{_currentSearch.Value}%")
+                    .Include(i => i.FilmGenres)
+                    .ThenInclude(i => i.Genre);
+            }    
             if (changeCountInGenres)
             {
                 var genres = GetFilteredFilms(films, false, true, true);
@@ -699,13 +704,6 @@ namespace MyHelper.ViewModels
             for (int i = 0; i < groupCounts.Count; i++)
                 collectionFilter[i + 1].Count = groupCounts[i];
         }
-
-        private Expression<Func<Film, bool>> GetFuncBySearch()
-            => _currentSearch.Additional.Contains("Автор")
-            ? f => f.Producer.Contains(_currentSearch.Value)
-            : _currentSearch.Additional.Contains("Название фильма")
-            ? f => f.Name.Contains(_currentSearch.Value)
-            : f => true;
 
         #endregion
 

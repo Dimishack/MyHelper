@@ -135,8 +135,8 @@
             <DockPanel>
                 <cusFE:SearchFE DockPanel.Dock="Top"
                                 SearchField="{Binding FieldSearch, UpdateSourceTrigger=PropertyChanged}"
-                                ListProperties="{Binding Searches}"
-                                SelectedProperty="{Binding SelectedSearch}"
+                                ListProperties="{Binding ArrayProperties}"
+                                SelectedProperty="{Binding SelectedProperty}"
                                 SearchCommand="{Binding SearchCommand}"
                                 CancelSearchCommand="{Binding CancelSearchCommand}"/>
                 <UniformGrid DockPanel.Dock="Bottom" Rows="1">

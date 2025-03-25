@@ -4,7 +4,7 @@
     {
         public bool IsSearch { get; private set; } = isSearch;
         public string Value { get; private set; } = value;
-        public string Additional { get; private set; } = additional;
+        public string Property { get; private set; } = additional;
 
         public static bool operator true(in Search search)
             => search.IsSearch;
@@ -21,7 +21,7 @@
         {
             IsSearch = isSearch;
             Value = value;
-            Additional = additionalValue;
+            Property = additionalValue;
         }
     }
 }

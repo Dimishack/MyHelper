@@ -26,8 +26,8 @@
         <ComboBox DockPanel.Dock="Right"
                   Margin="3,1"
                   Width="150"
-                  ItemsSource="{Binding Searches}"
-                  SelectedItem="{Binding SelectedSearch}"
+                  ItemsSource="{Binding ListProperties, ElementName=userControl}"
+                  SelectedItem="{Binding SelectedProperty, ElementName=userControl}"
                   Style="{StaticResource ComboBoxMainStyle}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>

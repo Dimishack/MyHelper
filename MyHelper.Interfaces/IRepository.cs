@@ -22,7 +22,6 @@ namespace MyHelper.Interfaces
 
         void SaveChanged();
         Task SaveChangedAsync();
-        bool Dispose();
-        Task<bool> DisposeAsync();
+        IQueryable<T> CustomFromSQLRaw(string sql, params object[] parameters);
     }
 }

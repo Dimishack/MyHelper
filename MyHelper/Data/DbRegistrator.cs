@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyHelper.DAL;
 using MyHelper.DAL.Context;
+using System.Globalization;
 
 namespace MyHelper.Data
 {
@@ -15,12 +17,16 @@ namespace MyHelper.Data
                 switch (type)
                 {
                     case null: throw new ArgumentNullException("Не определен тип БД");
-                    //case "MSSQL":
-                    //    opt.UseS
-                    //    break;
                     case "SQLite":
-                        opt.UseSqlite(configuration.GetConnectionString(type));
-                        break;
+                        {
+                            var connection = new SqliteConnection(configuration.GetConnectionString(type));
+                            connection.Open();
+                            connection.CreateCollation("RUSSIAN_NOCASE", (x, y) =>
+                                string.Compare(x, y, CultureInfo.GetCultureInfo("ru-RU"), CompareOptions.IgnoreCase));
+
+                            opt.UseSqlite(connection);
+                            break;
+                        }
 
                     default:
                         throw new InvalidOperationException($"Тип подключения {type} не поддерживается");

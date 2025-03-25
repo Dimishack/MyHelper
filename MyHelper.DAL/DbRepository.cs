@@ -87,31 +87,7 @@ namespace MyHelper.DAL
             catch (Exception) { return false; }
         }
 
-        public bool Dispose()
-        {
-            try
-            {
-                _db.Dispose();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public async Task<bool> DisposeAsync()
-        {
-            try
-            {
-                await _db.DisposeAsync().ConfigureAwait(false);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
+        public IQueryable<T> CustomFromSQLRaw(string sql, params object[] parameters) => _dbSet.FromSqlRaw(sql, parameters);
 
         public void SaveChanged() => _db.SaveChanges();
         public async Task SaveChangedAsync() => await _db.SaveChangesAsync();
