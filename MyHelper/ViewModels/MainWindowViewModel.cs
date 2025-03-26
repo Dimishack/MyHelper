@@ -15,7 +15,8 @@ namespace MyHelper.ViewModels
                                   IRepository<Check> checkRepostiory,
                                   IRepository<Genre> genreRepository,
                                   IRepository<Film> filmRepository,
-                                  IRepository<FilmGenre> filmGenreRepository
+                                  IRepository<FilmGenre> filmGenreRepository,
+                                  IPropertyDependency propertyDependency
         ) : ViewModel
     {
         private readonly IUserDialog _userDialog = userDialog;
@@ -26,6 +27,7 @@ namespace MyHelper.ViewModels
         private readonly IRepository<Genre> _genreRepository = genreRepository;
         private readonly IRepository<Film> _filmRepository = filmRepository;
         private readonly IRepository<FilmGenre> _filmGenreRepository = filmGenreRepository;
+        private readonly IPropertyDependency _propertyDependency = propertyDependency;
 
         #region Properties...
 
@@ -89,7 +91,7 @@ namespace MyHelper.ViewModels
         {
             get => _showTargetsView;
             set => ChangeCurrentView(ref _showTargetsView, value,
-                    () => CurrentViewModel = new TargetsUCViewModel(_targetRepository, _targetsRepository));
+                    () => CurrentViewModel = new TargetsUCViewModel(_targetRepository, _targetsRepository, _propertyDependency));
         }
 
         #endregion
@@ -104,7 +106,7 @@ namespace MyHelper.ViewModels
         {
             get => _showTasksView;
             set => ChangeCurrentView(ref _showTasksView, value,
-                    () => CurrentViewModel = new TasksUCViewModel(tasksRepository));
+                    () => CurrentViewModel = new TasksUCViewModel(tasksRepository, _propertyDependency));
         }
 
         #endregion
@@ -119,7 +121,7 @@ namespace MyHelper.ViewModels
         {
             get => _showChallengesView;
             set => ChangeCurrentView(ref _showChallengesView, value,
-                    () => CurrentViewModel = new ChallengesUCViewModel(_challengeRepository, _checkRepostiory));
+                    () => CurrentViewModel = new ChallengesUCViewModel(_challengeRepository, _checkRepostiory, _propertyDependency));
         }
 
         #endregion
@@ -149,7 +151,7 @@ namespace MyHelper.ViewModels
         {
             get => _showFilmsView;
             set => ChangeCurrentView(ref _showFilmsView, value,
-                    () => CurrentViewModel = new FilmsUCViewModel(_filmRepository, _genreRepository, _filmGenreRepository));
+                    () => CurrentViewModel = new FilmsUCViewModel(_filmRepository, _genreRepository, _filmGenreRepository, _propertyDependency));
         }
 
         #endregion

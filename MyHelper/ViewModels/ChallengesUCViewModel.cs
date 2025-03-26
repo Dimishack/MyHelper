@@ -5,6 +5,7 @@ using MyHelper.Infrastructure.Commands;
 using MyHelper.Interfaces;
 using MyHelper.Models.Challenges;
 using MyHelper.Models.Enums;
+using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,8 +14,11 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    internal sealed class ChallengesUCViewModel(IRepository<Challenge> challengeRepository, IRepository<Check> checkRepository)
-        : MainFunctionsViewModel<Challenge>(challengeRepository), IDisposable
+    internal sealed class ChallengesUCViewModel(
+        IRepository<Challenge> challengeRepository, 
+        IRepository<Check> checkRepository,
+        IPropertyDependency propertyDependency)
+        : MainFunctionsViewModel<Challenge>(challengeRepository, propertyDependency), IDisposable
     {
         private readonly IRepository<Check> _checkRepository = checkRepository;
         private readonly ChallengesOnProgressingCache _challengesOnProgressingCache = new();
@@ -37,6 +41,7 @@ namespace MyHelper.ViewModels
         ///<summary>Выбранный челлендж</summary>
         private Challenge? _selectedChallenge;
 
+        [ConnectedProperties(nameof(EnableToggleButtonsProgressAndEdit))]
         ///<summary>Выбранный челлендж</summary>
         public Challenge? SelectedChallenge
         {
@@ -45,7 +50,7 @@ namespace MyHelper.ViewModels
             {
                 if (!Set(ref _selectedChallenge, value)) return;
 
-                DepedencyProperites();
+                OnConnectedPropertyChanged();
             }
         }
 
@@ -56,6 +61,7 @@ namespace MyHelper.ViewModels
         ///<summary>Выбранный челлендж в прогрессе</summary>
         private ChallengeOnProgressingModel? _selectedProgressingChallenge;
 
+        [ConnectedProperties(nameof(EnableToggleButtonChecklist))]
         ///<summary>Выбранный челлендж в прогрессе</summary>
         public ChallengeOnProgressingModel? SelectedProgressingChallenge
         {
@@ -82,7 +88,7 @@ namespace MyHelper.ViewModels
                     }
                 }
                 Set(ref _selectedProgressingChallenge, value);
-                DepedencyProperites();
+                OnConnectedPropertyChanged();
             }
         }
 
@@ -143,6 +149,7 @@ namespace MyHelper.ViewModels
         ///<summary>Начать челлендж</summary>
         private bool _startChallenge;
 
+        [ConnectedProperties(nameof(EnableFrameworkElements))]
         ///<summary>Начать челлендж</summary>
         public bool StartChallenge
         {
@@ -152,14 +159,13 @@ namespace MyHelper.ViewModels
                 if (!Set(ref _startChallenge, value)) return;
                 if (value)
                     ChallengeForStart.ReturnToMainValues();
-                DepedencyProperites();
+                OnConnectedPropertyChanged();
             }
         }
 
         #endregion
 
-        [DependencyOn(nameof(StartChallenge))]
-        [IsMoveToTree]
+        [ConnectedProperties(nameof(EnableToggleButtonsProgressAndEdit))]
         public override bool EnableFrameworkElements => base.EnableFrameworkElements && !_startChallenge;
 
         #region ShowChecklist : bool - Показать чек-лист
@@ -208,7 +214,6 @@ namespace MyHelper.ViewModels
 
         #region EnableToggleButtonsProgressAndEdit : bool - Включить переключатели для выполнения и редактирования челленджей
 
-        [DependencyOn([nameof(EnableFrameworkElements), nameof(SelectedChallenge)])]
         ///<summary>Включить переключатели для выполнения и редактирования челленджей</summary>
         public bool EnableToggleButtonsProgressAndEdit => EnableFrameworkElements && _selectedChallenge is not null && !_selectedChallenge.InProgress;
 
@@ -216,7 +221,6 @@ namespace MyHelper.ViewModels
 
         #region EnableToggleButtonChecklist : bool - Включить переключатель отображения чек-листа
 
-        [DependencyOn(nameof(SelectedProgressingChallenge))]
         ///<summary>Включить переключатель отображения чек-листа</summary>
         public bool EnableToggleButtonChecklist => _selectedProgressingChallenge is not null
             && _selectedProgressingChallenge.CheckList.Count > 0;

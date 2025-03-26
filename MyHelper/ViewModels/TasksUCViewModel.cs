@@ -2,6 +2,7 @@
 using MyHelper.Infrastructure.Commands;
 using MyHelper.Interfaces;
 using MyHelper.Models;
+using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,7 +11,10 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels
 {
-    internal sealed class TasksUCViewModel(IRepository<MyTask> tasksRepository) : MainFunctionsViewModel<MyTask>(tasksRepository)
+    internal sealed class TasksUCViewModel(
+        IRepository<MyTask> tasksRepository, 
+        IPropertyDependency propertyDepenency)
+        : MainFunctionsViewModel<MyTask>(tasksRepository, propertyDepenency)
     {
         private readonly ObservableCollection<MyTask> _tasks = [];
         private bool _promptFilter = false;

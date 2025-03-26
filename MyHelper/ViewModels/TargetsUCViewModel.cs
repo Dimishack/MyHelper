@@ -4,9 +4,11 @@ using MyHelper.Infrastructure.Attributes;
 using MyHelper.Infrastructure.Commands;
 using MyHelper.Interfaces;
 using MyHelper.Models.Targets;
+using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -14,7 +16,9 @@ using System.Windows.Input;
 namespace MyHelper.ViewModels
 {
     internal sealed class TargetsUCViewModel(IRepository<Target> targetRepository,
-                             IRepository<TargetsGroup> targetsGroupRepository) : MainFunctionsViewModel<TargetsGroup>(targetsGroupRepository), IDisposable
+        IRepository<TargetsGroup> targetsGroupRepository,
+        IPropertyDependency propertyDepenency)
+        : MainFunctionsViewModel<TargetsGroup>(targetsGroupRepository, propertyDepenency)
     {
         private readonly IRepository<Target> _targetRepository = targetRepository;
         private string _filter = "все";
@@ -24,15 +28,14 @@ namespace MyHelper.ViewModels
 
         #region override EnableFrameworkElements - Включить визуальные элементы
 
-        [DependencyOn(nameof(ShowAdd_EditTargetUserControl))]
-        [IsMoveToTree]
+        [ConnectedProperties(nameof(EnableToggleButtonEditGroup), nameof(EnableToggleButtonEditTarget), nameof(EnableToggleButtonAddTarget))]
         public override bool EnableFrameworkElements => base.EnableFrameworkElements && !ShowAdd_EditTargetUserControl;
 
         #endregion
 
         #region TargetsCount : int - Количество целей (в общем)
 
-        [DependencyOn(nameof(SelectedTargetsGroup))]
+        [ConnectedProperties(nameof(Progress))]
         ///<summary>Количество целей (в общем)</summary>
         public int TargetsCount => _selectedTargetsGroup?.Targets.Count ?? 0;
 
@@ -50,6 +53,9 @@ namespace MyHelper.ViewModels
         ///<summary>Выбранная группа</summary>
         private TargetsGroup? _selectedTargetsGroup;
 
+        [ConnectedProperties(
+            nameof(TargetsCount), nameof(SelectedTargetsView), nameof(EnableToggleButtonEditGroup),
+            nameof(EnableToggleButtonAddTarget))]
         ///<summary>Выбранная группа</summary>
         public TargetsGroup? SelectedTargetsGroup
         {
@@ -67,7 +73,7 @@ namespace MyHelper.ViewModels
                 }
                 Set(ref _selectedTargetsGroup, value);
                 CompletedTargetsCount = _completedTargetsCount_Calculated;
-                DepedencyProperites();
+                OnConnectedPropertyChanged();
 
             }
         }
@@ -86,6 +92,7 @@ namespace MyHelper.ViewModels
         ///<summary>Выбранная цель</summary>
         private TargetModel? _selectedTarget;
 
+        [ConnectedProperties(nameof(EnableToggleButtonEditTarget))]
         ///<summary>Выбранная цель</summary>
         public TargetModel? SelectedTarget
         {
@@ -93,7 +100,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _selectedTarget, value)) return;
-                DepedencyProperites();
+                OnConnectedPropertyChanged();
             }
         }
 
@@ -101,7 +108,6 @@ namespace MyHelper.ViewModels
 
         private readonly CollectionViewSource _selectedTargetsViewSource = new();
 
-        [DependencyOn(nameof(SelectedTargetsGroup))]
         public ICollectionView SelectedTargetsView => _selectedTargetsViewSource.View;
 
         #region Sort : Dictionary<string, SortDescription> - Сортировка
@@ -143,6 +149,8 @@ namespace MyHelper.ViewModels
 
         ///<summary>Добавить цель</summary>
         private bool _addTarget;
+
+        [ConnectedProperties(nameof(ShowAdd_EditTargetUserControl))]
         ///<summary>Добавить цель</summary>
         public bool AddTarget
         {
@@ -157,7 +165,7 @@ namespace MyHelper.ViewModels
                     TargetForAdd_Edit.IsComplete = false;
                     OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
-                DepedencyProperites();
+                OnConnectedPropertyChanged();
             }
         }
 
@@ -180,7 +188,7 @@ namespace MyHelper.ViewModels
                     TargetForAdd_Edit.Note = _selectedTarget.Note;
                     OnPropertyChanged(nameof(TargetForAdd_Edit));
                 }
-                DepedencyProperites();
+                OnConnectedPropertyChanged();
             }
         }
 
@@ -188,8 +196,7 @@ namespace MyHelper.ViewModels
 
         #region ShowAdd_EditTargetUserControl : bool - Видимость окна создания или редактирования цели
 
-        [DependencyOn([nameof(AddTarget), nameof(EditTarget)])]
-        [IsMoveToTree]
+        [ConnectedProperties(nameof(EnableFrameworkElements))]
         ///<summary>Видимость окна создания или редактирования цели</summary>
         public bool ShowAdd_EditTargetUserControl => _addTarget || _editTarget;
 
@@ -197,7 +204,6 @@ namespace MyHelper.ViewModels
 
         #region EnableToggleButtonEditGroup : bool - Включить переключатель изменения группы целей
 
-        [DependencyOn([nameof(EnableFrameworkElements), nameof(SelectedTargetsGroup)])]
         ///<summary> Включить переключатель изменения группы целей </summary>
         public bool EnableToggleButtonEditGroup => EnableFrameworkElements &&
             _selectedTargetsGroup is not null
@@ -207,7 +213,6 @@ namespace MyHelper.ViewModels
 
         #region EnableToggleButtonEditTarget : bool - Включить переключатель изменения цели
 
-        [DependencyOn([nameof(EnableFrameworkElements), nameof(SelectedTarget)])]
         ///<summary>Включить переключатель изменения цели</summary>
         public bool EnableToggleButtonEditTarget => EnableFrameworkElements && _selectedTarget is not null;
 
@@ -215,7 +220,6 @@ namespace MyHelper.ViewModels
 
         #region EnableToggleButtonAddTarget : bool - Включить переключатель добавления цели
 
-        [DependencyOn([nameof(EnableFrameworkElements), nameof(SelectedTargetsGroup)])]
         ///<summary>Включить переключатель добавления цели</summary>
         public bool EnableToggleButtonAddTarget => EnableFrameworkElements && _selectedTargetsGroup is not null;
 
@@ -249,6 +253,8 @@ namespace MyHelper.ViewModels
 
         ///<summary>Количество выполненных задач</summary>
         private int _completedTargetsCount;
+
+        [ConnectedProperties(nameof(Progress))]
         ///<summary>Количество выполненных задач</summary>
         public int CompletedTargetsCount
         {
@@ -256,7 +262,7 @@ namespace MyHelper.ViewModels
             set
             {
                 if (!Set(ref _completedTargetsCount, value)) return;
-                DepedencyProperites();
+                OnConnectedPropertyChanged();
             }
         }
 
@@ -264,8 +270,7 @@ namespace MyHelper.ViewModels
 
         #region Progress : double - Прогресс выполнения целей
 
-        [DependencyOn(nameof(CompletedTargetsCount))]
-        [IsMoveToTree]
+        [ConnectedProperties(nameof(OffsetCompleted), nameof(Procent))]
         ///<summary>Прогресс выполнения целей</summary>
         public double Progress => (double)CompletedTargetsCount / (TargetsCount > 0
             ? TargetsCount
@@ -274,14 +279,12 @@ namespace MyHelper.ViewModels
         #endregion
 
         #region OffsetCompleted : double - Смещение выполненных целей
-        [DependencyOn(nameof(Progress))]
         ///<summary>Смещение выполненных целей</summary>
         public double OffsetCompleted => 2.0 - Progress;
 
         #endregion
 
         #region Procent : double - Процент выполненных целей
-        [DependencyOn(nameof(Progress))]
         ///<summary>Процент выполненных целей</summary>
         public double Procent => Math.Round(Progress * 100.0, 2);
 
@@ -415,8 +418,7 @@ namespace MyHelper.ViewModels
             await _targetRepository.AddAsync(newTarget);
             var newTargetModel = new TargetModel(newTarget);
             if (_filter != "выполненные") Targets.Add(newTargetModel);
-            OnPropertyChanged(nameof(TargetsCount));
-            DepedencyProperites(nameof(CompletedTargetsCount));
+            OnConnectedPropertyChanged(nameof(TargetsCount), true);
             AddTarget = false;
         }
 
@@ -473,7 +475,7 @@ namespace MyHelper.ViewModels
             await _targetRepository.RemoveAsync(_selectedTarget.Id);
             Targets.Remove(_selectedTarget);
             if (isComplete) CompletedTargetsCount--;
-            else DepedencyProperites(nameof(CompletedTargetsCount));
+            else OnConnectedPropertyChanged(nameof(Progress), true);
             OnPropertyChanged(nameof(TargetsCount));
         }
 
@@ -549,7 +551,6 @@ namespace MyHelper.ViewModels
                 TargetsGroupForAdd_Edit.Name = string.Empty;
                 OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
             }
-            DepedencyProperites(nameof(EnableFrameworkElements));
         }
 
         #endregion
@@ -564,7 +565,6 @@ namespace MyHelper.ViewModels
                 TargetsGroupForAdd_Edit.Name = _selectedTargetsGroup.Name;
                 OnPropertyChanged(nameof(TargetsGroupForAdd_Edit));
             }
-            DepedencyProperites(nameof(EnableFrameworkElements));
         }
 
         #endregion

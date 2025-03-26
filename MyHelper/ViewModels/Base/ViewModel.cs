@@ -20,27 +20,5 @@ namespace MyHelper.ViewModels.Base
             return true;
         }
 
-        protected virtual void DepedencyProperites([CallerMemberName] string? propertyName = null)
-        {
-            var viewModelType = this.GetType();
-            foreach (PropertyInfo property in viewModelType.GetProperties())
-            {
-                var depedencyAttribute = property.GetCustomAttribute<DependencyOnAttribute>();
-                if (depedencyAttribute is not null)
-                {
-                    foreach (string prop in depedencyAttribute.PropertiesName)
-                    {
-                        if (!string.IsNullOrWhiteSpace(prop) && prop == propertyName)
-                        {
-                            OnPropertyChanged(property.Name);
-                            var isMoveToTreeAttribute = property.GetCustomAttribute<IsMoveToTreeAttribute>();
-                            if (isMoveToTreeAttribute is not null)
-                                DepedencyProperites(property.Name);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
     }
 }

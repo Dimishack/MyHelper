@@ -7,6 +7,7 @@ namespace MyHelper.Services.Registrator
     {
         public static IServiceCollection AddServices(this IServiceCollection services) => services
             .AddSingleton<IUserDialog, UserDialogServices>()
+            .AddSingleton<IPropertyDependency, PropertyDepedencyService>()
             ;
     }
 }

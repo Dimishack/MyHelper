@@ -7,9 +7,11 @@ using MyHelper.Interfaces;
 using MyHelper.Models;
 using MyHelper.Models.Films;
 using MyHelper.Models.Structs;
+using MyHelper.Services.Interfaces;
 using MyHelper.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -18,7 +20,8 @@ namespace MyHelper.ViewModels
 {
     internal sealed class FilmsUCViewModel(IRepository<Film> filmRepository,
                                            IRepository<Genre> genreRepository,
-                                           IRepository<FilmGenre> filmGenreRepository) : MainFunctionsViewModel<Film>(filmRepository)
+                                           IRepository<FilmGenre> filmGenreRepository,
+                                           IPropertyDependency propertyDependency) : MainFunctionsViewModel<Film>(filmRepository, propertyDependency)
     {
         private record FilmWithGenreDto
         {
@@ -44,6 +47,9 @@ namespace MyHelper.ViewModels
         private bool _inFirstPage = false;
 
         #region Properties...
+
+        [ConnectedProperties(nameof(IsEditFilm))]
+        public override bool EnableFrameworkElements => base.EnableFrameworkElements;
 
         #region CountPages : int - Количество страниц
 
@@ -196,6 +202,7 @@ namespace MyHelper.ViewModels
         ///<summary>Выбранный фильм</summary>
         private Film? _selectedFilm;
 
+        [ConnectedProperties(nameof(IsEditFilm))]
         ///<summary>Выбранный фильм</summary>
         public Film? SelectedFilm
         {
@@ -204,7 +211,9 @@ namespace MyHelper.ViewModels
             {
                 if (!Set(ref _selectedFilm, value)) return;
 
-                DepedencyProperites();
+                Stopwatch sw = Stopwatch.StartNew();
+                OnConnectedPropertyChanged();
+                sw.Stop();
             }
         }
 
@@ -232,7 +241,6 @@ namespace MyHelper.ViewModels
 
         #region IsEditFilm : bool - редактировать фильм
 
-        [DependencyOn(nameof(SelectedFilm))]
         ///<summary>редактировать фильм</summary>
         public bool IsEditFilm => EnableFrameworkElements && _selectedFilm is not null;
 
@@ -259,19 +267,16 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - асихронная загрузка окна</summary>
         private async Task OnLoadedAsyncCommandExecuted(object? p)
         {
+            Stopwatch sw = Stopwatch.StartNew();
             var test = await _genreRepository.Items.AsNoTracking().Select(j => new { j.Name, j.FilmGenres.Count }).ToListAsync();
             foreach (var genre in test)
                 _filterGenre.Add(new(genre.Name, count: genre.Count));
             SelectedFilmsChanged += FilmsUCViewModel_SelectedFilmsChanged;
-            var films = _itemsRepository.Items.AsNoTracking();
-            var formats = await films.GroupBy(f => f.Format).Select(g => new { Format = g.Key, Count = g.Count() }).ToListAsync();
-            var statuses = await films.GroupBy(f => f.Status).Select(g => new { Status = g.Key, Count = g.Count() }).ToListAsync();
-            ChangeCountInFilters(_filterFormat, formats.Select(i => i.Format).ToList(), formats.Select(i => i.Count).ToList());
-            ChangeCountInFilters(_filterStatus, statuses.Select(i => i.Status).ToList(), statuses.Select(i => i.Count).ToList());
-            _filterGenre[0].Count = _filmCount = _filterStatus[0].Count;
-            _films.ClearAndAddElements(await films.Take(MAXCOUNT).ToListAsync());
-            CountPages = GetPageCount();
-            _pages.ClearAndAddElements(Enumerable.Range(1, _countPages < 10 ? _countPages : 10).ToList());
+            _inFirstPage = true;
+            await RequestAsync(true, false, true, true);
+            _filterGenre[0].Count = _filmCount;
+            sw.Stop();
+            Debug.WriteLine($"Время загрузки фильмов (в мс): {sw.Elapsed.TotalMilliseconds}");
         }
 
         #endregion
@@ -419,7 +424,9 @@ namespace MyHelper.ViewModels
 
         #region override DeleteElementCommand - Удалить фильм
 
-        protected override bool CanDeleteElementCommandExecute(object? p) => _selectedFilm is not null;
+        protected override bool CanDeleteElementCommandExecute(object? p) => 
+            _selectedFilm is not null
+            && EnableFrameworkElements;
 
         protected override async Task OnDeleteElementCommandExecuted(object? p)
         {

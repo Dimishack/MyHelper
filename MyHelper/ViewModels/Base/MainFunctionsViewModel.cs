@@ -1,10 +1,15 @@
-﻿using MyHelper.Infrastructure.Commands;
+﻿using MyHelper.Infrastructure.Attributes;
+using MyHelper.Infrastructure.Commands;
 using MyHelper.Interfaces;
+using MyHelper.Services.Interfaces;
 using System.Windows.Input;
 
 namespace MyHelper.ViewModels.Base
 {
-    internal abstract class MainFunctionsViewModel<T>(IRepository<T> itemsRepository) : ViewModel, IDisposable where T : class, IEntity, new()
+    internal abstract class MainFunctionsViewModel<T>(
+        IRepository<T> itemsRepository, 
+        IPropertyDependency propertyDepenency) 
+        : ConnectedViewModel(propertyDepenency), IDisposable where T : class, IEntity, new()
     {
         public bool Disposed { get; set; } = false;
 
@@ -12,6 +17,7 @@ namespace MyHelper.ViewModels.Base
 
         #region ShowAdd_EditUserControl : bool - Отобразить окно добавления (редактирования) элемента
 
+        [ConnectedProperties(nameof(EnableFrameworkElements))]
         ///<summary>Отобразить окно добавления (редактирования) элемента</summary>
         public bool ShowAdd_EditUserControl => _addElement || _editElement;
 
@@ -22,6 +28,7 @@ namespace MyHelper.ViewModels.Base
         ///<summary>Добавить элемент</summary>
         private bool _addElement;
 
+        [ConnectedProperties(nameof(ShowAdd_EditUserControl))]
         ///<summary>Добавить элемент</summary>
         public bool AddElement
         {
@@ -30,8 +37,7 @@ namespace MyHelper.ViewModels.Base
             {
                 if (!Set(ref _addElement, value)) return;
                 MethodBeforeAddElement();
-                OnPropertyChanged(nameof(ShowAdd_EditUserControl));
-                OnPropertyChanged(nameof(EnableFrameworkElements));
+                OnConnectedPropertyChanged();
             }
         }
 
@@ -44,6 +50,7 @@ namespace MyHelper.ViewModels.Base
         ///<summary>Редактировать элемент</summary>
         private bool _editElement;
 
+        [ConnectedProperties(nameof(ShowAdd_EditUserControl))]
         ///<summary>Редактировать элемент</summary>
         public bool EditElement
         {
@@ -52,8 +59,7 @@ namespace MyHelper.ViewModels.Base
             {
                 if (!Set(ref _editElement, value)) return;
                 MethodBeforeEditElement();
-                OnPropertyChanged(nameof(ShowAdd_EditUserControl));
-                OnPropertyChanged(nameof(EnableFrameworkElements));
+                OnConnectedPropertyChanged();
             }
         }
 
