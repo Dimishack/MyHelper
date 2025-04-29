@@ -14,7 +14,7 @@ namespace MyHelper.ViewModels
     internal sealed class TasksUCViewModel(
         IRepository<MyTask> tasksRepository, 
         IPropertyDependency propertyDepenency)
-        : MainFunctionsViewModel<MyTask>(tasksRepository, propertyDepenency)
+        : CrudViewModelBase<MyTask>(tasksRepository, propertyDepenency)
     {
         private readonly ObservableCollection<MyTask> _tasks = [];
         private bool _promptFilter = false;
@@ -59,7 +59,7 @@ namespace MyHelper.ViewModels
             {
                 if (!Set(ref _selectedTask, value)) return;
 
-                OnPropertyChanged(nameof(EnableToggleButtonEditElement));
+                OnPropertyChanged(nameof(IsTBEditTaskEnabled));
             }
         }
 
@@ -120,8 +120,8 @@ namespace MyHelper.ViewModels
                 _tasks.Clear();
                 Func<MyTask, bool>? func = CreateFunc(!Equals(value.Key, "Все"), !_checkedPriorityFilterAll);
                 var tasks = func is not null
-                    ? _itemsRepository.Items.Where(func)
-                    : _itemsRepository.Items;
+                    ? ItemsRepository.Items.Where(func)
+                    : ItemsRepository.Items;
                 foreach (MyTask task in tasks)
                     _tasks.Add(task);
             }
@@ -149,10 +149,10 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region EnableToggleButtonEditElement : bool - Включить переключатель редактирования элемента
+        #region IsTBEditTaskEnabled : bool - Включить переключатель редактирования задачи
 
-        ///<summary>Включить переключатель редактирования элемента</summary>
-        public bool EnableToggleButtonEditElement => EnableFrameworkElements && _selectedTask is not null;
+        ///<summary>Включить переключатель редактирования задачи</summary>
+        public bool IsTBEditTaskEnabled => IsElementEnabled && _selectedTask is not null;
 
         #endregion
 
@@ -166,7 +166,7 @@ namespace MyHelper.ViewModels
         {
             var groupAllCount = 0;
             Dictionary<string, int> groupsCount = [];
-            foreach (var task in _itemsRepository.Items)
+            foreach (var task in ItemsRepository.Items)
             {
                 groupAllCount++;
                 if (!groupsCount.TryAdd(task.Group, 1))
@@ -186,7 +186,7 @@ namespace MyHelper.ViewModels
 
         #region override AddElementCommand - Команда - добавить задачу
 
-        protected override bool CanAddElementCommandExecute(object? p) => ShowAdd_EditUserControl
+        protected override bool CanAddElementCommandExecute(object? p) => IsShowEditorUC
             && !string.IsNullOrWhiteSpace(_taskForAdd_Edit.Name)
             && !string.IsNullOrWhiteSpace(_taskForAdd_Edit.Group)
             ;
@@ -202,7 +202,7 @@ namespace MyHelper.ViewModels
                 End = _taskForAdd_Edit.End,
                 Note = _taskForAdd_Edit.Note
             };
-            await _itemsRepository.AddAsync(addTask);
+            await ItemsRepository.AddAsync(addTask);
             if (Equals(_selectedGroup.Key, "Все")
                 || Equals(_selectedGroup.Key, _taskForAdd_Edit.Group))
                 _tasks.Add(addTask);
@@ -211,14 +211,14 @@ namespace MyHelper.ViewModels
                 Groups.Add(_taskForAdd_Edit.Group, 0);
             Groups[_taskForAdd_Edit.Group]++;
             _count++;
-            AddElement = false;
+            IsAddingElement = false;
         }
 
         #endregion
 
         #region override EditElementCommand - Команда - редактировать задачу
 
-        protected override bool CanEditElementCommandExecute(object? p) => ShowAdd_EditUserControl
+        protected override bool CanEditElementCommandExecute(object? p) => IsShowEditorUC
             && _selectedTask is not null
             && !string.IsNullOrWhiteSpace(_taskForAdd_Edit.Name)
             &&
@@ -242,9 +242,9 @@ namespace MyHelper.ViewModels
             SelectedTask.Prompt = _taskForAdd_Edit.Prompt;
             SelectedTask.Group = _taskForAdd_Edit.Group;
             SelectedTask.Note = _taskForAdd_Edit.Note;
-            await _itemsRepository.UpdateAsync(_selectedTask);
+            await ItemsRepository.UpdateAsync(_selectedTask);
             TasksView.Refresh();
-            EditElement = false;
+            IsEditingElement = false;
         }
 
         #endregion
@@ -252,7 +252,7 @@ namespace MyHelper.ViewModels
         #region override DeleteElementCommand - Команда - удалить задачу
 
         protected override bool CanDeleteElementCommandExecute(object? p) => _selectedTask is not null
-            && !ShowAdd_EditUserControl;
+            && !IsShowEditorUC;
 
         protected override async Task OnDeleteElementCommandExecuted(object? p)
         {
@@ -265,7 +265,7 @@ namespace MyHelper.ViewModels
                     group = Groups.GetKeyValuePair(removedTask.Group);
                 if (--group.Value == 0)
                     Groups.Remove(group.Key);
-                await _itemsRepository.RemoveAsync(removedTask.Id);
+                await ItemsRepository.RemoveAsync(removedTask.Id);
             }
         }
 
@@ -307,8 +307,8 @@ namespace MyHelper.ViewModels
             }
             Func<MyTask, bool>? func = CreateFunc(false, !_checkedPriorityFilterAll);
             var tasks = func is not null
-                ? _itemsRepository.Items.Where(func)
-                : _itemsRepository.Items;
+                ? ItemsRepository.Items.Where(func)
+                : ItemsRepository.Items;
             if (Equals(_selectedGroup.Key, "Все"))
                 foreach (var task in tasks)
                 {
@@ -376,11 +376,11 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region override MethodBeforeAddElement
+        #region override OnBeforeAddElement
 
-        protected override void MethodBeforeAddElement()
+        protected override void OnBeforeAddElement()
         {
-            if (AddElement)
+            if (IsAddingElement)
             {
                 var keys = Groups.Keys;
                 keys.RemoveAt(0);
@@ -395,16 +395,16 @@ namespace MyHelper.ViewModels
                 TaskForAdd_Edit.End = DateTime.Today;
                 OnPropertyChanged(nameof(TaskForAdd_Edit));
             }
-            OnPropertyChanged(nameof(EnableToggleButtonEditElement));
+            OnPropertyChanged(nameof(IsTBEditTaskEnabled));
         }
 
         #endregion
 
         #region override MethodBeforeEditElement
 
-        protected override void MethodBeforeEditElement()
+        protected override void OnBeforeEditElement()
         {
-            if (EditElement)
+            if (IsEditingElement)
             {
                 var keys = Groups.Keys;
                 keys.RemoveAt(0);
@@ -418,7 +418,7 @@ namespace MyHelper.ViewModels
                 TaskForAdd_Edit.End = _selectedTask.End;
                 OnPropertyChanged(nameof(TaskForAdd_Edit));
             }
-            OnPropertyChanged(nameof(EnableToggleButtonEditElement));
+            OnPropertyChanged(nameof(IsTBEditTaskEnabled));
         }
 
         #endregion

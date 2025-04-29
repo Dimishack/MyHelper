@@ -21,7 +21,7 @@ namespace MyHelper.ViewModels
     internal sealed class FilmsUCViewModel(IRepository<Film> filmRepository,
                                            IRepository<Genre> genreRepository,
                                            IRepository<FilmGenre> filmGenreRepository,
-                                           IPropertyDependency propertyDependency) : MainFunctionsViewModel<Film>(filmRepository, propertyDependency)
+                                           IPropertyDependency propertyDependency) : CrudViewModelBase<Film>(filmRepository, propertyDependency)
     {
         private record FilmWithGenreDto
         {
@@ -49,7 +49,7 @@ namespace MyHelper.ViewModels
         #region Properties...
 
         [ConnectedProperties(nameof(IsEditFilm))]
-        public override bool EnableFrameworkElements => base.EnableFrameworkElements;
+        public override bool IsElementEnabled => base.IsElementEnabled;
 
         #region CountPages : int - Количество страниц
 
@@ -242,7 +242,7 @@ namespace MyHelper.ViewModels
         #region IsEditFilm : bool - редактировать фильм
 
         ///<summary>редактировать фильм</summary>
-        public bool IsEditFilm => EnableFrameworkElements && _selectedFilm is not null;
+        public bool IsEditFilm => IsElementEnabled && _selectedFilm is not null;
 
         #endregion
 
@@ -283,7 +283,7 @@ namespace MyHelper.ViewModels
 
         #region override AddElementCommand - Добавить фильм
 
-        protected override void MethodBeforeAddElement()
+        protected override void OnBeforeAddElement()
         {
             FilmForEdit.CopyFrom(new Film());
             OnPropertyChanged(nameof(FilmForEdit));
@@ -299,7 +299,7 @@ namespace MyHelper.ViewModels
         {
             Film newFilm = new();
             _filmForEdit.CopyTo(newFilm);
-            await _itemsRepository.AddAsync(newFilm);
+            await ItemsRepository.AddAsync(newFilm);
             foreach (var filmGenre in newFilm.FilmGenres)
                 await _filmGenreRepository.AddAsync(filmGenre);
 
@@ -321,14 +321,14 @@ namespace MyHelper.ViewModels
                     _pages.RemoveAt(0);
             }
 
-            AddElement = false;
+            IsAddingElement = false;
         }
 
         #endregion
 
         #region override EditElementCommand - Редактировать фильм
 
-        protected override void MethodBeforeEditElement()
+        protected override void OnBeforeEditElement()
         {
             if (_selectedFilm is not null)
             {
@@ -407,17 +407,17 @@ namespace MyHelper.ViewModels
 
             if (_currentSearch)
             {
-                var film = await _itemsRepository.GetAsync(_selectedFilm.Id);
+                var film = await ItemsRepository.GetAsync(_selectedFilm.Id);
                 FilmForEdit.CopyTo(film);
-                await _itemsRepository.UpdateAsync(film);
+                await ItemsRepository.UpdateAsync(film);
                 await RequestAsync(true, false, false, false);
 
             }
             else
-                await _itemsRepository.UpdateAsync(_selectedFilm);
+                await ItemsRepository.UpdateAsync(_selectedFilm);
 
             Films.Refresh();
-            EditElement = false;
+            IsEditingElement = false;
         }
 
         #endregion
@@ -426,7 +426,7 @@ namespace MyHelper.ViewModels
 
         protected override bool CanDeleteElementCommandExecute(object? p) => 
             _selectedFilm is not null
-            && EnableFrameworkElements;
+            && IsElementEnabled;
 
         protected override async Task OnDeleteElementCommandExecuted(object? p)
         {
@@ -440,7 +440,7 @@ namespace MyHelper.ViewModels
             _filterGenre[0].Count--;
             foreach (var filmGenreId in _selectedFilm.FilmGenres.Select(i => i.GenreId))
                 _filterGenre[filmGenreId].Count--;
-            await _itemsRepository.RemoveAsync(_selectedFilm.Id);
+            await ItemsRepository.RemoveAsync(_selectedFilm.Id);
             await RequestAsync(true, false, false, false);
 
             if (_countPages < _pages[^1])
@@ -632,14 +632,14 @@ namespace MyHelper.ViewModels
 
         private async Task RequestAsync(bool changeCountInPages, bool changeCountInGenres, bool changeCountInFormats, bool changeCountInStatuses)
         {
-            IQueryable<Film> films = _itemsRepository.Items
+            IQueryable<Film> films = ItemsRepository.Items
                 .AsNoTracking();
             if (_currentSearch)
             {
                 string property = _currentSearch.Property == "Автор"
                 ? "Producer"
                 : "Name";
-                films = _itemsRepository.CustomFromSQLRaw(
+                films = ItemsRepository.CustomFromSQLRaw(
                     string.Format("Select * FROM Films WHERE {0} COLLATE RUSSIAN_NOCASE ", property) + "LIKE {0}", $"%{_currentSearch.Value}%")
                     .Include(i => i.FilmGenres)
                     .ThenInclude(i => i.Genre);

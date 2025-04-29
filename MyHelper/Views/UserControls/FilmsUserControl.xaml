@@ -13,7 +13,6 @@
              xmlns:cusFE="clr-namespace:MyHelper.Views.UserControls.CustomFrameworkElements"
              
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance {x:Type vm:FilmsUCViewModel}, IsDesignTimeCreatable=True}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.RenderTransform>
         <TranslateTransform/>
@@ -141,11 +140,11 @@
                                 CancelSearchCommand="{Binding CancelSearchCommand}"/>
                 <UniformGrid DockPanel.Dock="Bottom" Rows="1">
                     <ToggleButton Style="{StaticResource AddElementStyle}"
-                                  IsEnabled="{Binding EnableFrameworkElements}"
-                                  IsChecked="{Binding AddElement}"/>
+                                  IsEnabled="{Binding IsElementEnabled}"
+                                  IsChecked="{Binding IsAddingElement}"/>
                     <ToggleButton Style="{StaticResource EditElementStyle}"
                                   IsEnabled="{Binding IsEditFilm}"
-                                  IsChecked="{Binding EditElement}"/>
+                                  IsChecked="{Binding IsEditingElement}"/>
                     <Button Style="{StaticResource DeleteElementStyle}"
                             Command="{Binding DeleteElementCommand}"/>
                     <Button Style="{StaticResource ButtonSaveStyle}"

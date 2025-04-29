@@ -44,7 +44,7 @@
             <GroupBox Header="Сортировка" Grid.Row="0">
                 <ComboBox ItemsSource="{Binding Sorts}"
                           SelectedItem="{Binding SelectedSort}"
-                          IsEditable="{Binding EnableFrameworkElements}"/>
+                          IsEditable="{Binding IsElementEnabled}"/>
             </GroupBox>
             <GroupBox Header="Фильтры" Grid.Row="1">
                 <StackPanel Orientation="Vertical">
@@ -100,8 +100,8 @@
             <GroupBox Header="На выполнении">
                 <DockPanel>
                     <UniformGrid DockPanel.Dock="Bottom" Rows="1">
-                        <ToggleButton IsEnabled="{Binding EnableToggleButtonChecklist}"
-                                      IsChecked="{Binding ShowChecklist}">
+                        <ToggleButton IsEnabled="{Binding IsTBChecklistEnabled}"
+                                      IsChecked="{Binding IsShowChecklist}">
                             <ToggleButton.Style>
                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonMainStyle}">
                                     <Setter Property="fa:IconImage.Icon" Value="Table"/>
@@ -116,7 +116,7 @@
                             <ListBox.Style>
                                 <Style TargetType="ListBox" BasedOn="{StaticResource ListBoxMainStyle}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ShowChecklist}" Value="True">
+                                        <DataTrigger Binding="{Binding IsShowChecklist}" Value="True">
                                             <Setter Property="IsEnabled" Value="False"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -181,8 +181,8 @@
             <GroupBox Header="Челленджи">
                 <DockPanel>
                     <UniformGrid Rows="1" DockPanel.Dock="Bottom">
-                        <ToggleButton IsEnabled="{Binding EnableToggleButtonsProgressAndEdit}"
-                                      IsChecked="{Binding StartChallenge}">
+                        <ToggleButton IsEnabled="{Binding IsTBProgressAndEditEnabled}"
+                                      IsChecked="{Binding IsStartChallenge}">
                             <ToggleButton.Style>
                                 <Style TargetType="ToggleButton" BasedOn="{StaticResource ToggleButtonMainStyle}">
                                     <Setter Property="fa:IconImage.Icon" Value="CircleArrowLeft"/>
@@ -190,11 +190,11 @@
                             </ToggleButton.Style>
                         </ToggleButton>
                         <ToggleButton Style="{StaticResource AddElementStyle}"
-                                      IsEnabled="{Binding EnableFrameworkElements}"
-                                      IsChecked="{Binding AddElement}"/>
+                                      IsEnabled="{Binding IsElementEnabled}"
+                                      IsChecked="{Binding IsAddingElement}"/>
                         <ToggleButton Style="{StaticResource EditElementStyle}"
-                                      IsEnabled="{Binding EnableToggleButtonsProgressAndEdit}"
-                                      IsChecked="{Binding EditElement}"/>
+                                      IsEnabled="{Binding IsTBProgressAndEditEnabled}"
+                                      IsChecked="{Binding IsEditingElement}"/>
                         <Button Style="{StaticResource DeleteElementStyle}"
                                 Command="{Binding DeleteElementCommand}"/>
                         <Button Style="{StaticResource ButtonSaveStyle}"
@@ -203,7 +203,7 @@
                     <Grid>
                         <ListBox ItemsSource="{Binding ChallengesView}" 
                                  SelectedItem="{Binding SelectedChallenge}"
-                                 IsEnabled="{Binding EnableFrameworkElements}">
+                                 IsEnabled="{Binding IsElementEnabled}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border Style="{StaticResource BorderInListBoxStyle}">

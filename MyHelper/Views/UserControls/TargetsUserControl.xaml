@@ -10,6 +10,9 @@
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
              
+             xmlns:vm="clr-namespace:MyHelper.ViewModels"
+             d:DataContext="{d:DesignInstance {x:Type vm:TargetsUCViewModel}, IsDesignTimeCreatable=True}"
+             
              d:DesignHeight="450" d:DesignWidth="700"
              MinHeight="300">
     <UserControl.RenderTransform>
@@ -40,12 +43,12 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <UniformGrid Grid.Row="1" Columns="1" Margin="0,5,0,0">
-                    <ToggleButton IsChecked="{Binding AddElement}"
-                                  IsEnabled="{Binding EnableFrameworkElements}"
+                    <ToggleButton IsChecked="{Binding IsAddingElement}"
+                                  IsEnabled="{Binding IsElementEnabled}"
                                   Style="{StaticResource AddElementStyle}"
                                   Margin="1"/>
-                    <ToggleButton IsChecked="{Binding EditElement}" 
-                                  IsEnabled="{Binding EnableToggleButtonEditGroup}"
+                    <ToggleButton IsChecked="{Binding IsEditingElement}" 
+                                  IsEnabled="{Binding IsTBEditGroupEnabled}"
                                   Style="{StaticResource EditElementStyle}"
                                   Margin="1"/>
                     <Button Command="{Binding DeleteElementCommand}"
@@ -60,7 +63,7 @@
                          SelectedItem="{Binding SelectedTargetsGroup}"
                          DisplayMemberPath="Year"
                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                         IsEnabled="{Binding EnableElemetns}"/>
+                         IsEnabled="{Binding IsElementEnabled}"/>
             </Grid>
         </GroupBox>
         <Grid DockPanel.Dock="Left" Width="140">
@@ -72,7 +75,7 @@
                 <ComboBox ItemsSource="{Binding Sort}"
                           SelectedItem="{Binding SelectedSort}"
                           Style="{StaticResource ComboBoxMainStyle}"
-                          IsEnabled="{Binding EnableFrameworkElements}"/>
+                          IsEnabled="{Binding IsElementEnabled}"/>
             </GroupBox>
             <GroupBox Grid.Row="1" Header="Фильтры">
                 <StackPanel Orientation="Vertical">
@@ -129,11 +132,11 @@
                     </Grid>
                 </Border>
                 <UniformGrid DockPanel.Dock="Bottom" Rows="1">
-                    <ToggleButton IsChecked="{Binding AddTarget}"
-                                  IsEnabled="{Binding EnableToggleButtonAddTarget}"
+                    <ToggleButton IsChecked="{Binding IsAddingTarget}"
+                                  IsEnabled="{Binding IsTBAddTargetEnabled}"
                                   Style="{StaticResource AddElementStyle}"/>
-                    <ToggleButton IsChecked="{Binding EditTarget}"
-                                  IsEnabled="{Binding EnableToggleButtonEditTarget}"
+                    <ToggleButton IsChecked="{Binding IsEditingTarget}"
+                                  IsEnabled="{Binding IsTBEditTargetEnabled}"
                                   Style="{StaticResource EditElementStyle}"/>
                     <Button Command="{Binding RemoveTargetCommand}"
                             Style="{StaticResource DeleteElementStyle}"/>
@@ -141,7 +144,7 @@
                 <Grid>
                     <ListBox ItemsSource="{Binding SelectedTargetsView}"
                              SelectedItem="{Binding SelectedTarget}"
-                             IsEnabled="{Binding EnableElements}">
+                             IsEnabled="{Binding IsElementEnabled}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource BorderInListBoxStyle}">

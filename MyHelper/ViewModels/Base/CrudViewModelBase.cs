@@ -6,71 +6,71 @@ using System.Windows.Input;
 
 namespace MyHelper.ViewModels.Base
 {
-    internal abstract class MainFunctionsViewModel<T>(
+    internal abstract class CrudViewModelBase<T>(
         IRepository<T> itemsRepository, 
         IPropertyDependency propertyDepenency) 
-        : ConnectedViewModel(propertyDepenency), IDisposable where T : class, IEntity, new()
+        : ConnectedViewModel (propertyDepenency), IDisposable where T : class, IEntity, new()
     {
-        public bool Disposed { get; set; } = false;
+        protected bool Disposed { get; set; } = false;
 
-        protected readonly IRepository<T> _itemsRepository = itemsRepository;
+        protected readonly IRepository<T> ItemsRepository = itemsRepository;
 
-        #region ShowAdd_EditUserControl : bool - Отобразить окно добавления (редактирования) элемента
+        #region IsShowEditorUC : bool - Отобразить окно добавления (редактирования) элемента
 
-        [ConnectedProperties(nameof(EnableFrameworkElements))]
+        [ConnectedProperties(nameof(IsElementEnabled))]
         ///<summary>Отобразить окно добавления (редактирования) элемента</summary>
-        public bool ShowAdd_EditUserControl => _addElement || _editElement;
+        public bool IsShowEditorUC => _isAddingElement || _isEditingElement;
 
         #endregion
 
-        #region AddElement : bool - Добавить элемент
+        #region IsAddingElement : bool - Добавить элемент
 
         ///<summary>Добавить элемент</summary>
-        private bool _addElement;
+        private bool _isAddingElement;
 
-        [ConnectedProperties(nameof(ShowAdd_EditUserControl))]
+        [ConnectedProperties(nameof(IsShowEditorUC))]
         ///<summary>Добавить элемент</summary>
-        public bool AddElement
+        public bool IsAddingElement
         {
-            get => _addElement;
+            get => _isAddingElement;
             set
             {
-                if (!Set(ref _addElement, value)) return;
-                MethodBeforeAddElement();
+                if (!Set(ref _isAddingElement, value)) return;
+                OnBeforeAddElement();
                 OnConnectedPropertyChanged();
             }
         }
 
-        protected virtual void MethodBeforeAddElement() { }
+        protected virtual void OnBeforeAddElement() { }
 
         #endregion
 
-        #region EditElement : bool - Редактировать элемент
+        #region IsEditingElement : bool - Редактировать элемент
 
         ///<summary>Редактировать элемент</summary>
-        private bool _editElement;
+        private bool _isEditingElement;
 
-        [ConnectedProperties(nameof(ShowAdd_EditUserControl))]
+        [ConnectedProperties(nameof(IsShowEditorUC))]
         ///<summary>Редактировать элемент</summary>
-        public bool EditElement
+        public bool IsEditingElement
         {
-            get => _editElement;
+            get => _isEditingElement;
             set
             {
-                if (!Set(ref _editElement, value)) return;
-                MethodBeforeEditElement();
+                if (!Set(ref _isEditingElement, value)) return;
+                OnBeforeEditElement();
                 OnConnectedPropertyChanged();
             }
         }
 
-        protected virtual void MethodBeforeEditElement() { }
+        protected virtual void OnBeforeEditElement() { }
 
         #endregion
 
-        #region EnableFrameworkElements : bool - Включить визуальные элементы
+        #region IsElementEnabled : bool - Включить визуальные элементы
 
-        ///<summary>Включить визуальные элементы</summary>
-        public virtual bool EnableFrameworkElements => !ShowAdd_EditUserControl;
+        ///<summary>Включить визуальный элемент</summary>
+        public virtual bool IsElementEnabled => !IsShowEditorUC;
 
         #endregion
 
@@ -169,10 +169,10 @@ namespace MyHelper.ViewModels.Base
             ??= new LambdaCommand(OnCancelOperationCommandExecuted, CanCancelOperationCommandExecute);
 
         ///<summary>Проверка возможности выполнения - отменить операцию</summary>
-        protected virtual bool CanCancelOperationCommandExecute(object? p) => ShowAdd_EditUserControl;
+        protected virtual bool CanCancelOperationCommandExecute(object? p) => IsShowEditorUC;
 
         ///<summary>Логика выполнения - отменить операцию</summary>
-        protected virtual void OnCancelOperationCommandExecuted(object? p) => AddElement = EditElement = false;
+        protected virtual void OnCancelOperationCommandExecuted(object? p) => IsAddingElement = IsEditingElement = false;
 
         #endregion
 
@@ -186,10 +186,10 @@ namespace MyHelper.ViewModels.Base
             ??= new LambdaCommandAsync(OnSaveRepositoryCommandExecuted, CanSaveRepositoryCommandExecute);
 
         ///<summary>Проверка возможности выполнения - сохранить репозиторий</summary>
-        private bool CanSaveRepositoryCommandExecute(object? p) => !_itemsRepository.AutoSaveChanges;
+        private bool CanSaveRepositoryCommandExecute(object? p) => !ItemsRepository.AutoSaveChanges;
 
         ///<summary>Логика выполнения - сохранить репозиторий</summary>
-        private async Task OnSaveRepositoryCommandExecuted(object? p) => await _itemsRepository.SaveChangedAsync();
+        private async Task OnSaveRepositoryCommandExecuted(object? p) => await ItemsRepository.SaveChangedAsync();
 
 
         #endregion
@@ -200,6 +200,19 @@ namespace MyHelper.ViewModels.Base
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing) { }
+        protected virtual void Dispose(bool disposing)
+        {
+            if(!Disposed)
+            {
+                if (disposing)
+                    DisposeManagedResources();
+                DisposeUnmanagedRecources();
+                Disposed = true;
+            }
+        }
+
+        protected virtual void DisposeUnmanagedRecources() { }
+
+        protected virtual void DisposeManagedResources() { }
     }
 }

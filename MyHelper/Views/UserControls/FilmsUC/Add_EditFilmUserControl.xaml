@@ -9,12 +9,11 @@
              xmlns:cusB="clr-namespace:MyHelper.Infrastructure.Behaviors"
              xmlns:vm="clr-namespace:MyHelper.ViewModels"
              
-             d:DataContext="{d:DesignInstance Type={x:Type vm:FilmsUCViewModel}, IsDesignTimeCreatable=True}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Height="0" VerticalAlignment="Bottom">
         <i:Interaction.Behaviors>
-            <cusB:ShowAdditionalUserControl MaxHeight="310" ManagementShow="{Binding ShowAdd_EditUserControl}"/>
+            <cusB:ShowAdditionalUserControl MaxHeight="310" ManagementShow="{Binding IsShowEditorUC}"/>
         </i:Interaction.Behaviors>
         <Border Style="{StaticResource BorderStyle_AdditionalUserControl}"/>
         <Grid Margin="5">
@@ -49,7 +48,7 @@
                      Text="{Binding FilmForEdit.ReleaseYear, UpdateSourceTrigger=PropertyChanged}"/>
             <DockPanel Grid.Row="3" Grid.Column="1">
                 <Grid DockPanel.Dock="Right"
-                      Visibility="{Binding EditElement, Converter={StaticResource bool2VisibilityConverter}}">
+                      Visibility="{Binding IsEditingElement, Converter={StaticResource bool2VisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
@@ -127,7 +126,7 @@
                         <Style TargetType="Button" BasedOn="{StaticResource CheckOrCancelElementStyle}">
                             <Setter Property="Command" Value="{Binding AddElementCommand}"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding EditElement}" Value="True">
+                                <DataTrigger Binding="{Binding IsEditingElement}" Value="True">
                                     <Setter Property="Command" Value="{Binding EditElementCommand}"/>
                                 </DataTrigger>
                             </Style.Triggers>

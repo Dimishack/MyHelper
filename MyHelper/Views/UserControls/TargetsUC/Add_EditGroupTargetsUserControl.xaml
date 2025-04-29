@@ -11,7 +11,7 @@
              mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
     <Grid Height="0" VerticalAlignment="Bottom">
         <i:Interaction.Behaviors>
-            <cusB:ShowAdditionalUserControl MaxHeight="115" ManagementShow="{Binding ShowAdd_EditUserControl}"/>
+            <cusB:ShowAdditionalUserControl MaxHeight="115" ManagementShow="{Binding IsShowEditorUC}"/>
         </i:Interaction.Behaviors>
         <Border Style="{StaticResource BorderStyle_AdditionalUserControl}"/>
         <Grid Margin="5">
@@ -42,7 +42,7 @@
                         <Style TargetType="Button" BasedOn="{StaticResource CheckOrCancelElementStyle}">
                             <Setter Property="Command" Value="{Binding AddElementCommand}"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding EditElement}" Value="True">
+                                <DataTrigger Binding="{Binding IsEditingElement}" Value="True">
                                     <Setter Property="Command" Value="{Binding EditElementCommand}"/>
                                 </DataTrigger>
                             </Style.Triggers>

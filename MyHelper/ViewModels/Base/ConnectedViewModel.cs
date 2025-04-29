@@ -5,21 +5,21 @@ namespace MyHelper.ViewModels.Base
 {
     internal class ConnectedViewModel : ViewModel
     {
-        protected readonly IPropertyDependency _propertyDependency;
+        protected readonly IPropertyDependency PropertyDependency;
 
         protected ConnectedViewModel(IPropertyDependency propertyDepenency)
         {
-            _propertyDependency = propertyDepenency;
-            _propertyDependency.RegisterDependencies(this.GetType());
+            PropertyDependency = propertyDepenency;
+            PropertyDependency.RegisterDependencies(this.GetType());
         }
 
         protected void OnConnectedPropertyChanged([CallerMemberName] string propertyName = "", bool currentPropertyChanged = false)
         {
             if(currentPropertyChanged) OnPropertyChanged(propertyName);
-            foreach (var connectedProperty in _propertyDependency.GetDependentProperties(propertyName))
+            foreach (var connectedProperty in PropertyDependency.GetDependentProperties(propertyName))
             {
                 OnPropertyChanged(connectedProperty);
-                if(_propertyDependency.DependencyContains(connectedProperty))
+                if(PropertyDependency.DependencyContains(connectedProperty))
                     OnConnectedPropertyChanged(connectedProperty);
             }
         }

@@ -10,7 +10,10 @@
              xmlns:c="clr-namespace:MyHelper.Infrastructure.Converters.MultiValueConverters"
              xmlns:tasksUC="clr-namespace:MyHelper.Views.UserControls.TasksUC"
              
-             mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:MyHelper.ViewModels"
+             d:DataContext="{d:DesignInstance {x:Type vm:TasksUCViewModel}, IsDesignTimeCreatable=True}"
+             
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.RenderTransform>
         <TranslateTransform/>
@@ -94,11 +97,11 @@
             <DockPanel>
                 <UniformGrid DockPanel.Dock="Bottom" Rows="1">
                     <ToggleButton Style="{StaticResource AddElementStyle}"
-                                  IsChecked="{Binding AddElement}"
-                                  IsEnabled="{Binding EnableFrameworkElements}"/>
+                                  IsChecked="{Binding IsAddingElement}"
+                                  IsEnabled="{Binding IsElementEnabled}"/>
                     <ToggleButton Style="{StaticResource EditElementStyle}"
-                                  IsChecked="{Binding EditElement}"
-                                  IsEnabled="{Binding EnableToggleButtonEditElement}"/>
+                                  IsChecked="{Binding IsEditingElement}"
+                                  IsEnabled="{Binding IsTBEditTaskEnabled}"/>
                     <Button Style="{StaticResource DeleteElementStyle}"
                             Command="{Binding DeleteElementCommand}"/>
                     <Button Style="{StaticResource ButtonSaveStyle}"
@@ -107,7 +110,7 @@
                 <Grid>
                     <ListBox ItemsSource="{Binding TasksView}"
                          SelectedItem="{Binding SelectedTask}"
-                         IsEnabled="{Binding EnableFrameworkElements}">
+                         IsEnabled="{Binding IsElementEnabled}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border Style="{StaticResource BorderInListBoxStyle}">

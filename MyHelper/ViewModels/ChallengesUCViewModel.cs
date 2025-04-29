@@ -18,7 +18,7 @@ namespace MyHelper.ViewModels
         IRepository<Challenge> challengeRepository, 
         IRepository<Check> checkRepository,
         IPropertyDependency propertyDependency)
-        : MainFunctionsViewModel<Challenge>(challengeRepository, propertyDependency), IDisposable
+        : CrudViewModelBase<Challenge>(challengeRepository, propertyDependency), IDisposable
     {
         private readonly IRepository<Check> _checkRepository = checkRepository;
         private readonly ChallengesOnProgressingCache _challengesOnProgressingCache = new();
@@ -41,7 +41,7 @@ namespace MyHelper.ViewModels
         ///<summary>Выбранный челлендж</summary>
         private Challenge? _selectedChallenge;
 
-        [ConnectedProperties(nameof(EnableToggleButtonsProgressAndEdit))]
+        [ConnectedProperties(nameof(IsTBProgressAndEditEnabled))]
         ///<summary>Выбранный челлендж</summary>
         public Challenge? SelectedChallenge
         {
@@ -61,7 +61,7 @@ namespace MyHelper.ViewModels
         ///<summary>Выбранный челлендж в прогрессе</summary>
         private ChallengeOnProgressingModel? _selectedProgressingChallenge;
 
-        [ConnectedProperties(nameof(EnableToggleButtonChecklist))]
+        [ConnectedProperties(nameof(IsTBChecklistEnabled))]
         ///<summary>Выбранный челлендж в прогрессе</summary>
         public ChallengeOnProgressingModel? SelectedProgressingChallenge
         {
@@ -71,7 +71,7 @@ namespace MyHelper.ViewModels
                 if (_selectedProgressingChallenge == value) return;
                 if (value is not null && value.CheckList.Count == 0)
                 {
-                    var checklist = _itemsRepository.Items
+                    var checklist = ItemsRepository.Items
                         .Include(cs => cs.CheckList)
                         .Where(ch => ch.InProgress)
                         .FirstOrDefault(c => c.Id == value.Id)?
@@ -144,19 +144,19 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region StartChallenge : bool - Начать челлендж
+        #region IsStartChallenge : bool - Начать челлендж
 
         ///<summary>Начать челлендж</summary>
-        private bool _startChallenge;
+        private bool _isStartChallenge;
 
-        [ConnectedProperties(nameof(EnableFrameworkElements))]
+        [ConnectedProperties(nameof(IsElementEnabled))]
         ///<summary>Начать челлендж</summary>
-        public bool StartChallenge
+        public bool IsStartChallenge
         {
-            get => _startChallenge;
+            get => _isStartChallenge;
             set
             {
-                if (!Set(ref _startChallenge, value)) return;
+                if (!Set(ref _isStartChallenge, value)) return;
                 if (value)
                     ChallengeForStart.ReturnToMainValues();
                 OnConnectedPropertyChanged();
@@ -165,21 +165,21 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        [ConnectedProperties(nameof(EnableToggleButtonsProgressAndEdit))]
-        public override bool EnableFrameworkElements => base.EnableFrameworkElements && !_startChallenge;
+        [ConnectedProperties(nameof(IsTBProgressAndEditEnabled))]
+        public override bool IsElementEnabled => base.IsElementEnabled && !_isStartChallenge;
 
-        #region ShowChecklist : bool - Показать чек-лист
-
-        ///<summary>Показать чек-лист</summary>
-        private bool _showChecklist;
+        #region IsShowChecklist : bool - Показать чек-лист
 
         ///<summary>Показать чек-лист</summary>
-        public bool ShowChecklist
+        private bool _isShowChecklist;
+
+        ///<summary>Показать чек-лист</summary>
+        public bool IsShowChecklist
         {
-            get => _showChecklist;
+            get => _isShowChecklist;
             set
             {
-                if (!Set(ref _showChecklist, value)) return;
+                if (!Set(ref _isShowChecklist, value)) return;
                 if (value)
                 {
                     _checklistViewSource.Source = _selectedProgressingChallenge?.CheckList;
@@ -212,17 +212,17 @@ namespace MyHelper.ViewModels
 
         #endregion
 
-        #region EnableToggleButtonsProgressAndEdit : bool - Включить переключатели для выполнения и редактирования челленджей
+        #region IsTBProgressAndEditEnabled : bool - Включить переключатели для выполнения и редактирования челленджей
 
         ///<summary>Включить переключатели для выполнения и редактирования челленджей</summary>
-        public bool EnableToggleButtonsProgressAndEdit => EnableFrameworkElements && _selectedChallenge is not null && !_selectedChallenge.InProgress;
+        public bool IsTBProgressAndEditEnabled => IsElementEnabled && _selectedChallenge is not null && !_selectedChallenge.InProgress;
 
         #endregion
 
-        #region EnableToggleButtonChecklist : bool - Включить переключатель отображения чек-листа
+        #region IsTBChecklistEnabled : bool - Включить переключатель отображения чек-листа
 
         ///<summary>Включить переключатель отображения чек-листа</summary>
-        public bool EnableToggleButtonChecklist => _selectedProgressingChallenge is not null
+        public bool IsTBChecklistEnabled => _selectedProgressingChallenge is not null
             && _selectedProgressingChallenge.CheckList.Count > 0;
 
         #endregion
@@ -275,7 +275,7 @@ namespace MyHelper.ViewModels
 
         protected override void OnLoadedCommandExecuted(object? p)
         {
-            foreach (var challenge in _itemsRepository.Items)
+            foreach (var challenge in ItemsRepository.Items)
             {
                 _challenges.Add(challenge);
                 if (challenge.InProgress)
@@ -310,7 +310,7 @@ namespace MyHelper.ViewModels
 
         #region override AddElementCommand - Команда - добавить челлендж
 
-        protected override bool CanAddElementCommandExecute(object? p) => ShowAdd_EditUserControl
+        protected override bool CanAddElementCommandExecute(object? p) => IsShowEditorUC
             && !string.IsNullOrWhiteSpace(_challengeForAdd_Edit.Name);
 
         protected override async Task OnAddElementCommandExecuted(object? p)
@@ -321,17 +321,17 @@ namespace MyHelper.ViewModels
                 Note = _challengeForAdd_Edit.Note,
                 InProgress = false
             };
-            await _itemsRepository.AddAsync(newChallenge);
+            await ItemsRepository.AddAsync(newChallenge);
             _challenges.Add(newChallenge);
             _challengesCount++;
-            AddElement = false;
+            IsAddingElement = false;
         }
 
         #endregion
 
         #region override EditElementCommand - Команда - редактировать челлендж
 
-        protected override bool CanEditElementCommandExecute(object? p) => ShowAdd_EditUserControl
+        protected override bool CanEditElementCommandExecute(object? p) => IsShowEditorUC
             && _selectedChallenge is not null
             && !string.IsNullOrWhiteSpace(_challengeForAdd_Edit.Name)
             && (_selectedChallenge.Name != _challengeForAdd_Edit.Name
@@ -342,24 +342,24 @@ namespace MyHelper.ViewModels
         {
             SelectedChallenge.Name = ChallengeForAdd_Edit.Name;
             SelectedChallenge.Note = ChallengeForAdd_Edit.Note;
-            await _itemsRepository.UpdateAsync(await _itemsRepository.GetAsync(_selectedChallenge.Id));
+            await ItemsRepository.UpdateAsync(await ItemsRepository.GetAsync(_selectedChallenge.Id));
             ChallengesView.Refresh();
-            EditElement = false;
+            IsEditingElement = false;
         }
 
         #endregion
 
         #region override DeleteElementCommand - Команда - удалить челлендж
 
-        protected override bool CanDeleteElementCommandExecute(object? p) => !ShowAdd_EditUserControl
-            && !_startChallenge
+        protected override bool CanDeleteElementCommandExecute(object? p) => !IsShowEditorUC
+            && !_isStartChallenge
             && _selectedChallenge is not null
             && !_selectedChallenge.InProgress
             ;
 
         protected override async Task OnDeleteElementCommandExecuted(object? p)
         {
-            await _itemsRepository.RemoveAsync(_selectedChallenge.Id);
+            await ItemsRepository.RemoveAsync(_selectedChallenge.Id);
             _challenges.Remove(_selectedChallenge);
             if (--_challengesCount <= 10 && !_checkedProgressFilterAll)
             {
@@ -372,12 +372,12 @@ namespace MyHelper.ViewModels
 
         #region override CancelOperationCommand - Команда - отменить операцию
 
-        protected override bool CanCancelOperationCommandExecute(object? p) => ShowAdd_EditUserControl || StartChallenge;
+        protected override bool CanCancelOperationCommandExecute(object? p) => IsShowEditorUC || IsStartChallenge;
 
         protected override void OnCancelOperationCommandExecuted(object? p)
         {
             base.OnCancelOperationCommandExecuted(p);
-            StartChallenge = false;
+            IsStartChallenge = false;
         }
 
         #endregion
@@ -394,7 +394,7 @@ namespace MyHelper.ViewModels
         ///<summary>Проверка возможности выполнения - начать челлендж</summary>
         private bool CanStartChallengeCommandExecute(object? p)
         {
-            var result = _startChallenge
+            var result = _isStartChallenge
             && _selectedChallenge is not null;
             if (_challengeForStart.Regularity == (int)ChallengeRegularity.ByDayOfTheWeek)
             {
@@ -416,15 +416,15 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - начать челлендж</summary>
         private async Task OnStartChallengeCommandExecutedAsync(object? p)
         {
-            var getChallenge = await _itemsRepository.GetAsync(_selectedChallenge.Id);
+            var getChallenge = await ItemsRepository.GetAsync(_selectedChallenge.Id);
             ChallengeOnProgressingModel newChallengeOnProgressingModel = new(getChallenge, ChallengeForStart);
             if (_challengesOnProgressingCache.Add(newChallengeOnProgressingModel))
             {
                 ChallengesOnProgress.Add(newChallengeOnProgressingModel);
                 ChallengesOnProgress.Last().CheckedChanged += NewChallenge_CheckedChanged;
-                await _itemsRepository.UpdateAsync(getChallenge);
+                await ItemsRepository.UpdateAsync(getChallenge);
             }
-            StartChallenge = false;
+            IsStartChallenge = false;
         }
 
         #endregion
@@ -439,7 +439,7 @@ namespace MyHelper.ViewModels
             ??= new LambdaCommandAsync(OnStopChallengeCommandExecuted, CanStopChallengeCommandExecute);
 
         ///<summary>Проверка возможности выполнения - остановить челлендж</summary>
-        private bool CanStopChallengeCommandExecute(object? p) => !_showChecklist
+        private bool CanStopChallengeCommandExecute(object? p) => !_isShowChecklist
             && _selectedProgressingChallenge is not null
             && _selectedProgressingChallenge.InProgress;
 
@@ -450,8 +450,8 @@ namespace MyHelper.ViewModels
             {
                 SelectedProgressingChallenge.StopChallenge();
                 _selectedProgressingChallenge.CheckedChanged -= NewChallenge_CheckedChanged;
-                var getChallenge = await _itemsRepository.GetAsync(_selectedProgressingChallenge.Id);
-                await _itemsRepository.UpdateAsync(getChallenge);
+                var getChallenge = await ItemsRepository.GetAsync(_selectedProgressingChallenge.Id);
+                await ItemsRepository.UpdateAsync(getChallenge);
                 ChallengesOnProgress.Remove(_selectedProgressingChallenge);
                 if (_challengesOnProgressingCache.Count <= 10)
                 {
@@ -467,7 +467,7 @@ namespace MyHelper.ViewModels
                     }
                 }
             }
-            OnPropertyChanged(nameof(EnableToggleButtonsProgressAndEdit));
+            OnPropertyChanged(nameof(IsTBProgressAndEditEnabled));
         }
 
         #endregion
@@ -488,7 +488,7 @@ namespace MyHelper.ViewModels
         ///<summary>Логика выполнения - фильтровать выполнение (Челленджи)</summary>
         private void OnProgressFilterCommandExecuted(string p)
         {
-            var challenges = _itemsRepository.Items;
+            var challenges = ItemsRepository.Items;
             _challenges.Clear();
 
             switch (p)
@@ -634,30 +634,30 @@ namespace MyHelper.ViewModels
 
         #region override MethodBeforeAddElement
 
-        protected override void MethodBeforeAddElement()
+        protected override void OnBeforeAddElement()
         {
-            if (AddElement)
+            if (IsAddingElement)
             {
                 ChallengeForAdd_Edit.Name = string.Empty;
                 ChallengeForAdd_Edit.Note = null;
                 OnPropertyChanged(nameof(ChallengeForAdd_Edit));
             }
-            OnPropertyChanged(nameof(EnableToggleButtonsProgressAndEdit));
+            OnPropertyChanged(nameof(IsTBProgressAndEditEnabled));
         }
 
         #endregion
 
         #region override MethodBeforeEditElement
 
-        protected override void MethodBeforeEditElement()
+        protected override void OnBeforeEditElement()
         {
-            if (EditElement)
+            if (IsEditingElement)
             {
                 ChallengeForAdd_Edit.Name = _selectedChallenge.Name;
                 ChallengeForAdd_Edit.Note = _selectedChallenge.Note;
                 OnPropertyChanged(nameof(ChallengeForAdd_Edit));
             }
-            OnPropertyChanged(nameof(EnableToggleButtonsProgressAndEdit));
+            OnPropertyChanged(nameof(IsTBProgressAndEditEnabled));
         }
 
         #endregion
