@@ -405,16 +405,10 @@ namespace MyHelper.ViewModels
             await _filmGenreRepository.SaveChangedAsync();
             _filmGenreRepository.AutoSaveChanges = true;
 
-            if (_currentSearch)
-            {
-                var film = await ItemsRepository.GetAsync(_selectedFilm.Id);
-                FilmForEdit.CopyTo(film);
-                await ItemsRepository.UpdateAsync(film);
-                await RequestAsync(true, false, false, false);
-
-            }
-            else
-                await ItemsRepository.UpdateAsync(_selectedFilm);
+            var film = await ItemsRepository.GetAsync(_selectedFilm.Id);
+            FilmForEdit.CopyTo(film);
+            await ItemsRepository.UpdateAsync(film);
+            await RequestAsync(true, false, false, false);
 
             Films.Refresh();
             IsEditingElement = false;
@@ -424,7 +418,7 @@ namespace MyHelper.ViewModels
 
         #region override DeleteElementCommand - Удалить фильм
 
-        protected override bool CanDeleteElementCommandExecute(object? p) => 
+        protected override bool CanDeleteElementCommandExecute(object? p) =>
             _selectedFilm is not null
             && IsElementEnabled;
 
@@ -643,7 +637,7 @@ namespace MyHelper.ViewModels
                     string.Format("Select * FROM Films WHERE {0} COLLATE RUSSIAN_NOCASE ", property) + "LIKE {0}", $"%{_currentSearch.Value}%")
                     .Include(i => i.FilmGenres)
                     .ThenInclude(i => i.Genre);
-            }    
+            }
             if (changeCountInGenres)
             {
                 var genres = GetFilteredFilms(films, false, true, true);
