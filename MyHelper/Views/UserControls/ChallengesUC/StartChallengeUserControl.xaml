@@ -11,7 +11,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid VerticalAlignment="Bottom" Height="0">
         <i:Interaction.Behaviors>
-            <cusB:ShowAdditionalUserControl MaxHeight="230" ManagementShow="{Binding StartChallenge}"/>
+            <cusB:ShowAdditionalUserControl MaxHeight="230" ManagementShow="{Binding IsStartChallenge}"/>
         </i:Interaction.Behaviors>
         <Border Style="{StaticResource BorderStyle_AdditionalUserControl}">
             <Grid Margin="5">
